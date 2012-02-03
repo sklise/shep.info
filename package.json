@@ -1,0 +1,17 @@
+{
+  "name" : "itpirl",
+  "version" : "0.0.1",
+  "author" : "Steven Klise",
+  "description" : "web chat, events and dashboard for ITP",
+  "licenses" : [{
+    "type" : "MIT",
+    "url" : "http://github.com/stevenklise/itpirl/raw/master/License.md"
+  }],
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/stevenklise/itpirl.git"
+  },
+  "dependencies" : {
+    "express" : "2.2.0"
+  }
+}
