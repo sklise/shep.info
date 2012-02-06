@@ -12,6 +12,7 @@
     "url" : "http://github.com/stevenklise/itpirl.git"
   },
   "dependencies" : {
-    "express" : "2.2.0"
+    "express" : "latest",
+    "now" : "latest"
   }
 }
