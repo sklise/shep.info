@@ -1,1 +1,1 @@
-web: node itpirl.js
+web: node server.js
