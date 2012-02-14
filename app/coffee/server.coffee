@@ -14,9 +14,7 @@ everyone = nowjs.initialize app
 everyone.now.distributeMessage = (message) ->
   everyone.now.receiveMessage @now.name, message
 
-##########
-# ROUTES #
-##########
+# ROUTES
 # app.get '/', (request, response) ->
   # response.send 'Hello World'
   
