@@ -13,6 +13,7 @@
   },
   "dependencies" : {
     "express" : "latest",
-    "now" : "latest"
+    "now" : "latest",
+    "coffee-script" : "latest"
   }
 }

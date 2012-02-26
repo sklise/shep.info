@@ -1,12 +1,7 @@
 jQuery ->
-  _.templateSettings = {
-      interpolate : /\{\{([\s\S]+?)\}\}/g
-  }
-
-
   class EventView extends Backbone.View
     tagName: 'li'
-    template: _.template($('#event-template').html())
+    template: Mustache.template($('#event-template').html())
     render: ->
       event = @model.toJSON()
       event.where = event.where ? ""
