@@ -1,1 +1,5 @@
-studentcal = "http://l:9292/calendar/student?callback=?"
+@app = window.app ? {}
+
+jQuery ->
+  new app.AppView collection: app.Events
+  app.Events.fetch()

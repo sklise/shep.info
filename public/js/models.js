@@ -11,16 +11,12 @@
       Event.__super__.constructor.apply(this, arguments);
     }
 
-    Event.prototype.initialize = function(attributes, options) {
-      return true;
-    };
-
     return Event;
 
   })(Backbone.Model);
 
-  this.App = (_ref = window.App) != null ? _ref : {};
+  this.app = (_ref = window.app) != null ? _ref : {};
 
-  this.App.Event = Event;
+  this.app.Event = Event;
 
 }).call(this);

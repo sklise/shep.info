@@ -11,16 +11,16 @@
       Events.__super__.constructor.apply(this, arguments);
     }
 
-    Events.prototype.model = App.Event;
+    Events.prototype.model = app.Event;
 
-    Events.prototype.url = 'http://ilc.itpirl.com/calendar/student';
+    Events.prototype.url = 'http://l:9292/calendar/week?callback=?';
 
     return Events;
 
   })(Backbone.Collection);
 
-  this.App = (_ref = window.App) != null ? _ref : {};
+  this.app = (_ref = window.app) != null ? _ref : {};
 
-  this.App.Events = new Events;
+  this.app.Events = new Events;
 
 }).call(this);

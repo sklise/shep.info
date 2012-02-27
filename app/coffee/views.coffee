@@ -1,14 +1,38 @@
 jQuery ->
-  class EventView extends Backbone.View
-    tagName: 'li'
-    template: Mustache.template($('#event-template').html())
-    render: ->
-      event = @model.toJSON()
-      event.where = event.where ? ""
-      event.link = event.link ? ""
-      $(@el).html @template(event)
-      $('#event-window').prepend $(@el)
-      @
+  _.templateSettings = {
+      interpolate : /\{\{([\s\S]+?)\}\}/g
+  }
   
-  @App = window.App ? {}
-  @App.EventView = EventView
+  class AppView extends Backbone.View
+    el: '#content'
+    initialize: (options) ->
+      @collection.bind 'reset', @render, @
+      @eventview = new EventsView collection: @collection
+    render: ->
+      $(@el).find('#event-window').append @eventview.render().el
+  
+  class EventsView extends Backbone.View
+    id: 'event-feed'
+    tagName: 'ul'
+    template: ($('#events-template').html())
+    render: ->
+      $(@el).empty()
+      for event in @collection.models
+        eventView = new EventView model: event
+        $(@el).append(eventView.render().el)
+      @
+
+  class EventView extends Backbone.View
+    className: 'event'
+    tagName: 'li'
+    template: $('#event-template').html()
+    events:
+      'click' : 'toggleExpanded'
+    render: ->
+      $(@el).html Mustache.render(@template, @model.toJSON())
+      @
+    toggleExpanded: ->
+      @$('.details').toggle()
+
+  @app = window.app ? {}
+  @app.AppView = AppView

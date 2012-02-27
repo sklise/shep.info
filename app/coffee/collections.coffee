@@ -1,6 +1,6 @@
 class Events extends Backbone.Collection
-  model: App.Event
-  url: 'http://l:9292/calendar/today?callback=?'
+  model: app.Event
+  url: 'http://l:9292/calendar/week?callback=?'
   
-@App = window.App ? {}
-@App.Events = new Events
+@app = window.app ? {}
+@app.Events = new Events

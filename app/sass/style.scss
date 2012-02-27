@@ -5,6 +5,7 @@
 // 4. Use descriptive state-based classes.
 // 5. List native elements first and classes after.
 // 6. DRY: Colors and snippets used more than once should be mixins.
+// 7. Use comments with lines of underscores to column 55.
 
 $column-width: 78px;
 $gutter-width: 18px;
@@ -30,20 +31,18 @@ $alt-size: 8px 40px;
 $main-font: "Helvetica";
 $header-font: "Colaborate-Light";
 
-@mixin header-font {
-  font-family: "Colaborate-Light";
-}
-@mixin mono-font {
-  font-family: "Menlo", "Monaco", monospace;
-}
+$base: 18px 150px;
 
 body {
-  background-color: rgba(0, 0, 0, 1);
-  color: rgba(255,255,255,1);
+  font-family: "Myriad Pro";
+  font-size: ms(1, $base, $golden);
+  line-height: ms(2, $base, $golden);
+  background-color: rgb(210,210,210);
+  margin: 0 auto;
 }
 
 #wrapper {
-  @include grid-page;
+  @include grid-page(12);
   font-size: modular-scale(2, $base-size, $golden);
   line-height: modular-scale(3, $base-size, $golden);
   font-family: $main-font;
@@ -167,21 +166,15 @@ header {
 #event-feed {
   font-family: $header-font;
   color: #000;
+  background-color: rgba(0,0,0,0.3);
 
   li {
     background-color: rgba(244,244,244,1);
-    @include border-radius(5px);
-    margin: 0 0 0.2em;
-    padding: 0.4em 1.5em 0.4em 0.7em;
+    margin: 0 0;
+    overflow-y: auto;
+    padding: 0.8em 0.8em;
 
-    -webkit-box-shadow: inset 0 2px 2px rgba(244, 244, 244, 0.25), inset -1px -2px 3px rgba(12, 12, 12, 0.25);
-
-    &.event-school { background-color: darken($event-color, 20%); }
-    &.event-group { background-color: $event-color }
-    &.event-help { background-color: rgba(95, 191, 26, 1); }
-    &.event-student { background-color: lighten($event-color, 20%); }
-    &.floorsquare { background-color: rgba(51, 201, 247, 1); }
-    &.order { background-color: rgba(240,53,40,1); }
+    -webkit-box-shadow: inset 0 1px 2px rgba(244, 244, 244, 0.25), inset 0px -1px 2px rgba(12, 12, 12, 0.25);
   }
   
   .more,
@@ -196,31 +189,33 @@ header {
     }
   }
 
-  .detail {
-  
+  .details {
+    display: none;
   }
 
-  .order {
-    .detail {
-      border-top: 1px solid darken(rgba(240,53,40,1),15%);
-      padding: 0.5em 0 0;
-      font-size: modular-scale(3, $alt-size, $golden);
-      line-height: modular-scale(2, $base-size, $golden);
-    }
-  
-    input {
-      font-family: inherit;
-      font-size: inherit;
-      line-height: inherit;
-      border: none;
-      @include border-radius(4px);
-    }
-  
-    input[type="number"] {
-      text-align: right;
-      width: 3em;
+  .calendar-link {
+    color: rgba(0,0,0, 0.3);
+    float: right;
+    text-decoration: none;
+    
+    &:hover {
+      color: rgba(0,0,0,1);
     }
   }
+
+  // EVENT CATEGORIES
+  //__________________________________________________
+  
+  // DriveBy, Theory Club, Softlab, Rare Groove
+  .group, li:nth-child(5n)        { background-color: rgba(0,110,214,0.7); }
+  // Product orders
+  .order, li:nth-child(5n+1)      { background-color: rgba(240,53,40,0.7); }
+  // Not at ITP
+  .outside, li:nth-child(5n+2)    { background-color: rgba(214,186,0,0.7); }
+  // Things posted by the residents
+  .residents, li:nth-child(5n+3)  { background-color: rgba(0,191,33,0.7); }
+  // Talks, Announce-list Events
+  .school, li:nth-child(5n+4)     { background-color: rgba(158,2,204,0.7); }
 }
 
 .date-time {
