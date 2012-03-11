@@ -29,6 +29,8 @@ jQuery ->
     events:
       'click' : 'toggleExpanded'
     render: ->
+      console.log @model.toJSON()
+      
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
     toggleExpanded: ->

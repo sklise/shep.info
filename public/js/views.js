@@ -81,6 +81,7 @@
       };
 
       EventView.prototype.render = function() {
+        console.log(this.model.toJSON());
         $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
         return this;
       };
