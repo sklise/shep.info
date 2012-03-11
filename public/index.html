@@ -10,6 +10,7 @@
   <script src="/js/vendor/mustache.js" type="text/javascript"></script>
   <script src="/nowjs/now.js"></script>
   
+  <script src="/js/utils.js"></script>
   <script src="/js/models.js"></script>
   <script src="/js/collections.js"></script>
   <script src="/js/views.js"></script>
@@ -17,18 +18,17 @@
   <script src="/js/itpirl.js"></script>
   <script>
   $(document).ready(function(){
-
-    // now.receiveMessage = function(name, message){
-    //   $('#chat-log').append('<li><div class="chatter">' + name + '</div><div class="message">' + message + '</div></li>');
-    // }
-    // 
-    // $("#send-button").click(function(){
-    //   now.distributeMessage($("#new-message-input").val());
-    //   $("#new-message-input").val("");
-    // });
-    // 
-    // now.name = prompt("What's your name?", "");
-
+    now.receiveMessage = function(name, message){
+      $('#chat-log').append('<li><div class="chatter">' + name + '</div><div class="message">' + message + '</div></li>');
+    }
+    
+    $("#new-message").submit(function(){
+      event.preventDefault();
+      now.distributeMessage($("#new-message-input").val());
+      $("#new-message-input").val("");
+    });
+    
+    now.name = prompt("What's your name?", "");
   });
   </script>
 </head>
@@ -36,18 +36,18 @@
   <div id="wrapper">
   <div id="content">
     <div id="chat-window">
-      <!--
       <ul id="chat-log">
         
       </ul>
-      <div id="new-message">
-        <input type="text" id="new-message-input">
-        <input type="button" value="Send" id="send-button">
-      </div> -->
+      <form id="new-message">
+        <button id="ask-shep" class="pictos">M</button>
+        <input id="new-message-input">
+      </form>
     </div>
     <div id="event-window"></div>
   </div>
   </div>
+  
   <script type="text/template" id="events-template">
     <ul>
     </ul>
@@ -55,8 +55,8 @@
   
   <script type="text/template" id="event-template">
     <div>
-      <span class="time">{{ start }} - {{ end }}</span> {{ title }} 
-      <a class="calendar-link pictos" target="_blank" href="{{ url }}">\</a>
+      <span class="time">{{ startTime }}-{{ endTime }}</span> {{ title }} 
+      <a class="calendar-link pictos" title="Open in Google Calendar" target="_blank" href="{{ url }}">\</a>
       <div class="details">
         <p class="location">{{ location }}</p>
         <div>{{ description }}</p>
