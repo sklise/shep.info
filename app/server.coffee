@@ -1,7 +1,9 @@
 # Require libs.
 nowjs = require 'now'
 express = require 'express'
-
+io.configure ->
+  io.set("transports", ["xhr-polling"])
+  io.set("polling duration", 10)
 app = express.createServer(express.logger())
 
 app.configure ->

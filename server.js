@@ -5,6 +5,11 @@
 
   express = require('express');
 
+  io.configure(function() {
+    io.set("transports", ["xhr-polling"]);
+    return io.set("polling duration", 10);
+  });
+
   app = express.createServer(express.logger());
 
   app.configure(function() {
