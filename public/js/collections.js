@@ -13,7 +13,7 @@
 
     Events.prototype.model = app.Event;
 
-    Events.prototype.url = 'http://ilc.itpirl.com/calendar/week?callback=?';
+    Events.prototype.url = 'http://itp-api.info/calendar/week?callback=?';
 
     return Events;
 
