@@ -31,7 +31,7 @@
       if(event.which == 13) {
         event.preventDefault()
         if(message.length > 0){
-          now.distributeMessage($("#new-message-input").val())
+          now.distributeMessage($("#new-message-input").val());
           $("#new-message-input").val('').attr('rows',1)
         }
       }
