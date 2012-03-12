@@ -73,7 +73,6 @@ jQuery ->
       'click' : 'toggleExpanded'
     render: ->
       $(@el).html Mustache.render(@template, @model.toJSON())
-      console.log @model.toJSON()
       @
     toggleExpanded: ->
       # I don't like how this is working currently. When you click on the link

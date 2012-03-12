@@ -13,6 +13,7 @@ everyone = nowjs.initialize app
 
 everyone.now.distributeMessage = (message) ->
   everyone.now.receiveMessage @now.name, message
+  false
 
 # ROUTES
 # app.get '/', (request, response) ->

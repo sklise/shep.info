@@ -41,7 +41,6 @@
       var endResult, pattern, startResult;
       pattern = /([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]+):([0-9]+):[0-9]+[^-]/;
       startResult = rawStart.match(pattern);
-      console.log(startResult);
       endResult = rawEnd.match(pattern);
       if (startResult) {
         this.set({

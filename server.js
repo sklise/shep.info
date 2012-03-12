@@ -14,7 +14,8 @@
   everyone = nowjs.initialize(app);
 
   everyone.now.distributeMessage = function(message) {
-    return everyone.now.receiveMessage(this.now.name, message);
+    everyone.now.receiveMessage(this.now.name, message);
+    return false;
   };
 
   port = process.env.PORT || 3000;

@@ -21,7 +21,6 @@ class Event extends Backbone.Model
       # (.*$) # TimeZone
     ///
     startResult = rawStart.match pattern
-    console.log startResult
     endResult = rawEnd.match pattern
     if startResult
       @set startDate:startResult[1]
