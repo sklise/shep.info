@@ -1,6 +1,6 @@
 # Require libs.
 nowjs = require 'now'
-express = require('express')
+express = require 'express'
 
 app = express.createServer(express.logger())
 

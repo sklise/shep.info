@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, EventView, EventsView, _ref;
+    var AppView, EventDateView, EventView, EventsView, MessageView, MessagesView, _ref;
     _.templateSettings = {
       interpolate: /\{\{([\s\S]+?)\}\}/g
     };
@@ -19,16 +19,70 @@
 
       AppView.prototype.initialize = function(options) {
         this.collection.bind('reset', this.render, this);
-        return this.eventview = new EventsView({
+        this.eventsview = new EventsView({
+          collection: this.collection
+        });
+        return this.messagesview = new MessagesView({
           collection: this.collection
         });
       };
 
       AppView.prototype.render = function() {
-        return $(this.el).find('#event-window').append(this.eventview.render().el);
+        $(this.el).find('#event-window').append(this.eventsview.render().el);
+        return this.messagesview.render().el;
       };
 
       return AppView;
+
+    })(Backbone.View);
+    MessageView = (function(_super) {
+
+      __extends(MessageView, _super);
+
+      function MessageView() {
+        MessageView.__super__.constructor.apply(this, arguments);
+      }
+
+      MessageView.prototype.className = 'message';
+
+      MessageView.prototype.tagName = 'li';
+
+      MessageView.prototype.template = $('#message-template').html();
+
+      MessageView.prototype.render = function() {
+        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
+        return this;
+      };
+
+      return MessageView;
+
+    })(Backbone.View);
+    MessagesView = (function(_super) {
+
+      __extends(MessagesView, _super);
+
+      function MessagesView() {
+        MessagesView.__super__.constructor.apply(this, arguments);
+      }
+
+      MessagesView.prototype.el = '#chat-window';
+
+      MessagesView.prototype.template = $('#messages-template').html();
+
+      MessagesView.prototype.render = function() {
+        var chatInterior, chatWindowHeight, headerHeight, windowHeight;
+        $(this.el).append(Mustache.render(this.template));
+        windowHeight = $(window).height();
+        headerHeight = $('#header-container').height();
+        $(this.el).css('height', windowHeight - headerHeight);
+        chatWindowHeight = windowHeight - headerHeight;
+        chatInterior = chatWindowHeight - $('#new-message').height();
+        $('#chat-log-container').height(chatInterior);
+        $('#chat-log').css('min-height', chatInterior);
+        return this;
+      };
+
+      return MessagesView;
 
     })(Backbone.View);
     EventsView = (function(_super) {
@@ -43,7 +97,7 @@
 
       EventsView.prototype.tagName = 'ul';
 
-      EventsView.prototype.template = $('#events-template').html();
+      EventsView.prototype.template = ($('#events-template')).html();
 
       EventsView.prototype.render = function() {
         var event, eventView, _i, _len, _ref;
@@ -62,6 +116,28 @@
       return EventsView;
 
     })(Backbone.View);
+    EventDateView = (function(_super) {
+
+      __extends(EventDateView, _super);
+
+      function EventDateView() {
+        EventDateView.__super__.constructor.apply(this, arguments);
+      }
+
+      EventDateView.prototype.tagName = 'li';
+
+      EventDateView.prototype.className = 'event-date';
+
+      EventDateView.prototype.template = ($('#event-date')).html();
+
+      EventDateView.prototype.render = function() {
+        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
+        return this;
+      };
+
+      return EventDateView;
+
+    })(Backbone.View);
     EventView = (function(_super) {
 
       __extends(EventView, _super);
@@ -74,15 +150,15 @@
 
       EventView.prototype.tagName = 'li';
 
-      EventView.prototype.template = $('#event-template').html();
+      EventView.prototype.template = ($('#event-template')).html();
 
       EventView.prototype.events = {
         'click': 'toggleExpanded'
       };
 
       EventView.prototype.render = function() {
-        console.log(this.model.toJSON());
         $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
+        console.log(this.model.toJSON());
         return this;
       };
 

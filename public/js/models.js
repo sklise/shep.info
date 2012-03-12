@@ -1,7 +1,19 @@
 (function() {
-  var Event, _ref,
+  var Event, Message, _ref,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  Message = (function(_super) {
+
+    __extends(Message, _super);
+
+    function Message() {
+      Message.__super__.constructor.apply(this, arguments);
+    }
+
+    return Message;
+
+  })(Backbone.Model);
 
   Event = (function(_super) {
 
@@ -16,10 +28,12 @@
     };
 
     Event.prototype.toAMPM = function(hours, minutes) {
+      var minutesOut;
+      minutesOut = (parseInt(minutes) > 0 ? ":" + minutes : "");
       if (parseInt(hours) > 12) {
-        return parseInt(hours) - 12 + ":" + minutes + "p";
+        return parseInt(hours) - 12 + minutesOut + "p";
       } else {
-        return parseInt(hours) + ":" + minutes + "a";
+        return parseInt(hours) + minutesOut + "a";
       }
     };
 
@@ -37,7 +51,9 @@
           startTime: this.toAMPM(startResult[2], startResult[3])
         });
       } else {
-        this.set;
+        this.set({
+          allDay: true
+        });
       }
       if (endResult) {
         this.set({
@@ -45,6 +61,10 @@
         });
         return this.set({
           endTime: this.toAMPM(endResult[2], endResult[3])
+        });
+      } else {
+        return this.set({
+          allDay: true
         });
       }
     };
@@ -56,5 +76,7 @@
   this.app = (_ref = window.app) != null ? _ref : {};
 
   this.app.Event = Event;
+
+  this.app.Message = Message;
 
 }).call(this);
