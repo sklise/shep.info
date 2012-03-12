@@ -1,9 +1,7 @@
 # Require libs.
 nowjs = require 'now'
 express = require 'express'
-io.configure ->
-  io.set("transports", ["xhr-polling"])
-  io.set("polling duration", 10)
+
 app = express.createServer(express.logger())
 
 app.configure ->
@@ -11,7 +9,7 @@ app.configure ->
   app.use express.static(__dirname + '/public')
 
 # global messages
-everyone = nowjs.initialize app
+everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
 
 everyone.now.distributeMessage = (message) ->
   everyone.now.receiveMessage @now.name, message

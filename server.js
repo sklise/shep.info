@@ -5,18 +5,17 @@
 
   express = require('express');
 
-  io.configure(function() {
-    io.set("transports", ["xhr-polling"]);
-    return io.set("polling duration", 10);
-  });
-
   app = express.createServer(express.logger());
 
   app.configure(function() {
     return app.use(express.static(__dirname + '/public'));
   });
 
-  everyone = nowjs.initialize(app);
+  everyone = nowjs.initialize(app, {
+    socketio: {
+      transports: ['xhr-polling', 'jsonp-polling']
+    }
+  });
 
   everyone.now.distributeMessage = function(message) {
     everyone.now.receiveMessage(this.now.name, message);
