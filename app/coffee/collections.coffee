@@ -1,6 +1,6 @@
 class Events extends Backbone.Collection
   model: app.Event
-  url: 'http://l:9292/calendar/week?callback=?'
+  url: 'http://ilc.itpirl.com/calendar/week?callback=?'
 
 class Messages extends Backbone.Collection
   model: app.Message
