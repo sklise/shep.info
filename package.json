@@ -12,8 +12,10 @@
     "url" : "http://github.com/stevenklise/itpirl.git"
   },
   "dependencies" : {
+    "irc" : "0.3.3",
     "express" : "latest",
-    "now" : "latest",
+    "now" : "0.8.0",
+    "mustache" : "0.4.0",
     "coffee-script" : "latest"
   }
 }
