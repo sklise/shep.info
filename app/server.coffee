@@ -3,6 +3,7 @@ nowjs = require 'now'
 express = require 'express'
 irc = require 'irc'
 mustache = require 'mustache'
+ejs = require 'ejs'
 
 # MUSTACHE FOR EXPRESS
 #_____________________________________________________

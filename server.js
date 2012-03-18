@@ -1,5 +1,5 @@
 (function() {
-  var app, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port;
+  var app, ejs, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port;
 
   nowjs = require('now');
 
@@ -8,6 +8,8 @@
   irc = require('irc');
 
   mustache = require('mustache');
+
+  ejs = require('ejs');
 
   mustache_template = {
     compile: function(source, options) {
