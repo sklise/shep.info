@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port;
+  var app, ejs, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port, redis;
 
   nowjs = require('now');
 
@@ -10,6 +10,8 @@
   mustache = require('mustache');
 
   ejs = require('ejs');
+
+  redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
   mustache_template = {
     compile: function(source, options) {
@@ -37,16 +39,20 @@
     return app.register(".mustache", mustache_template);
   });
 
+  app.get('/', function(request, response) {
+    return response.render('index.ejs');
+  });
+
+  app.get('/help', function(request, response) {
+    console.log('here');
+    return response.send('Hello World');
+  });
+
   everyone = nowjs.initialize(app, {
     socketio: {
       transports: ['xhr-polling', 'jsonp-polling']
     }
   });
-
-  everyone.now.distributeMessage = function(message) {
-    everyone.ircClient.say('#itp', message);
-    return everyone.now.receiveMessage(this.now.name, message);
-  };
 
   ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net';
 
@@ -54,23 +60,19 @@
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: process.env.ITPIRL_IRC_PORT || 6667
+    port: process.env.ITPIRL_IRC_PORT || 6667,
+    userName: process.env.ITP_IRL_USERNAME || 'itpanon',
+    password: process.env.ITPIRL_IRC_PASSWORD || ''
   });
+
+  everyone.now.distributeMessage = function(message) {
+    everyone.ircClient.say('#itp', message);
+    return everyone.now.receiveMessage(this.now.name, message);
+  };
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
     console.log("" + from + ":" + message);
     return everyone.now.receiveMessage(from, message);
-  });
-
-  app.get('/', function(request, response) {
-    return response.render('index.ejs', {
-      layout: false
-    });
-  });
-
-  app.get('/help', function(request, response) {
-    everyone.ircClient.say('#itp', 'shep feed me');
-    return response.send('Hello World');
   });
 
   port = process.env.PORT || 3000;
