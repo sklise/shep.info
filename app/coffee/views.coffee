@@ -7,8 +7,8 @@ jQuery ->
     el: '#content'
     initialize: (options) ->
       @collection.bind 'reset', @render, @
-      @eventsview = new EventsView collection: @collection
       @messagesview = new MessagesView collection: @collection
+      @eventsview = new EventsView collection: @collection
     render: ->
       $(@el).find('#event-window').append @eventsview.render().el
       @messagesview.render().el

@@ -19,10 +19,10 @@
 
       AppView.prototype.initialize = function(options) {
         this.collection.bind('reset', this.render, this);
-        this.eventsview = new EventsView({
+        this.messagesview = new MessagesView({
           collection: this.collection
         });
-        return this.messagesview = new MessagesView({
+        return this.eventsview = new EventsView({
           collection: this.collection
         });
       };
