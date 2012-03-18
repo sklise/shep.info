@@ -17,6 +17,7 @@
     "now" : "0.8.0",
     "mustache" : "0.4.0",
     "ejs" : "",
+    "redis-url" : "0.1.0",
     "coffee-script" : "latest"
   }
 }
