@@ -1,6 +1,7 @@
 (function() {
 
   jQuery(function() {
+    var _results;
     now.receiveMessage = function(name, message) {
       var time;
       time = new Date;
@@ -26,7 +27,11 @@
         }
       }
     });
-    return now.name = prompt("What's your name?", "");
+    _results = [];
+    while (now.name === void 0 || now.name === "") {
+      _results.push(now.name = prompt("What's your name?", ""));
+    }
+    return _results;
   });
 
 }).call(this);

@@ -15,4 +15,5 @@ jQuery ->
         now.distributeMessage($("#new-message-input").val())
         $("#new-message-input").val('').attr('rows',1)
     
-  now.name = prompt("What's your name?", "")
+  while now.name == undefined || now.name == ""
+    now.name = prompt("What's your name?", "")

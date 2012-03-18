@@ -37,13 +37,32 @@ app.configure ->
 everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
 
 everyone.now.distributeMessage = (message) ->
-  console.log message
+  everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage @now.name, message
+
+# SETUP IRC
+#_____________________________________________________
+ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
+everyone.ircClient = new irc.Client(ircHost, ircNick, {
+  channels: ['#itp']
+  port: process.env.ITPIRL_IRC_PORT || 6667
+  # userName: process.env.ITP_IRL_USERNAME || 'itpanon'
+  # password: process.env.ITPIRL_IRC_PASSWORD || ''
+})
+
+everyone.ircClient.addListener 'message#itp', (from, message) ->
+  console.log "#{from}:#{message}"
+  everyone.now.receiveMessage from, message
 
 # ROUTES
 #_____________________________________________________
 app.get '/', (request, response) ->
-  response.render 'index.mustache', {layout: false}
+  response.render 'index.ejs', {layout: false}
+
+app.get '/help', (request, response) ->
+  everyone.ircClient.say('#itp', 'shep feed me')
+  response.send 'Hello World'
 
 # LISTEN ON A PORT
 #_____________________________________________________

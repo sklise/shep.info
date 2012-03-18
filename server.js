@@ -1,5 +1,5 @@
 (function() {
-  var app, everyone, express, irc, mustache, mustache_template, nowjs, port;
+  var app, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port;
 
   nowjs = require('now');
 
@@ -42,14 +42,33 @@
   });
 
   everyone.now.distributeMessage = function(message) {
-    console.log(message);
+    everyone.ircClient.say('#itp', message);
     return everyone.now.receiveMessage(this.now.name, message);
   };
 
+  ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net';
+
+  ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon';
+
+  everyone.ircClient = new irc.Client(ircHost, ircNick, {
+    channels: ['#itp'],
+    port: process.env.ITPIRL_IRC_PORT || 6667
+  });
+
+  everyone.ircClient.addListener('message#itp', function(from, message) {
+    console.log("" + from + ":" + message);
+    return everyone.now.receiveMessage(from, message);
+  });
+
   app.get('/', function(request, response) {
-    return response.render('index.mustache', {
+    return response.render('index.ejs', {
       layout: false
     });
+  });
+
+  app.get('/help', function(request, response) {
+    everyone.ircClient.say('#itp', 'shep feed me');
+    return response.send('Hello World');
   });
 
   port = process.env.PORT || 3000;
