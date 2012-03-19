@@ -115,6 +115,7 @@ h2 {
   overflow-x: hidden;
 
   li {
+    word-wrap: break-word;
     overflow-y: auto;
     padding: 1em 0 0.3em;
     position: relative;
