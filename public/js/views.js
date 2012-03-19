@@ -100,7 +100,7 @@
       EventsView.prototype.template = ($('#events-template')).html();
 
       EventsView.prototype.render = function() {
-        var event, eventView, _i, _len, _ref;
+        var event, eventView, eventWindow, headerHeight, windowHeight, _i, _len, _ref;
         $(this.el).empty();
         _ref = this.collection.models;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -110,6 +110,11 @@
           });
           $(this.el).append(eventView.render().el);
         }
+        windowHeight = $(window).height();
+        headerHeight = $('#header-container').height();
+        $(this.el).css('height', windowHeight - headerHeight);
+        eventWindow = windowHeight - headerHeight;
+        $('#event-window').height(eventWindow);
         return this;
       };
 
