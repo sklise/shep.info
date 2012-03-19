@@ -31,16 +31,28 @@ $base-size: 10px 350px;
 $alt-size: 8px 320px;
 
 $main-font: "Helvetica";
-$header-font: "Colaborate-Light";
+$header-font: "ColaborateLightRegular", "Lucida Grande", sans-serif;
+$header-bold: "ColaborateMediumRegular", "Lucida Grande", sans-serif;
 
 $base: 18px 150px;
 
 body {
   font-family: "Myriad Pro";
-  font-size: ms(1, $base, $golden);
-  line-height: ms(2, $base, $golden);
+  font-size: ms(1, $base-size, $golden);
+  line-height: ms(2, $base-size, $golden);
   background-color: rgb(210,210,210);
   margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $header-font;
+}
+
+h2 {
+  font-family: $header-bold;
+  font-size: ms(5, $base-size, $golden);
+  line-height: ms(6, $base-size, $golden);
+  margin: 0.5em 0;
 }
 
 #wrapper {
@@ -154,9 +166,7 @@ body {
 .chatter,
 .message {
   display: block;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+  @include box-sizing;
 }
 
 .chatter {
@@ -184,9 +194,7 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     resize:none;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+    @include box-sizing;
     
     padding: ms(1, $base-size, $golden) 0 ms(1, $base-size, $golden) #{ms(5, $base-size, $golden)+10};
     margin: 0;
@@ -233,9 +241,7 @@ body {
   font-size: modular-scale(2, $base-size, $golden);
   line-height: modular-scale(2, $base-size, $golden);
   display: block;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+  @include box-sizing;
   height: modular-scale(3, $base-size, $golden);
   margin: 0 auto 0.2em;
   text-align: center;
@@ -308,4 +314,17 @@ body {
   color: lighten($black, 88%);
   font-size: modular-scale(2, $alt-size, $golden);
   line-height: modular-scale(3, $alt-size, $golden);
+}
+
+.introduction {
+  background-color: rgb(255,238,195);
+  margin: 0.5em 0;
+  padding: 0.75em 1.5em;
+  @include box-sizing;
+  
+  p {
+    font-size: ms(2, $alt-size, $golden);
+    line-height: ms(3, $alt-size, $golden);
+    margin: 0 0 1em;
+  }
 }

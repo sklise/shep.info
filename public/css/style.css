@@ -88,10 +88,19 @@ em {
 
 body {
   font-family: "Myriad Pro";
-  font-size: 22px;
-  line-height: 29px;
+  font-size: 12px;
+  line-height: 16px;
   background-color: #d2d2d2;
   margin: 0 auto; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "ColaborateLightRegular", "Lucida Grande", sans-serif; }
+
+h2 {
+  font-family: "ColaborateMediumRegular", "Lucida Grande", sans-serif;
+  font-size: 32px;
+  line-height: 42px;
+  margin: 0.5em 0; }
 
 #wrapper {
   width: 1152px;
@@ -103,7 +112,7 @@ body {
   overflow: auto; }
 
 #header-container {
-  font-family: "Colaborate-Medium", "Colaborate-Light";
+  font-family: "Colaborate-Medium", "ColaborateLightRegular", "Lucida Grande", sans-serif;
   font-size: 20px;
   line-height: 26px;
   background-color: black;
@@ -181,8 +190,8 @@ body {
 .chatter,
 .message {
   display: block;
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
 .chatter {
@@ -209,8 +218,8 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     resize: none;
-    -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
     padding: 12px 0 12px 42px;
     margin: 0;
@@ -251,8 +260,8 @@ body {
   font-size: 16px;
   line-height: 16px;
   display: block;
-  -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
   height: 20px;
   margin: 0 auto 0.2em;
@@ -264,7 +273,7 @@ body {
     padding: 0.2em 0.7em; }
 
 #event-feed {
-  font-family: "Colaborate-Light";
+  font-family: "ColaborateLightRegular", "Lucida Grande", sans-serif;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.3); }
   #event-feed li {
@@ -306,3 +315,15 @@ body {
   color: #e0e0e0;
   font-size: 13px;
   line-height: 18px; }
+
+.introduction {
+  background-color: #ffeec3;
+  margin: 0.5em 0;
+  padding: 0.75em 1.5em;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+  .introduction p {
+    font-size: 13px;
+    line-height: 18px;
+    margin: 0 0 1em; }
