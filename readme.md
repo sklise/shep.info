@@ -2,7 +2,7 @@
 
 ## Changelog
 
-### 0.7.0
+### 0.7.0 - 2012/03/18
 
 First version with a version number.
 
