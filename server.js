@@ -60,9 +60,7 @@
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: process.env.ITPIRL_IRC_PORT || 6667,
-    userName: process.env.ITP_IRL_USERNAME || 'itpanon',
-    password: process.env.ITPIRL_IRC_PASSWORD || ''
+    port: process.env.ITPIRL_IRC_PORT || 6667
   });
 
   everyone.now.distributeMessage = function(message) {

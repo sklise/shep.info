@@ -60,8 +60,8 @@ ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
 everyone.ircClient = new irc.Client(ircHost, ircNick, {
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
-  userName: process.env.ITP_IRL_USERNAME || 'itpanon'
-  password: process.env.ITPIRL_IRC_PASSWORD || ''
+  # userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon'
+  # password: process.env.ITPIRL_IRC_PASSWORD || ''
 })
 
 # TELL NOW.JS HOW TO HANDLE MESSAGES
@@ -69,6 +69,12 @@ everyone.ircClient = new irc.Client(ircHost, ircNick, {
 everyone.now.distributeMessage = (message) ->
   # Distribute the message to IRC as well as Now
   # so that Shep can hear it.
+
+  # everyone.getUsers (users) ->
+  #   for user in users
+  #     nowjs.getClient user, ->
+  #       console.log @now.name
+
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage @now.name, message
 
