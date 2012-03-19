@@ -1,11 +1,47 @@
 # REQUIRE MODULES
 #_____________________________________________________
+http = require 'http' # posting to cakemix
+querystring = require 'querystring' # stringifying posts to cakemix
 nowjs = require 'now'
 express = require 'express'
 irc = require 'irc'
 mustache = require 'mustache'
 ejs = require 'ejs'
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+
+# SAVING MESSAGES TO CAKEMIX FOR NOW
+#_____________________________________________________
+logMessage = (name, message) ->
+  # Adapted from http://www.theroamingcoder.com/node/111
+  console.log(name, message)
+  response = ''
+
+  post =
+    domain: 'www.itpcakemix.com'
+    port: 80
+    path: '/add'
+    data: querystring.stringify
+      user: 'shep'
+      project: 'itpirl'
+      name: name
+      message: message
+  
+  options =
+    host: post.domain,  
+    port: post.port,  
+    path: post.path,  
+    method: 'POST',  
+    headers: 
+      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Length': post.data.length
+
+  post_req = http.request options, (res) ->
+    res.setEncoding('utf8')
+    res.on 'data', (chunk) ->
+      response += chunk
+  post_req.write(post.data)
+  post_req.end()
+  response
 
 # MUSTACHE FOR EXPRESS
 #_____________________________________________________
@@ -74,12 +110,12 @@ everyone.now.distributeMessage = (message) ->
   #   for user in users
   #     nowjs.getClient user, ->
   #       console.log @now.name
-
+  console.log logMessage(@now.name, message)
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage @now.name, message
 
 everyone.ircClient.addListener 'message#itp', (from, message) ->
-  console.log "#{from}:#{message}"
+  logMessage from, message
   # When Shep, or users in an IRC client send a message
   # Also send it to Now.js
   everyone.now.receiveMessage from, message

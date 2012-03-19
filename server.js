@@ -1,5 +1,9 @@
 (function() {
-  var app, ejs, everyone, express, irc, ircHost, ircNick, mustache, mustache_template, nowjs, port, redis;
+  var app, ejs, everyone, express, http, irc, ircHost, ircNick, logMessage, mustache, mustache_template, nowjs, port, querystring, redis;
+
+  http = require('http');
+
+  querystring = require('querystring');
 
   nowjs = require('now');
 
@@ -12,6 +16,42 @@
   ejs = require('ejs');
 
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+
+  logMessage = function(name, message) {
+    var options, post, post_req, response;
+    console.log(name, message);
+    response = '';
+    post = {
+      domain: 'www.itpcakemix.com',
+      port: 80,
+      path: '/add',
+      data: querystring.stringify({
+        user: 'shep',
+        project: 'itpirl',
+        name: name,
+        message: message
+      })
+    };
+    options = {
+      host: post.domain,
+      port: post.port,
+      path: post.path,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': post.data.length
+      }
+    };
+    post_req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      return res.on('data', function(chunk) {
+        return response += chunk;
+      });
+    });
+    post_req.write(post.data);
+    post_req.end();
+    return response;
+  };
 
   mustache_template = {
     compile: function(source, options) {
@@ -64,12 +104,13 @@
   });
 
   everyone.now.distributeMessage = function(message) {
+    console.log(logMessage(this.now.name, message));
     everyone.ircClient.say('#itp', message);
     return everyone.now.receiveMessage(this.now.name, message);
   };
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
-    console.log("" + from + ":" + message);
+    logMessage(from, message);
     return everyone.now.receiveMessage(from, message);
   });
 
