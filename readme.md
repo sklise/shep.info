@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### 0.7.2 - 2012/03/19
+
+- Fix wordwrapping in chat messages with word-wrap:break-word;
+- Implement feedback widget, posting to cakemix.
+
 ### 0.7.1 - 2012/03/19 10:30am
 
 - Log messages to www.itpcakemix.com

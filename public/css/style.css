@@ -112,9 +112,6 @@ h2 {
   overflow: auto; }
 
 #header-container {
-  font-family: "Colaborate-Medium", "ColaborateLightRegular", "Lucida Grande", sans-serif;
-  font-size: 20px;
-  line-height: 26px;
   background-color: black;
   width: 100%;
   overflow: auto; }
@@ -125,12 +122,27 @@ h2 {
   margin: 0 auto;
   color: white;
   position: relative;
-  clear: both;
-  /*  @include grid-row(true);*/ }
+  clear: both; }
   #header h1 {
+    font-family: "Colaborate-Medium", "ColaborateLightRegular", "Lucida Grande", sans-serif;
+    font-size: 20px;
+    line-height: 26px;
     margin: 0 9px;
     float: left;
     width: 174px; }
+  #header #feedback {
+    margin: 0 9px;
+    float: left;
+    width: 174px;
+    margin-left: 393px;
+    float: right;
+    position: relative; }
+    #header #feedback #feedback-button:hover {
+      color: #006ed6;
+      cursor: pointer; }
+    #header #feedback .feedback-form {
+      position: absolute;
+      z-index: 10; }
 
 #content {
   width: auto;

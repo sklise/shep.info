@@ -17,8 +17,9 @@
 
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
-  logMessage = function(name, message) {
+  logMessage = function(name, message, project) {
     var options, post, post_req, response;
+    if (project == null) project = 'itpirl';
     console.log(name, message);
     response = '';
     post = {
@@ -27,7 +28,7 @@
       path: '/add',
       data: querystring.stringify({
         user: 'shep',
-        project: 'itpirl',
+        project: project,
         name: name,
         message: message
       })
@@ -76,6 +77,7 @@
 
   app.configure(function() {
     app.use(express.static(__dirname + '/public'));
+    app.use(express.bodyParser());
     return app.register(".mustache", mustache_template);
   });
 
@@ -86,6 +88,11 @@
   app.get('/help', function(request, response) {
     console.log('here');
     return response.send('Hello World');
+  });
+
+  app.post('/feedback/new', function(request, response) {
+    logMessage(request.body.name, request.body.message, 'itpirl-feedback');
+    return response.send('hi');
   });
 
   everyone = nowjs.initialize(app, {
@@ -100,10 +107,15 @@
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: process.env.ITPIRL_IRC_PORT || 6667
+    port: process.env.ITPIRL_IRC_PORT || 6667,
+    userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon',
+    password: process.env.ITPIRL_IRC_PASSWORD || ''
   });
 
   everyone.now.distributeMessage = function(message) {
+    var clientId;
+    clientId = '';
+    everyone.getUsers(function(users) {});
     console.log(logMessage(this.now.name, message));
     everyone.ircClient.say('#itp', message);
     return everyone.now.receiveMessage(this.now.name, message);

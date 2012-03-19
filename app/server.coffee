@@ -11,7 +11,7 @@ redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://local
 
 # SAVING MESSAGES TO CAKEMIX FOR NOW
 #_____________________________________________________
-logMessage = (name, message) ->
+logMessage = (name, message, project='itpirl') ->
   # Adapted from http://www.theroamingcoder.com/node/111
   console.log(name, message)
   response = ''
@@ -22,7 +22,7 @@ logMessage = (name, message) ->
     path: '/add'
     data: querystring.stringify
       user: 'shep'
-      project: 'itpirl'
+      project: project
       name: name
       message: message
   
@@ -68,6 +68,7 @@ app = express.createServer(express.logger())
 app.configure ->
   # Setup static file server
   app.use express.static(__dirname + '/public')
+  app.use express.bodyParser()
   app.register(".mustache", mustache_template)
 
 # CONNECT TO REDIS
@@ -85,6 +86,10 @@ app.get '/help', (request, response) ->
   console.log 'here'
   response.send 'Hello World'
 
+app.post '/feedback/new', (request, response) ->
+  logMessage request.body.name, request.body.message, 'itpirl-feedback'
+  response.send 'hi'
+
 # SETUP NOW.JS
 #_____________________________________________________
 everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
@@ -96,8 +101,8 @@ ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
 everyone.ircClient = new irc.Client(ircHost, ircNick, {
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
-  # userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon'
-  # password: process.env.ITPIRL_IRC_PASSWORD || ''
+  userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon'
+  password: process.env.ITPIRL_IRC_PASSWORD || ''
 })
 
 # TELL NOW.JS HOW TO HANDLE MESSAGES
@@ -106,7 +111,8 @@ everyone.now.distributeMessage = (message) ->
   # Distribute the message to IRC as well as Now
   # so that Shep can hear it.
 
-  # everyone.getUsers (users) ->
+  clientId = ''
+  everyone.getUsers (users) ->
   #   for user in users
   #     nowjs.getClient user, ->
   #       console.log @now.name
@@ -115,6 +121,7 @@ everyone.now.distributeMessage = (message) ->
   everyone.now.receiveMessage @now.name, message
 
 everyone.ircClient.addListener 'message#itp', (from, message) ->
+  # log the message
   logMessage from, message
   # When Shep, or users in an IRC client send a message
   # Also send it to Now.js

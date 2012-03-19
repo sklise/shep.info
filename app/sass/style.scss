@@ -65,9 +65,6 @@ h2 {
 }
 
 #header-container {
-  font-family: 'Colaborate-Medium', $header-font;
-  font-size: modular-scale(3, $base-size, $golden);
-  line-height: modular-scale(4, $base-size, $golden);
   background-color: black;
   width: 100%;
   overflow: auto;
@@ -80,10 +77,29 @@ h2 {
   color: rgb(255,255,255);
   position: relative;
   clear: both;
-/*  @include grid-row(true);*/
   
   h1 {
+    font-family: 'Colaborate-Medium', $header-font;
+    font-size: modular-scale(3, $base-size, $golden);
+    line-height: modular-scale(4, $base-size, $golden);
     @include grid-column(2);
+  }
+  
+  #feedback {
+    @include grid-column(2);
+    @include grid-offset(4);
+    float: right;
+    position: relative;
+    
+    #feedback-button:hover {
+      color: rgba(0,110,214,1);
+      cursor: pointer;
+    }
+    
+    .feedback-form {
+      position: absolute;
+      z-index: 10;
+    }
   }
 }
 
@@ -317,6 +333,9 @@ h2 {
   line-height: modular-scale(3, $alt-size, $golden);
 }
 
+
+// INTRODUCTION BOX
+//____________________________________________________
 .introduction {
   background-color: rgb(255,238,195);
   margin: 0.5em 0;
