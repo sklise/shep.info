@@ -17,7 +17,8 @@ $gutter-width: 18px;
 
 $black: rgba(0,0,0,1);
 $gold: rgba(255,180,0,1);
-$blue: rgba(17, 13, 255, 1);
+$blue: rgba(17, 13, 245, 1);
+$chat-background: rgba(244,244,244,1);
 
 /* Calendar colors */
 $event-color: rgba(147, 32, 214, 1);
@@ -27,7 +28,7 @@ $event-color: rgba(147, 32, 214, 1);
 }
 
 $base-size: 10px 350px;
-$alt-size: 8px 40px;
+$alt-size: 8px 320px;
 
 $main-font: "Helvetica";
 $header-font: "Colaborate-Light";
@@ -96,44 +97,54 @@ body {
 }
 
 #chat-log {
-  background-color: rgba(244,244,244,1);
+  background-color: $chat-background;
   min-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
 
   li {
     overflow-y: auto;
-    padding: 0.6em 0;
+    padding: 1em 0 0.3em;
     position: relative;
     @include grid-row;
 
+    &.consecutive {
+      padding: 0.3em 0;
+      
+      .chatter {
+        opacity: 0;
+      }
+    }
+
     .message-time {
       background-color: transparentize($black,0.5);
-      @include border-radius(4px);
+      color: $chat-background;
       display: block;
-      float: right;
-      padding: 0.1em;
+      font-size: ms(1, $alt-size, $golden);
+      line-height: ms(1, $alt-size, $golden);
+      opacity: 0;
+      padding: 0.15em 0.3em;
       position: absolute;
       right: 1em;
-      visibility: hidden;
+      -moz-transition: opacity 200ms ease-in-out;
+      -webkit-transition: opacity 200ms ease-in;
+      transition: opacity 200ms ease-in;
     }
     
     &:hover .message-time {
-      visibility: visible;
+      opacity: 1;
     }
 
-    &.me .chatter {
+    &.self .chatter {
       color: $blue;
     }
 
     &.shep {
-
-
+      background: darken($chat-background, 5%);
       .chatter {
         color: darken($gold, 10%);
       }
       .message {
-        color: lighten($black, 40%);
       }
     }
 
@@ -144,6 +155,8 @@ body {
 .message {
   display: block;
   -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .chatter {
@@ -168,9 +181,12 @@ body {
     border: 1px solid transparent;
     font-size: ms(2, $base-size, $golden);
     line-height: ms(3, $base-size, $golden);
-    -webkit-appearance:none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     resize:none;
     -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     
     padding: ms(1, $base-size, $golden) 0 ms(1, $base-size, $golden) #{ms(5, $base-size, $golden)+10};
     margin: 0;
@@ -189,6 +205,8 @@ body {
   color: white;
   font-size: ms(3, $base-size, $golden);
   -webkit-border-radius: ms(5, $base-size, $golden);
+  -moz-border-radius: ms(5, $base-size, $golden);
+  border-radius: ms(5, $base-size, $golden);
   height: ms(5, $base-size, $golden);
   width: ms(5, $base-size, $golden);
   position: relative;
@@ -217,6 +235,8 @@ body {
   line-height: modular-scale(2, $base-size, $golden);
   display: block;
   -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   height: modular-scale(3, $base-size, $golden);
   margin: 0 auto 0.2em;
   text-align: center;
