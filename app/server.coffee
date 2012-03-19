@@ -7,7 +7,7 @@ express = require 'express'
 irc = require 'irc'
 mustache = require 'mustache'
 ejs = require 'ejs'
-redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+# redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
 # SAVING MESSAGES TO CAKEMIX FOR NOW
 #_____________________________________________________
@@ -88,7 +88,7 @@ app.get '/help', (request, response) ->
 
 app.post '/feedback/new', (request, response) ->
   logMessage request.body.name, request.body.message, 'itpirl-feedback'
-  response.send 'hi'
+  response.send '{sucess:hopefully}'
 
 # SETUP NOW.JS
 #_____________________________________________________
@@ -101,8 +101,8 @@ ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
 everyone.ircClient = new irc.Client(ircHost, ircNick, {
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
-  userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon'
-  password: process.env.ITPIRL_IRC_PASSWORD || ''
+  # userName: process.env.ITPIRL_IRC_USERNAME || 'itpanon'
+  # password: process.env.ITPIRL_IRC_PASSWORD || ''
 })
 
 # TELL NOW.JS HOW TO HANDLE MESSAGES
@@ -111,12 +111,11 @@ everyone.now.distributeMessage = (message) ->
   # Distribute the message to IRC as well as Now
   # so that Shep can hear it.
 
-  clientId = ''
-  everyone.getUsers (users) ->
+  # everyone.getUsers (users) ->
   #   for user in users
   #     nowjs.getClient user, ->
   #       console.log @now.name
-  console.log logMessage(@now.name, message)
+  logMessage(@now.name, message)
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage @now.name, message
 
