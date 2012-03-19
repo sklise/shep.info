@@ -50,6 +50,11 @@ jQuery ->
       for event in @collection.models
         eventView = new EventView model: event
         $(@el).append(eventView.render().el)
+      windowHeight = $(window).height()
+      headerHeight = $('#header-container').height()
+      $(@el).css('height', windowHeight - headerHeight)
+      eventWindow = windowHeight - headerHeight
+      $('#event-window').height(eventWindow)
       @
 
   # Event Date
