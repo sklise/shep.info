@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### 0.7.1 - 2012/03/19 10:30am
+
+- Log messages to www.itpcakemix.com
+- Watch for messages to 'shep' or 'shepbot' for chat highlighting
+
 ### 0.7.0 - 2012/03/18
 
 First version with a version number.
