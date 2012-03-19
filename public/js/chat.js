@@ -19,7 +19,7 @@
         classes = [];
         if (senderName === nowName) {
           classes.push('self');
-        } else if (senderName === 'shep') {
+        } else if (senderName === 'shep' || senderName === 'shepbot') {
           classes.push('shep');
         }
         if ($('#chat-log li').last().find('.chatter').text() === senderName) {
