@@ -221,7 +221,6 @@ body {
       border: 1px solid blue; }
 
 #ask-shep {
-  color: white;
   font-size: 20px;
   -webkit-border-radius: 32px;
   -moz-border-radius: 32px;
@@ -231,11 +230,11 @@ body {
   position: relative;
   display: block;
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: 16px;
+  top: 16px;
   border: #1e5799; }
   #ask-shep:hover {
-    background: #90bae4; }
+    /*    background: #90bae4;*/ }
 
 #event-window {
   margin: 0 9px;

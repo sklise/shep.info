@@ -202,7 +202,6 @@ body {
 }
 
 #ask-shep {
-  color: white;
   font-size: ms(3, $base-size, $golden);
   -webkit-border-radius: ms(5, $base-size, $golden);
   -moz-border-radius: ms(5, $base-size, $golden);
@@ -212,12 +211,12 @@ body {
   position: relative;
   display: block;
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: ms(5, $base-size, $golden)/2;
+  top: ms(5, $base-size, $golden)/2;
   
   border: #1e5799;
   &:hover {
-    background: #90bae4;
+/*    background: #90bae4;*/
   }  
 }
 
