@@ -40,6 +40,8 @@
       });
     });
   </script>
+  
+  <title>ITPIRL</title>
 </head>
 <body>
   <div id="header-container">
@@ -55,7 +57,16 @@
 
   <div id="wrapper">
   <div id="content">
-    <div id="chat-window"></div>
+    <div id="chat-window">
+      <div id="chat-log-container">
+        <ul id="chat-log">
+        </ul>
+      </div>
+      <form id="new-message">
+        <div id="ask-shep" class="pictos">p</div>
+        <textarea id="new-message-input" rows=1></textarea>
+      </form>
+    </div>
     <div id="event-window">
       <div class="introduction">
         <h2>Welcome to ITPIRL.</h2>
