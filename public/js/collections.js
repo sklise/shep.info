@@ -13,7 +13,7 @@
 
     Events.prototype.model = app.Event;
 
-    Events.prototype.url = 'http://128.122.151.157:9292/calendar/week?callback=?';
+    Events.prototype.url = 'http://www.itp-api.info/calendar/week?callback=?';
 
     return Events;
 
