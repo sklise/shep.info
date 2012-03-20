@@ -27,16 +27,15 @@ jQuery ->
   #___________________________________________________
   class MessagesView extends Backbone.View
     el: '#chat-window'
-    template: ($('#messages-template').html())
-    render: ->
-      $(@el).append Mustache.render(@template)
-      windowHeight = $(window).height()
+    fitHeight: (windowHeight) ->
       headerHeight = $('#header-container').height()
       $(@el).css('height', windowHeight - headerHeight)
       chatWindowHeight = windowHeight - headerHeight
-      chatInterior = chatWindowHeight - $('#new-message').height()
-      $('#chat-log-container').height(chatInterior)
-      $('#chat-log').css('min-height', chatInterior)
+      chatInterior = chatWindowHeight - @$('#new-message').height()
+      @$('#chat-log-container').height(chatInterior)
+      @$('#chat-log').css('min-height', chatInterior)
+    render: ->
+      @fitHeight $(window).height()
       @
   
   # Events Roll

@@ -67,18 +67,18 @@
 
       MessagesView.prototype.el = '#chat-window';
 
-      MessagesView.prototype.template = $('#messages-template').html();
-
-      MessagesView.prototype.render = function() {
-        var chatInterior, chatWindowHeight, headerHeight, windowHeight;
-        $(this.el).append(Mustache.render(this.template));
-        windowHeight = $(window).height();
+      MessagesView.prototype.fitHeight = function(windowHeight) {
+        var chatInterior, chatWindowHeight, headerHeight;
         headerHeight = $('#header-container').height();
         $(this.el).css('height', windowHeight - headerHeight);
         chatWindowHeight = windowHeight - headerHeight;
-        chatInterior = chatWindowHeight - $('#new-message').height();
-        $('#chat-log-container').height(chatInterior);
-        $('#chat-log').css('min-height', chatInterior);
+        chatInterior = chatWindowHeight - this.$('#new-message').height();
+        this.$('#chat-log-container').height(chatInterior);
+        return this.$('#chat-log').css('min-height', chatInterior);
+      };
+
+      MessagesView.prototype.render = function() {
+        this.fitHeight($(window).height());
         return this;
       };
 
