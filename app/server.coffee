@@ -110,20 +110,29 @@ everyone.ircClient = new irc.Client(ircHost, ircNick, {
 everyone.now.distributeMessage = (message, name=@now.name) ->
   # Distribute the message to IRC as well as Now
   # so that Shep can hear it.
-
-  # everyone.getUsers (users) ->
-  #   for user in users
-  #     nowjs.getClient user, ->
-  #       console.log @now.name
   logMessage(name, message)
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage name, message
 
+everyone.now.userList = []
+
+everyone.makeUserList = ->
+  everyone.now.userList = []
+  everyone.getUsers (users) ->
+    for user in users
+      nowjs.getClient user, ->
+        console.log @now.name
+        everyone.now.userList.push @now.name
+
+
 everyone.on 'connect', ->
-  console.log "#{@now.name}"
+  console.log "#{@now.name} connected"
+  everyone.makeUserList()
   everyone.now.receiveMessage('Join ', "#{@now.name} has joined the chat.")
 
 everyone.on 'disconnect', ->
+  console.log "#{@now.name} disconnected"
+  everyone.makeUserList()
   everyone.now.receiveMessage('Leave ', "#{@now.name} has left the chat.")
 
 # This will be useless until IRCClients are initiated per-user.

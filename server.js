@@ -115,12 +115,33 @@
     return everyone.now.receiveMessage(name, message);
   };
 
+  everyone.now.userList = [];
+
+  everyone.makeUserList = function() {
+    everyone.now.userList = [];
+    return everyone.getUsers(function(users) {
+      var user, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = users.length; _i < _len; _i++) {
+        user = users[_i];
+        _results.push(nowjs.getClient(user, function() {
+          console.log(this.now.name);
+          return everyone.now.userList.push(this.now.name);
+        }));
+      }
+      return _results;
+    });
+  };
+
   everyone.on('connect', function() {
-    console.log("" + this.now.name);
+    console.log("" + this.now.name + " connected");
+    everyone.makeUserList();
     return everyone.now.receiveMessage('Join ', "" + this.now.name + " has joined the chat.");
   });
 
   everyone.on('disconnect', function() {
+    console.log("" + this.now.name + " disconnected");
+    everyone.makeUserList();
     return everyone.now.receiveMessage('Leave ', "" + this.now.name + " has left the chat.");
   });
 
