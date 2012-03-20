@@ -63,8 +63,13 @@
         </ul>
       </div>
       <form id="new-message">
-        <div id="ask-shep" class="pictos">p</div>
-        <textarea id="new-message-input" rows=1></textarea>
+        <input id="chat-name" />
+        <textarea id="new-message-input" autofocus rows=1></textarea>
+        <script>
+            if (!("autofocus" in document.createElement("textarea"))) {
+              document.getElementById("new-message-input").focus();
+            }
+          </script>
       </form>
     </div>
     <div id="event-window">

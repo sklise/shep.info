@@ -108,11 +108,27 @@
     port: process.env.ITPIRL_IRC_PORT || 6667
   });
 
-  everyone.now.distributeMessage = function(message) {
-    logMessage(this.now.name, message);
+  everyone.now.distributeMessage = function(message, name) {
+    if (name == null) name = this.now.name;
+    logMessage(name, message);
     everyone.ircClient.say('#itp', message);
-    return everyone.now.receiveMessage(this.now.name, message);
+    return everyone.now.receiveMessage(name, message);
   };
+
+  everyone.on('connect', function() {
+    console.log("" + this.now.name);
+    return everyone.now.receiveMessage('Join ', "" + this.now.name + " has joined the chat.");
+  });
+
+  everyone.on('disconnect', function() {
+    return everyone.now.receiveMessage('Leave ', "" + this.now.name + " has left the chat.");
+  });
+
+  everyone.ircClient.addListener('join', function(from, message) {});
+
+  everyone.ircClient.addListener('notice', function(from, message) {
+    return console.log("NOTICE: " + from + " : " + message);
+  });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
     logMessage(from, message);

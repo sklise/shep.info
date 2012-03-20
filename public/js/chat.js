@@ -1,7 +1,7 @@
 (function() {
 
   jQuery(function() {
-    var _results;
+    var updateName;
     now.receiveMessage = function(name, message) {
       var classifyName, time;
       time = new Date;
@@ -21,6 +21,8 @@
           classes.push('self');
         } else if (senderName === 'shep' || senderName === 'shepbot') {
           classes.push('shep');
+        } else if (senderName === 'Nickname' || senderName === 'Join ' || senderName === 'Leave ') {
+          classes.push('system-notice');
         }
         if ($('#chat-log li').last().find('.chatter').text() === senderName) {
           classes.push('consecutive');
@@ -49,11 +51,24 @@
         }
       }
     });
-    _results = [];
+    updateName = function(raw) {
+      var oldname;
+      if (raw !== now.name) {
+        oldname = now.name;
+        now.name = raw;
+        now.distributeMessage("" + oldname + " is now known as " + now.name, 'Nickname');
+        return true;
+      } else {
+        return false;
+      }
+    };
     while (now.name === void 0 || now.name === "") {
-      _results.push(now.name = prompt("What's your name?", ""));
+      now.name = prompt("What's your name?", "");
+      $('#chat-name').val(now.name);
     }
-    return _results;
+    return $('#chat-name').focusout(function() {
+      return updateName(($(this)).val());
+    });
   });
 
 }).call(this);

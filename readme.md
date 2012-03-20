@@ -2,6 +2,12 @@
 
 ## Changelog
 
+### 0.7.3 - 2012/03/20
+
+- Improve colors and layout.
+- Allow users to change their name w/o refresh
+- Notify chatroom when users join and leave.
+
 ### 0.7.2 - 2012/03/19
 
 - Fix wordwrapping in chat messages with word-wrap:break-word;

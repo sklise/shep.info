@@ -18,8 +18,9 @@ $gutter-width: 18px;
 $black: rgba(0,0,0,1);
 $gold: rgba(255,180,0,1);
 $blue: rgba(17, 13, 245, 1);
+$divider-dark-gray: rgb(219, 215, 212);
 $chat-background: rgba(245, 248, 255,1);
-$shep-background: rgb(255, 248, 207);
+$shep-background: rgb(255, 238, 195);
 $shep-name: rgb(224, 169, 20);
 
 /* Calendar colors */
@@ -124,6 +125,7 @@ h2 {
 #chat-log-container {
   overflow-y: scroll;
   height: 500px;
+  @include grid-row;
 }
 
 #chat-log {
@@ -179,6 +181,12 @@ h2 {
       }
     }
 
+    &.system-notice {
+      background-color: desaturate($chat-background, 10%);
+      color: gray;
+      font-style: italic;
+    }
+
   }
 }
 
@@ -197,54 +205,62 @@ h2 {
 
 .message {
   @include grid-column(6);
+  padding-right: 1em;
 }
 
 // NEW MESSAGE
 //____________________________________________________
 #new-message {
+  background-color: lighten($chat-background, 1%);
+  border-top: 2px solid $divider-dark-gray;
   position: absolute;
   bottom: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
+  @include grid-row;
+}
 
-  #new-message-input {
-    border: 1px solid transparent;
-    font-size: ms(2, $base-size, $golden);
-    line-height: ms(3, $base-size, $golden);
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    resize:none;
-    @include box-sizing;
-    
-    padding: ms(1, $base-size, $golden) 0 ms(1, $base-size, $golden) #{ms(5, $base-size, $golden)+10};
-    margin: 0;
-    width: 100%;
+#new-message-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  resize:none;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  -moz-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  background-color: #efefef;
 
-    
-    &:focus {
-      cursor: blink;
-      outline: none;
-      border: 1px solid blue;
-    }
+  @include grid-column(6);
+  &:focus {
+    -webkit-box-shadow: none;
+    background-color: #ffffff;
+    border: 1px solid blue;
   }
 }
 
-#ask-shep {
-  font-size: ms(3, $base-size, $golden);
-  -webkit-border-radius: ms(5, $base-size, $golden);
-  -moz-border-radius: ms(5, $base-size, $golden);
-  border-radius: ms(5, $base-size, $golden);
-  height: ms(5, $base-size, $golden);
-  width: ms(5, $base-size, $golden);
-  position: relative;
-  display: block;
-  position: absolute;
-  left: ms(5, $base-size, $golden)/2;
-  top: ms(5, $base-size, $golden)/2;
-  
-  border: #1e5799;
-  &:hover {
-/*    background: #90bae4;*/
-  }  
+#chat-name {
+  @include grid-column(1);
+  background-color: transparent;
+  overflow: hidden;
+  resize: none;
+}
+
+#new-message-input,
+#chat-name {
+  border: 1px solid transparent;
+  font-size: ms(2, $base-size, $golden);
+  line-height: ms(3, $base-size, $golden);
+  @include box-sizing;
+  padding: 0.5em 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+
+  &:focus {
+    cursor: blink;
+    outline: none;
+  }
 }
 
 #event-window {
@@ -339,7 +355,7 @@ h2 {
 // INTRODUCTION BOX
 //____________________________________________________
 .introduction {
-  background-color: rgb(255,238,195);
+  background-color: $shep-background;
   margin: 0.5em 0;
   padding: 0.75em 1.5em;
   @include box-sizing;

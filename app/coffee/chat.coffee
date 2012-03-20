@@ -24,6 +24,8 @@ jQuery ->
         classes.push 'self'
       else if senderName == 'shep' || senderName == 'shepbot'
         classes.push 'shep'
+      else if senderName in ['Nickname', 'Join ', 'Leave ']
+        classes.push 'system-notice'
       if $('#chat-log li').last().find('.chatter').text() == senderName
         classes.push 'consecutive'
       classes.join(' ')
@@ -41,6 +43,18 @@ jQuery ->
       if(message.length > 0)
         now.distributeMessage($("#new-message-input").val())
         $("#new-message-input").val('').attr('rows',1)
-    
+
+  updateName = (raw) ->
+    if raw != now.name
+      oldname = now.name
+      now.name = raw
+      now.distributeMessage("#{oldname} is now known as #{now.name}",'Nickname')
+      true
+    else
+      false
   while now.name == undefined || now.name == ""
     now.name = prompt("What's your name?", "")
+    $('#chat-name').val(now.name)
+  $('#chat-name').focusout ->
+    updateName ($ this).val()
+
