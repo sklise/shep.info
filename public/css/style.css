@@ -90,7 +90,7 @@ body {
   font-family: "Myriad Pro";
   font-size: 12px;
   line-height: 16px;
-  background-color: #d2d2d2;
+  background-color: #f2f2f2;
   margin: 0 auto; }
 
 h1, h2, h3, h4, h5, h6 {
@@ -163,7 +163,7 @@ h2 {
   height: 500px; }
 
 #chat-log {
-  background-color: #f4f4f4;
+  background-color: #f5f8ff;
   min-height: 400px;
   overflow-y: auto;
   overflow-x: hidden; }
@@ -180,7 +180,7 @@ h2 {
         opacity: 0; }
     #chat-log li .message-time {
       background-color: rgba(0, 0, 0, 0.5);
-      color: #f4f4f4;
+      color: #f5f8ff;
       display: block;
       font-size: 11px;
       line-height: 11px;
@@ -196,9 +196,9 @@ h2 {
     #chat-log li.self .chatter {
       color: #110df5; }
     #chat-log li.shep {
-      background: #e7e7e7; }
+      background: #fff8cf; }
       #chat-log li.shep .chatter {
-        color: #cc9000; }
+        color: #e0a914; }
 
 .chatter,
 .message {

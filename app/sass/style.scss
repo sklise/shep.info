@@ -18,7 +18,9 @@ $gutter-width: 18px;
 $black: rgba(0,0,0,1);
 $gold: rgba(255,180,0,1);
 $blue: rgba(17, 13, 245, 1);
-$chat-background: rgba(244,244,244,1);
+$chat-background: rgba(245, 248, 255,1);
+$shep-background: rgb(255, 248, 207);
+$shep-name: rgb(224, 169, 20);
 
 /* Calendar colors */
 $event-color: rgba(147, 32, 214, 1);
@@ -40,7 +42,7 @@ body {
   font-family: "Myriad Pro";
   font-size: ms(1, $base-size, $golden);
   line-height: ms(2, $base-size, $golden);
-  background-color: rgb(210,210,210);
+  background-color: rgb(242, 242, 242);
   margin: 0 auto;
 }
 
@@ -169,9 +171,9 @@ h2 {
     }
 
     &.shep {
-      background: darken($chat-background, 5%);
+      background: $shep-background;
       .chatter {
-        color: darken($gold, 10%);
+        color: $shep-name;
       }
       .message {
       }
