@@ -1,0 +1,158 @@
+#chat-window {
+  @include grid-column(7);
+  font-size: modular-scale(1, $base-size, $golden);
+  line-height: modular-scale(2, $base-size, $golden);
+  color: #000;
+  position: relative;
+  height: 600px;
+}
+
+// CHAT LOG
+//____________________________________________________
+#chat-log-container {
+  @include box-sizing;
+  height: 500px;
+  overflow-y: scroll;
+}
+
+#chat-log {
+  background-color: $chat-background;
+  min-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  li {
+    @include grid-row;
+    overflow-y: auto;
+    padding: 1em 0 0.3em;
+    position: relative;
+    word-wrap: break-word;
+
+    // Show consecutive messages from the same chatter closer together and
+    // hide the chatter's name in consecutive messages.
+    &.consecutive {
+      padding: 0.3em 0;
+      
+      .chatter {
+        opacity: 0;
+      }
+    }
+
+    // Make the .message-time visible when the mouse hovers the containing li.
+    &:hover .message-time {
+      opacity: 1;
+    }
+
+    &.self .chatter {
+      color: $blue;
+    }
+
+    // Call out messages from Shep with a golden font color and a brighter
+    // background.
+    &.shep {
+      background: $shep-background;
+
+      .chatter {
+        color: $shep-name;
+      }
+    }
+
+    &.system-notice {
+      background-color: desaturate($chat-background, 10%);
+      color: gray;
+      font-style: italic;
+    }
+  }
+}
+
+// Timestamps are aligned along the right side of #chat-log and are transparent
+// until fading in and out
+.message-time {
+  background-color: transparentize($black,0.5);
+  color: $chat-background;
+  display: block;
+  font-size: ms(1, $alt-size, $golden);
+  font-style: normal;
+  line-height: ms(1, $alt-size, $golden);
+  opacity: 0;
+  padding: 0.2em 0.3em 0.15em;
+  position: absolute;
+  right: 1em;
+  -moz-transition: opacity 200ms ease-in-out;
+  -webkit-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
+}
+
+.chatter,
+.message {
+  display: block;
+  @include box-sizing;
+}
+
+.chatter {
+  @include grid-column(2);
+  font-weight: bold;
+  overflow-x: hidden;
+  text-align: right;
+}
+
+.message {
+  @include grid-column(10);
+  padding-right: 1em;
+}
+
+// NEW MESSAGE
+//____________________________________________________
+#new-message {
+/*  @include grid-row;*/
+  background-color: lighten($chat-background, 1%);
+  border-top: 2px solid $divider-dark-gray;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#new-message-input {
+  @include grid-column(9);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  resize:none;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  -moz-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+  background-color: #efefef;
+
+  &:focus {
+    -webkit-box-shadow: none;
+    background-color: #ffffff;
+    border: 1px solid blue;
+  }
+}
+
+#chat-name {
+  @include grid-column(3);
+  background-color: transparent;
+  overflow: hidden;
+  resize: none;
+  text-align: right;
+}
+
+#new-message-input,
+#chat-name {
+  border: 1px solid transparent;
+  font-size: ms(2, $base-size, $golden);
+  line-height: ms(3, $base-size, $golden);
+  @include box-sizing;
+  padding: 0.5em 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+
+  &:focus {
+    cursor: blink;
+    outline: none;
+  }
+}

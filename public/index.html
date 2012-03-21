@@ -38,24 +38,42 @@
           $('#feedback-form').empty();
         });
       });
+      
+      $('#user-toggle').click(function(){
+        if($(this).find('#user-list').length == 0) {
+          $userList = $('<div/>').attr('id','user-list');
+          $(this).append($userList);
+          names=""
+          _.each(now.userList, function(name){ names+= '<li>'+name+'</li>'})
+          $userList.html('<ul>'+names+'</ul>').css('width',$(this).width());
+        } else {
+          $('#user-list').remove();
+        }
+      });
     });
   </script>
   
   <title>ITPIRL</title>
 </head>
 <body>
-  <div id="header-container">
-    <div id="header">
-      <h1>ITPIRL</h1>
+  <div id="header">
+    <h1>ITPIRL</h1>
 
-      <div id="feedback">
-        <button id="feedback-button"><span class="pictos">W</span> Feedback</button>
-        <div id="feedback-form"></div>
-      </div>
+    <div id="feedback">
+      <button id="feedback-button"><span class="pictos">W</span> Feedback</button>
+      <div id="feedback-form"></div>
     </div>
   </div>
 
   <div id="wrapper">
+    <div id="toolbars">
+      <div id="chat-toolbar">
+        <div id="user-toggle">
+          <span class="pictos">+</span> Users
+        </div>
+      </div>
+    </div>
+    
   <div id="content">
     <div id="chat-window">
       <div id="chat-log-container">
@@ -75,12 +93,14 @@
     <div id="event-window">
       <div class="introduction">
         <h2>Welcome to ITPIRL.</h2>
-        <h3>v. 0.7.3</h3>
-        <p><em>Best viewed in Safari or Chrome on OS X Lion</em></p>
-        <p>To your left is a chat room, below are this week's events from the ITP Student Google Calendar.</p>
+        <h3>v. 0.7.4</h3>
+        <p><em>Best viewed in Safari or Chrome.</em></p>
+        <p>To your left is a chat room, below <del>are</del> <em>will soon be</em> this week's events from the ITP Student Google Calendar.</p>
         <p>There's a bot living in the chat room, his name is Shep and he's a dog. Currently he isn't standing still for pictures but don't worry, he won't bite. Type "shep help" (and press enter) in chat to see all of his tricks.</p>
         <p><strong>PRIVACY:</strong> This site is private only in the sense that probably no one knows about it. All content is currently publicly accessible. So watch ur lolz.</p>
-        <p><strong>BETA:</strong> This website is in beta, until 1.0.0 expect slow response and broken functionality.</p>
+        <p><strong>BETA:</strong> This website is in beta, until 1.0.0 expect slow response and broken functionality. Click the button in the top right corner to give feedback please!</p>
+        
+        <p><strong>LICENSE:</strong> All code is open source under the <a href="https://github.com/stevenklise/itpirl/blob/master/License.md" target="_blank">MIT License</a>. Source code is available on <a href="https://github.com/stevenklise/itpirl" target="_blank">Github</a></p>
       </div>
     </div>
   </div>

@@ -68,10 +68,11 @@
       MessagesView.prototype.el = '#chat-window';
 
       MessagesView.prototype.fitHeight = function(windowHeight) {
-        var chatInterior, chatWindowHeight, headerHeight;
-        headerHeight = $('#header-container').height();
-        $(this.el).css('height', windowHeight - headerHeight);
-        chatWindowHeight = windowHeight - headerHeight;
+        var chatInterior, chatWindowHeight, headerHeight, toolbarHeight;
+        headerHeight = $('#header').height();
+        toolbarHeight = $('#toolbars').height();
+        $(this.el).css('height', windowHeight - headerHeight - toolbarHeight);
+        chatWindowHeight = windowHeight - headerHeight - toolbarHeight;
         chatInterior = chatWindowHeight - this.$('#new-message').height();
         this.$('#chat-log-container').height(chatInterior);
         return this.$('#chat-log').css('min-height', chatInterior);
@@ -99,8 +100,15 @@
 
       EventsView.prototype.template = ($('#events-template')).html();
 
+      EventsView.prototype.fitHeight = function(windowHeight) {
+        var headerHeight, toolbarHeight;
+        headerHeight = $('#header').height();
+        toolbarHeight = $('#toolbars').height();
+        return $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight);
+      };
+
       EventsView.prototype.render = function() {
-        var event, eventView, eventWindow, headerHeight, windowHeight, _i, _len, _ref;
+        var event, eventView, _i, _len, _ref;
         $(this.el).empty();
         _ref = this.collection.models;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -110,11 +118,7 @@
           });
           $(this.el).append(eventView.render().el);
         }
-        windowHeight = $(window).height();
-        headerHeight = $('#header-container').height();
-        $(this.el).css('height', windowHeight - headerHeight);
-        eventWindow = windowHeight - headerHeight;
-        $('#event-window').height(eventWindow);
+        this.fitHeight($(window).height());
         return this;
       };
 

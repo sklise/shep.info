@@ -28,9 +28,10 @@ jQuery ->
   class MessagesView extends Backbone.View
     el: '#chat-window'
     fitHeight: (windowHeight) ->
-      headerHeight = $('#header-container').height()
-      $(@el).css('height', windowHeight - headerHeight)
-      chatWindowHeight = windowHeight - headerHeight
+      headerHeight = $('#header').height()
+      toolbarHeight = $('#toolbars').height()
+      $(@el).css('height', windowHeight - headerHeight - toolbarHeight)
+      chatWindowHeight = windowHeight - headerHeight - toolbarHeight
       chatInterior = chatWindowHeight - @$('#new-message').height()
       @$('#chat-log-container').height(chatInterior)
       @$('#chat-log').css('min-height', chatInterior)
@@ -44,16 +45,18 @@ jQuery ->
     id: 'event-feed'
     tagName: 'ul'
     template: ($ '#events-template').html()
+    fitHeight: (windowHeight) ->
+      headerHeight = $('#header').height()
+      toolbarHeight = $('#toolbars').height()
+      $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight)
     render: ->
       $(@el).empty()
       for event in @collection.models
         eventView = new EventView model: event
         $(@el).append(eventView.render().el)
-      windowHeight = $(window).height()
-      headerHeight = $('#header-container').height()
-      $(@el).css('height', windowHeight - headerHeight)
-      eventWindow = windowHeight - headerHeight
-      $('#event-window').height(eventWindow)
+      @fitHeight $(window).height()
+      # eventWindow = windowHeight - headerHeight
+      # $('#event-window').height(eventWindow)
       @
 
   # Event Date

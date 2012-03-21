@@ -1,0 +1,21 @@
+#chat-toolbar {
+  @include box-sizing;
+  @include grid-column(7);
+  background-color: $toolbar-chat-background;
+  overflow-y: auto;
+}
+
+#user-toggle {
+  @include grid-column(2);
+  @include grid-offset(10);
+  
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+#user-list {
+  background-color: transparentize($toolbar-chat-background, 0.2);
+  position: fixed;
+  z-index: 2;
+}

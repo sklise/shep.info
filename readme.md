@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### 0.7.4 - 2012/03/21
+
+- Fluid layout with minimum width of 960px. This fixes the scrollbars issue.
+- Functional, ugly, user list.
+
 ### 0.7.3 - 2012/03/20
 
 - Improve colors and layout.

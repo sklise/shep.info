@@ -111,6 +111,7 @@
   everyone.now.distributeMessage = function(message, name) {
     if (name == null) name = this.now.name;
     logMessage(name, message);
+    if (name === 'Nickname') everyone.makeUserList();
     everyone.ircClient.say('#itp', message);
     return everyone.now.receiveMessage(name, message);
   };

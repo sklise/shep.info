@@ -111,6 +111,10 @@ everyone.now.distributeMessage = (message, name=@now.name) ->
   # Distribute the message to IRC as well as Now
   # so that Shep can hear it.
   logMessage(name, message)
+  
+  if name == 'Nickname'
+    everyone.makeUserList()
+
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage name, message
 
