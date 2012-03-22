@@ -4,44 +4,26 @@ http = require 'http' # posting to cakemix
 querystring = require 'querystring' # stringifying posts to cakemix
 nowjs = require 'now'
 express = require 'express'
-irc = require 'irc'
-mustache = require 'mustache'
-ejs = require 'ejs'
-# redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+irc = require 'irc' # irc client for node.js
+mustache = require 'mustache' # templating
+ejs = require 'ejs' # templating
+redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-# SAVING MESSAGES TO CAKEMIX FOR NOW
+# LOG MESSAGES TO REDIS
 #_____________________________________________________
-logMessage = (name, message, project='itpirl') ->
-  # Adapted from http://www.theroamingcoder.com/node/111
-  console.log(name, message)
-  response = ''
+logMessage = (name, message, room='itp') ->
+  redis.incr 'nextId', (err,id) ->
+    newMessage = {id, name, message, created_at:Date.now()}
+    redis.rpush 'messages:'+room, JSON.stringify(newMessage)
 
-  post =
-    domain: 'www.itpcakemix.com'
-    port: 80
-    path: '/add'
-    data: querystring.stringify
-      user: 'shep'
-      project: project
-      name: name
-      message: message
-  
-  options =
-    host: post.domain,  
-    port: post.port,  
-    path: post.path,  
-    method: 'POST',  
-    headers: 
-      'Content-Type': 'application/x-www-form-urlencoded'
-      'Content-Length': post.data.length
-
-  post_req = http.request options, (res) ->
-    res.setEncoding('utf8')
-    res.on 'data', (chunk) ->
-      response += chunk
-  post_req.write(post.data)
-  post_req.end()
-  response
+# RETRIEVE LAST N MESSAGES
+# recentMessages = (num, room="itp") ->
+#   redis.llen 'messages:' + room, (err, length) ->
+#     start = length - num
+#     end = length - 1
+#     console.log start,end
+#     redis.lrange 'messages:' + room, start, end, (err, obj) ->
+#       everyone.now.recentMessages = obj
 
 # MUSTACHE FOR EXPRESS
 #_____________________________________________________
@@ -71,19 +53,12 @@ app.configure ->
   app.use express.bodyParser()
   app.register(".mustache", mustache_template)
 
-# CONNECT TO REDIS
-#_____________________________________________________
-# redis.set('foo', 'har')
-# redis.get 'foo', (err, value) ->
-#   console.log "foo is #{value}"
-
 # ROUTES
 #_____________________________________________________
 app.get '/', (request, response) ->
   response.render 'index.ejs'
 
 app.get '/help', (request, response) ->
-  console.log 'here'
   response.send 'Hello World'
 
 app.post '/feedback/new', (request, response) ->
@@ -118,33 +93,28 @@ everyone.now.distributeMessage = (message, name=@now.name) ->
   everyone.ircClient.say('#itp', message)
   everyone.now.receiveMessage name, message
 
-everyone.now.userList = []
-
+# GET THE NAMES OF ALL CURRENT NOW USERS
+#_____________________________________________________
 everyone.makeUserList = ->
   everyone.now.userList = []
   everyone.getUsers (users) ->
     for user in users
       nowjs.getClient user, ->
-        console.log @now.name
         everyone.now.userList.push @now.name
 
-
 everyone.on 'connect', ->
-  console.log "#{@now.name} connected"
   everyone.makeUserList()
-  everyone.now.receiveMessage('Join ', "#{@now.name} has joined the chat.")
+  from = "Join"
+  message = "#{@now.name} has joined the chat."
+  logMessage from, message
+  everyone.now.receiveMessage from, message
 
 everyone.on 'disconnect', ->
-  console.log "#{@now.name} disconnected"
   everyone.makeUserList()
-  everyone.now.receiveMessage('Leave ', "#{@now.name} has left the chat.")
-
-# This will be useless until IRCClients are initiated per-user.
-everyone.ircClient.addListener 'join', (from, message) ->
-  # everyone.now.event('Join', "#{message} has joined #{from}")
-
-everyone.ircClient.addListener 'notice', (from, message) ->
-  console.log "NOTICE: #{from} : #{message}"
+  from = "Leave"
+  message = "#{@now.name} has left the chat."
+  logMessage from, message
+  everyone.now.receiveMessage from, message
 
 everyone.ircClient.addListener 'message#itp', (from, message) ->
   # log the message

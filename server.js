@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, http, irc, ircHost, ircNick, logMessage, mustache, mustache_template, nowjs, port, querystring;
+  var app, ejs, everyone, express, http, irc, ircHost, ircNick, logMessage, mustache, mustache_template, nowjs, port, querystring, redis;
 
   http = require('http');
 
@@ -15,41 +15,20 @@
 
   ejs = require('ejs');
 
-  logMessage = function(name, message, project) {
-    var options, post, post_req, response;
-    if (project == null) project = 'itpirl';
-    console.log(name, message);
-    response = '';
-    post = {
-      domain: 'www.itpcakemix.com',
-      port: 80,
-      path: '/add',
-      data: querystring.stringify({
-        user: 'shep',
-        project: project,
+  redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+
+  logMessage = function(name, message, room) {
+    if (room == null) room = 'itp';
+    return redis.incr('nextId', function(err, id) {
+      var newMessage;
+      newMessage = {
+        id: id,
         name: name,
-        message: message
-      })
-    };
-    options = {
-      host: post.domain,
-      port: post.port,
-      path: post.path,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': post.data.length
-      }
-    };
-    post_req = http.request(options, function(res) {
-      res.setEncoding('utf8');
-      return res.on('data', function(chunk) {
-        return response += chunk;
-      });
+        message: message,
+        created_at: Date.now()
+      };
+      return redis.rpush('messages:' + room, JSON.stringify(newMessage));
     });
-    post_req.write(post.data);
-    post_req.end();
-    return response;
   };
 
   mustache_template = {
@@ -84,7 +63,6 @@
   });
 
   app.get('/help', function(request, response) {
-    console.log('here');
     return response.send('Hello World');
   });
 
@@ -116,8 +94,6 @@
     return everyone.now.receiveMessage(name, message);
   };
 
-  everyone.now.userList = [];
-
   everyone.makeUserList = function() {
     everyone.now.userList = [];
     return everyone.getUsers(function(users) {
@@ -126,7 +102,6 @@
       for (_i = 0, _len = users.length; _i < _len; _i++) {
         user = users[_i];
         _results.push(nowjs.getClient(user, function() {
-          console.log(this.now.name);
           return everyone.now.userList.push(this.now.name);
         }));
       }
@@ -135,21 +110,21 @@
   };
 
   everyone.on('connect', function() {
-    console.log("" + this.now.name + " connected");
+    var from, message;
     everyone.makeUserList();
-    return everyone.now.receiveMessage('Join ', "" + this.now.name + " has joined the chat.");
+    from = "Join";
+    message = "" + this.now.name + " has joined the chat.";
+    logMessage(from, message);
+    return everyone.now.receiveMessage(from, message);
   });
 
   everyone.on('disconnect', function() {
-    console.log("" + this.now.name + " disconnected");
+    var from, message;
     everyone.makeUserList();
-    return everyone.now.receiveMessage('Leave ', "" + this.now.name + " has left the chat.");
-  });
-
-  everyone.ircClient.addListener('join', function(from, message) {});
-
-  everyone.ircClient.addListener('notice', function(from, message) {
-    return console.log("NOTICE: " + from + " : " + message);
+    from = "Leave";
+    message = "" + this.now.name + " has left the chat.";
+    logMessage(from, message);
+    return everyone.now.receiveMessage(from, message);
   });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
