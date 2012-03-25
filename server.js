@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, http, irc, ircHost, ircNick, logMessage, mustache, mustache_template, nowjs, port, querystring, redis;
+  var app, ejs, everyone, express, helpers, http, irc, ircHost, ircNick, logMessage, mustache, nowjs, port, querystring, redis;
 
   http = require('http');
 
@@ -17,45 +17,14 @@
 
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
-  logMessage = function(name, message, room) {
-    if (room == null) room = 'itp';
-    return redis.incr('nextId', function(err, id) {
-      var newMessage;
-      newMessage = {
-        id: id,
-        name: name,
-        message: message,
-        created_at: Date.now()
-      };
-      return redis.rpush('messages:' + room, JSON.stringify(newMessage));
-    });
-  };
-
-  mustache_template = {
-    compile: function(source, options) {
-      if (typeof source === 'string') {
-        return function(options) {
-          options.locals = options.locals || {};
-          options.partials = options.partials || {};
-          if (options.body) locals.body = options.body;
-          return mustache.to_html(source, options.locals, options.partials);
-        };
-      } else {
-        return source;
-      }
-    },
-    render: function(template, options) {
-      template = this.compile(template, options);
-      return template(options);
-    }
-  };
+  helpers = require('./helpers.js');
 
   app = express.createServer(express.logger());
 
   app.configure(function() {
     app.use(express.static(__dirname + '/public'));
     app.use(express.bodyParser());
-    return app.register(".mustache", mustache_template);
+    return app.register(".mustache", helpers.mustache_template);
   });
 
   app.get('/', function(request, response) {
@@ -67,7 +36,7 @@
   });
 
   app.post('/feedback/new', function(request, response) {
-    logMessage(request.body.name, request.body.message, 'itpirl-feedback');
+    logMessage(request.body.name, request.body.message, Date.now(), 'itpirl-feedback');
     return response.send('{sucess:hopefully}');
   });
 
@@ -77,59 +46,115 @@
     }
   });
 
+  logMessage = function(timestamp, sender, message, destination) {
+    if (destination == null) {
+      destination = {
+        'room': 'itp'
+      };
+    }
+    return redis.incr('nextId', function(err, id) {
+      var newMessage;
+      newMessage = {
+        id: id,
+        sender: sender,
+        message: message,
+        destination: destination,
+        timestamp: timestamp
+      };
+      return redis.rpush('messages:' + destination.room, JSON.stringify(newMessage));
+    });
+  };
+
+  everyone.now.distributeChatMessage = function(sender, message, destination) {
+    var timestamp;
+    if (destination == null) {
+      destination = {
+        'room': 'itp'
+      };
+    }
+    timestamp = helpers.setTimestamp();
+    logMessage(timestamp, sender, message, destination);
+    if (destination.room !== void 0) {
+      everyone.ircClient.say("#" + destination.room, message);
+    }
+    return everyone.now.receiveChatMessage(timestamp, sender, message, destination);
+  };
+
+  everyone.now.distributeSystemMessage = function(type, message, destination) {
+    var timestamp;
+    if (destination == null) {
+      destination = {
+        'room': 'itp'
+      };
+    }
+    timestamp = helpers.setTimestamp();
+    logMessage(timestamp, type, message, destination);
+    return everyone.now.receiveSystemMessage(timestamp, type, message);
+  };
+
+  everyone.now.getUserList = function() {
+    var userlist;
+    userlist = [];
+    everyone.getUsers(function(users) {
+      var user, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = users.length; _i < _len; _i++) {
+        user = users[_i];
+        _results.push(nowjs.getClient(user, function() {
+          return userList.push(this.now.name);
+        }));
+      }
+      return _results;
+    });
+    return userlist;
+  };
+
+  nowjs.on('connect', function() {
+    var myNow, n, room, timestamp;
+    timestamp = Date.now();
+    logMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
+    everyone.now.receiveSystemMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
+    myNow = this.now;
+    room = 'itp';
+    n = 10;
+    return redis.llen('messages:' + room, function(err, length) {
+      var end, start;
+      start = length - n;
+      end = length - 1;
+      return redis.lrange('messages:' + room, start, end, function(err, obj) {
+        var m, message, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = obj.length; _i < _len; _i++) {
+          message = obj[_i];
+          _results.push(m = JSON.parse(message));
+        }
+        return _results;
+      });
+    });
+  });
+
+  nowjs.on('disconnect', function() {
+    var timestamp;
+    timestamp = Date.now();
+    logMessage(timestamp, 'Leave', "" + this.now.name + " has joined the chat.");
+    return everyone.now.receiveSystemMessage(timestamp, 'Leave', "" + this.now.name + " has left the chat.");
+  });
+
   ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net';
 
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon';
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: process.env.ITPIRL_IRC_PORT || 6667
-  });
-
-  everyone.now.distributeMessage = function(message, name) {
-    if (name == null) name = this.now.name;
-    logMessage(name, message);
-    if (name === 'Nickname') everyone.makeUserList();
-    everyone.ircClient.say('#itp', message);
-    return everyone.now.receiveMessage(name, message);
-  };
-
-  everyone.makeUserList = function() {
-    everyone.now.userList = [];
-    return everyone.getUsers(function(users) {
-      var user, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = users.length; _i < _len; _i++) {
-        user = users[_i];
-        _results.push(nowjs.getClient(user, function() {
-          return everyone.now.userList.push(this.now.name);
-        }));
-      }
-      return _results;
-    });
-  };
-
-  everyone.on('connect', function() {
-    var from, message;
-    everyone.makeUserList();
-    from = "Join";
-    message = "" + this.now.name + " has joined the chat.";
-    logMessage(from, message);
-    return everyone.now.receiveMessage(from, message);
-  });
-
-  everyone.on('disconnect', function() {
-    var from, message;
-    everyone.makeUserList();
-    from = "Leave";
-    message = "" + this.now.name + " has left the chat.";
-    logMessage(from, message);
-    return everyone.now.receiveMessage(from, message);
+    port: process.env.ITPIRL_IRC_PORT || 6667,
+    userName: process.env.ITPIRL_IRC_USERNAME || '',
+    password: process.env.ITPIRL_IRC_PASSWORD || ''
   });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
-    logMessage(from, message);
-    return everyone.now.receiveMessage(from, message);
+    return everyone.now.distributeChatMessage(from, message, {
+      'room': 'itp'
+    });
   });
 
   port = process.env.PORT || 3000;
