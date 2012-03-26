@@ -73,7 +73,20 @@ jQuery ->
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
     renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} system-notice"
 
+  $('#user-toggle').click ->
+    if $('#user-toggle').find('#user-list').length == 0
+      now.getUserList()
+      $userList = $('<div/>').attr('id','user-list')
+      $('#user-toggle').append($userList)
+      names= ""
+      _.each now.userList, (name) ->
+        names+= '<li>'+name+'</li>'
+      $userList.html('<ul>'+names+'</ul>').css('width',$('#user-toggle').width());
+    else
+      $('#user-list').remove();
   now.ready ->
+    now.addUserToList = (name) ->
+      now.userList.push name
     now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
       renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
     now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->

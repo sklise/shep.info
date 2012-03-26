@@ -102,14 +102,17 @@ everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'
 
 # Get the names of all connected Now.js clientss
 everyone.now.getUserList = ->
-  userlist = []
+  everyone.now.userList = []
   everyone.getUsers (users) ->
     for user in users
       nowjs.getClient user, ->
-        userList.push @now.name
-  userlist
+        everyone.now.addUserToList @now.name
 
 nowjs.on 'connect', ->
+  # Create an irc client for the new user.
+  ircConnections[@user.clientId] = new irc.Client ircHost, @now.name,
+    channels: ['#itp']
+    port: process.env.ITPIRL_IRC_PORT || 6667
   timestamp = Date.now()
   logMessage timestamp, 'Join', "#{@now.name} has joined the chat."
   everyone.now.receiveSystemMessage timestamp, 'Join', "#{@now.name} has joined the chat."
@@ -122,7 +125,6 @@ nowjs.on 'connect', ->
     end = length - 1
 
     redis.lrange 'messages:' + room, start, end, (err, obj) ->
-      console.log obj.length
       for message in obj
         # Redis returns the object as a string, turn it back to an object
         m = JSON.parse(message)

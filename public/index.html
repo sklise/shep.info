@@ -38,18 +38,6 @@
           $('#feedback-form').empty();
         });
       });
-      
-      $('#user-toggle').click(function(){
-        if($(this).find('#user-list').length == 0) {
-          $userList = $('<div/>').attr('id','user-list');
-          $(this).append($userList);
-          names=""
-          _.each(now.userList, function(name){ names+= '<li>'+name+'</li>'})
-          $userList.html('<ul>'+names+'</ul>').css('width',$(this).width());
-        } else {
-          $('#user-list').remove();
-        }
-      });
     });
   </script>
   

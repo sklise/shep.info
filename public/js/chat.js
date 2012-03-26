@@ -81,7 +81,25 @@
       if (destination == null) destination = 'itp';
       return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " system-notice");
     };
+    $('#user-toggle').click(function() {
+      var $userList, names;
+      if ($('#user-toggle').find('#user-list').length === 0) {
+        now.getUserList();
+        $userList = $('<div/>').attr('id', 'user-list');
+        $('#user-toggle').append($userList);
+        names = "";
+        _.each(now.userList, function(name) {
+          return names += '<li>' + name + '</li>';
+        });
+        return $userList.html('<ul>' + names + '</ul>').css('width', $('#user-toggle').width());
+      } else {
+        return $('#user-list').remove();
+      }
+    });
     return now.ready(function() {
+      now.addUserToList = function(name) {
+        return now.userList.push(name);
+      };
       now.receiveSystemMessage = function(timestamp, type, message, destination) {
         if (destination == null) destination = 'itp';
         return renderMessage($('#system-message-template').html(), timestamp, type, message, 'system-notice');

@@ -93,20 +93,18 @@
   };
 
   everyone.now.getUserList = function() {
-    var userlist;
-    userlist = [];
-    everyone.getUsers(function(users) {
+    everyone.now.userList = [];
+    return everyone.getUsers(function(users) {
       var user, _i, _len, _results;
       _results = [];
       for (_i = 0, _len = users.length; _i < _len; _i++) {
         user = users[_i];
         _results.push(nowjs.getClient(user, function() {
-          return userList.push(this.now.name);
+          return everyone.now.addUserToList(this.now.name);
         }));
       }
       return _results;
     });
-    return userlist;
   };
 
   nowjs.on('connect', function() {
@@ -122,7 +120,6 @@
       end = length - 1;
       return redis.lrange('messages:' + room, start, end, function(err, obj) {
         var m, message, _i, _len, _results;
-        console.log(obj.length);
         _results = [];
         for (_i = 0, _len = obj.length; _i < _len; _i++) {
           message = obj[_i];
