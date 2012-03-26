@@ -98,33 +98,31 @@
         return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " previous-message");
       }
     };
-    return now.ready(function() {
-      $('#chat-name').focusout(function() {
-        return updateName(($(this)).val());
-      });
-      now.addUserToList = function(name) {
-        return now.userList.push(name);
-      };
-      now.receiveSystemMessage = function(timestamp, type, message, destination) {
-        if (destination == null) destination = 'itp';
-        return renderMessage($('#system-message-template').html(), timestamp, type, message, 'system-notice');
-      };
-      now.receiveChatMessage = function(timestamp, sender, message, destination) {
-        if (destination == null) destination = 'itp';
-        return renderMessage($('#message-template').html(), timestamp, sender, message, classifyName(sender, this.now.name));
-      };
-      return $("#new-message").live('keypress', function(event) {
-        var message;
-        message = $("#new-message-input").val();
-        if (message.length > 80) $('#new-message-input').attr('rows', 2);
-        if (event.which === 13) {
-          event.preventDefault();
-          if (message.length > 0) {
-            now.distributeChatMessage(now.name, $("#new-message-input").val());
-            return $("#new-message-input").val('').attr('rows', 1);
-          }
+    $('#chat-name').focusout(function() {
+      return updateName(($(this)).val());
+    });
+    now.addUserToList = function(name) {
+      return now.userList.push(name);
+    };
+    now.receiveSystemMessage = function(timestamp, type, message, destination) {
+      if (destination == null) destination = 'itp';
+      return renderMessage($('#system-message-template').html(), timestamp, type, message, 'system-notice');
+    };
+    now.receiveChatMessage = function(timestamp, sender, message, destination) {
+      if (destination == null) destination = 'itp';
+      return renderMessage($('#message-template').html(), timestamp, sender, message, classifyName(sender, this.now.name));
+    };
+    return $("#new-message").live('keypress', function(event) {
+      var message;
+      message = $("#new-message-input").val();
+      if (message.length > 80) $('#new-message-input').attr('rows', 2);
+      if (event.which === 13) {
+        event.preventDefault();
+        if (message.length > 0) {
+          now.distributeChatMessage(now.name, $("#new-message-input").val());
+          return $("#new-message-input").val('').attr('rows', 1);
         }
-      });
+      }
     });
   });
 

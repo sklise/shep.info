@@ -87,27 +87,27 @@ jQuery ->
     else
       renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
 
-  now.ready ->
 
-    $('#chat-name').focusout ->
-      updateName ($ this).val()
-    now.addUserToList = (name) ->
-      now.userList.push name
 
-    now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
-      renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
+  $('#chat-name').focusout ->
+    updateName ($ this).val()
+  now.addUserToList = (name) ->
+    now.userList.push name
 
-    now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
-      renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
+  now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
+    renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
 
-    # Send a new message
-    $("#new-message").live 'keypress', (event) ->
-      message = $("#new-message-input").val()
-      if(message.length > 80)
-        $('#new-message-input').attr('rows',2)
-      if(event.which == 13)
-        event.preventDefault()
-        if(message.length > 0)
-          now.distributeChatMessage(now.name, $("#new-message-input").val())
-          $("#new-message-input").val('').attr('rows',1)
+  now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
+    renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
+
+  # Send a new message
+  $("#new-message").live 'keypress', (event) ->
+    message = $("#new-message-input").val()
+    if(message.length > 80)
+      $('#new-message-input').attr('rows',2)
+    if(event.which == 13)
+      event.preventDefault()
+      if(message.length > 0)
+        now.distributeChatMessage(now.name, $("#new-message-input").val())
+        $("#new-message-input").val('').attr('rows',1)
 
