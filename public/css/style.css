@@ -189,7 +189,7 @@ h2 {
       background: #ffeec3; }
       #chat-log li.shep .chatter {
         color: #e0a914; }
-    #chat-log li.system-notice {
+    #chat-log li.system-notice, #chat-log li.previous-message {
       background-color: #f6f8ff;
       color: gray;
       font-style: italic; }

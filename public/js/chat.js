@@ -74,13 +74,6 @@
         $('#chat-name').val(now.name);
       }
     }
-    $('#chat-name').focusout(function() {
-      return updateName(($(this)).val());
-    });
-    now.receivePreviousMessage = function(timestamp, sender, message, destination) {
-      if (destination == null) destination = 'itp';
-      return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " system-notice");
-    };
     $('#user-toggle').click(function() {
       var $userList, names;
       if ($('#user-toggle').find('#user-list').length === 0) {
@@ -96,7 +89,19 @@
         return $('#user-list').remove();
       }
     });
+    now.receivePreviousMessage = function(timestamp, sender, message, destination) {
+      if (destination == null) destination = 'itp';
+      console.log('hi');
+      if (sender === 'Join' || sender === 'Leave') {
+        return renderMessage($('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message');
+      } else {
+        return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " previous-message");
+      }
+    };
     return now.ready(function() {
+      $('#chat-name').focusout(function() {
+        return updateName(($(this)).val());
+      });
       now.addUserToList = function(name) {
         return now.userList.push(name);
       };

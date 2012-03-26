@@ -63,7 +63,8 @@
       }
     }
 
-    &.system-notice {
+    &.system-notice,
+    &.previous-message {
       background-color: desaturate($chat-background, 10%);
       color: gray;
       font-style: italic;

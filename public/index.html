@@ -17,6 +17,7 @@
   <script src="/js/itpirl.js"></script>
   <script src="/js/chat.js"></script>
   <script>
+    // Implement this stuff with Backbone.js
     $(document).ready(function(){
       $('#feedback-button').click(function(){
         event.preventDefault();
@@ -27,7 +28,7 @@
           $feedbackForm.empty();
         }
       });
-    
+
       $('#feedback-send').live('click', function(){
         event.preventDefault();
         data = {
@@ -40,7 +41,7 @@
       });
     });
   </script>
-  
+
   <title>ITPIRL</title>
 </head>
 <body>
@@ -61,7 +62,7 @@
         </div>
       </div>
     </div>
-    
+
   <div id="content">
     <div id="chat-window">
       <div id="chat-log-container">

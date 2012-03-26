@@ -68,11 +68,6 @@ jQuery ->
     if now.name != undefined || now.name.length > 0
       $('#chat-name').val(now.name)
 
-  $('#chat-name').focusout ->
-    updateName ($ this).val()
-  now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
-    renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} system-notice"
-
   $('#user-toggle').click ->
     if $('#user-toggle').find('#user-list').length == 0
       now.getUserList()
@@ -84,11 +79,24 @@ jQuery ->
       $userList.html('<ul>'+names+'</ul>').css('width',$('#user-toggle').width());
     else
       $('#user-list').remove();
+
+  now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
+    console.log 'hi'
+    if sender in ['Join', 'Leave']
+      renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
+    else
+      renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
+
   now.ready ->
+
+    $('#chat-name').focusout ->
+      updateName ($ this).val()
     now.addUserToList = (name) ->
       now.userList.push name
+
     now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
       renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
+
     now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
       renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
 
