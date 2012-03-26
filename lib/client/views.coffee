@@ -27,10 +27,15 @@ jQuery ->
   #___________________________________________________
   class MessagesView extends Backbone.View
     el: '#chat-window'
+    initialize: (options) ->
+      fit = @fitHeight
+      $(window).bind 'resize', ->
+        fit($(this).height())
     fitHeight: (windowHeight) ->
       headerHeight = $('#header').height()
       toolbarHeight = $('#toolbars').height()
-      $(@el).css('height', windowHeight - headerHeight - toolbarHeight)
+      console.log $(@el)
+      $('#chat-window').css('height', (windowHeight - headerHeight - toolbarHeight) + 'px')
       chatWindowHeight = windowHeight - headerHeight - toolbarHeight
       chatInterior = chatWindowHeight - @$('#new-message').height()
       @$('#chat-log-container').height(chatInterior)
@@ -45,6 +50,10 @@ jQuery ->
     id: 'event-feed'
     tagName: 'ul'
     template: ($ '#events-template').html()
+    initialize: (options) ->
+      fit = @fitHeight
+      $(window).bind 'resize', ->
+        fit($(this).height())
     fitHeight: (windowHeight) ->
       headerHeight = $('#header').height()
       toolbarHeight = $('#toolbars').height()
