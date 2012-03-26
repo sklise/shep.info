@@ -110,23 +110,24 @@
   };
 
   nowjs.on('connect', function() {
-    var myNow, n, room, timestamp;
+    var myNow, room, timestamp;
     timestamp = Date.now();
     logMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
     everyone.now.receiveSystemMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
     myNow = this.now;
     room = 'itp';
-    n = 10;
     return redis.llen('messages:' + room, function(err, length) {
       var end, start;
-      start = length - n;
+      start = length - 10;
       end = length - 1;
       return redis.lrange('messages:' + room, start, end, function(err, obj) {
         var m, message, _i, _len, _results;
+        console.log(obj.length);
         _results = [];
         for (_i = 0, _len = obj.length; _i < _len; _i++) {
           message = obj[_i];
-          _results.push(m = JSON.parse(message));
+          m = JSON.parse(message);
+          _results.push(myNow.receivePreviousMessage(m.timestamp, m.sender, m.message));
         }
         return _results;
       });
@@ -152,7 +153,12 @@
   });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
-    return everyone.now.distributeChatMessage(from, message, {
+    var timestamp;
+    timestamp = Date.now();
+    logMessage(timestamp, from, message, {
+      'room': 'itp'
+    });
+    return everyone.now.receiveChatMessage(timestamp, from, message, {
       'room': 'itp'
     });
   });

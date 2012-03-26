@@ -1,5 +1,5 @@
 (function() {
-  var classifyName, formatTime, parseMessage, parseSystemMessage, updateName;
+  var classifyName, formatTime, parseMessage, parseSystemMessage, renderMessage, updateName;
 
   classifyName = function(senderName, nowName) {
     var classes;
@@ -28,7 +28,14 @@
   };
 
   formatTime = function(timestamp) {
-    return timestamp;
+    var hours, marker, minutes, time;
+    time = new Date(timestamp);
+    hours = time.getHours();
+    minutes = time.getMinutes();
+    marker = hours > 12 ? 'P' : 'A';
+    minutes = minutes > 9 ? minutes : '0' + minutes;
+    hours = hours > 12 ? hours - 12 : hours;
+    return "" + hours + ":" + minutes + marker;
   };
 
   parseSystemMessage = function(message) {
@@ -45,52 +52,56 @@
     });
   };
 
+  renderMessage = function(template, timestamp, sender, message, classes) {
+    if (classes == null) classes = '';
+    this.template = template;
+    $('#chat-log').append(Mustache.render(this.template, {
+      name: sender,
+      message: parseMessage(message),
+      time: formatTime(timestamp),
+      classes: classes
+    }));
+    $('#chat-log-container').animate({
+      'scrollTop': $('#chat-log').height()
+    }, 200);
+    return true;
+  };
+
   jQuery(function() {
-    now.receiveSystemMessage = function(timestamp, type, message, destination) {
-      if (destination == null) destination = 'itp';
-      this.template = $('#message-template').html();
-      return $('#chat-log').append(Mustache.render(this.template, {
-        name: type,
-        message: parseSystemMessage(message),
-        time: formatTime(timestamp),
-        classes: 'system-notice'
-      }));
-    };
-    now.receiveChatMessage = function(timestamp, sender, message, destination) {
-      var nowName;
-      if (destination == null) destination = 'itp';
-      this.template = $('#message-template').html();
-      nowName = this.now.name;
-      $('#chat-log').append(Mustache.render(this.template, {
-        name: sender,
-        message: parseMessage(message),
-        time: formatTime(timestamp),
-        classes: classifyName(sender, nowName)
-      }));
-      return $('#chat-log-container').animate({
-        'scrollTop': $('#chat-log').height()
-      }, 200);
-    };
-    $("#new-message").live('keypress', function(event) {
-      var message;
-      message = $("#new-message-input").val();
-      if (message.length > 80) $('#new-message-input').attr('rows', 2);
-      if (event.which === 13) {
-        event.preventDefault();
-        if (message.length > 0) {
-          now.distributeChatMessage(now.name, $("#new-message-input").val());
-          return $("#new-message-input").val('').attr('rows', 1);
-        }
-      }
-    });
     while (now.name === void 0 || now.name === "") {
       now.name = prompt("What's your name?", "");
       if (now.name !== void 0 || now.name.length > 0) {
         $('#chat-name').val(now.name);
       }
     }
-    return $('#chat-name').focusout(function() {
+    $('#chat-name').focusout(function() {
       return updateName(($(this)).val());
+    });
+    now.receivePreviousMessage = function(timestamp, sender, message, destination) {
+      if (destination == null) destination = 'itp';
+      return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " system-notice");
+    };
+    return now.ready(function() {
+      now.receiveSystemMessage = function(timestamp, type, message, destination) {
+        if (destination == null) destination = 'itp';
+        return renderMessage($('#system-message-template').html(), timestamp, type, message, 'system-notice');
+      };
+      now.receiveChatMessage = function(timestamp, sender, message, destination) {
+        if (destination == null) destination = 'itp';
+        return renderMessage($('#message-template').html(), timestamp, sender, message, classifyName(sender, this.now.name));
+      };
+      return $("#new-message").live('keypress', function(event) {
+        var message;
+        message = $("#new-message-input").val();
+        if (message.length > 80) $('#new-message-input').attr('rows', 2);
+        if (event.which === 13) {
+          event.preventDefault();
+          if (message.length > 0) {
+            now.distributeChatMessage(now.name, $("#new-message-input").val());
+            return $("#new-message-input").val('').attr('rows', 1);
+          }
+        }
+      });
     });
   });
 

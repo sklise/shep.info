@@ -113,18 +113,21 @@ nowjs.on 'connect', ->
   timestamp = Date.now()
   logMessage timestamp, 'Join', "#{@now.name} has joined the chat."
   everyone.now.receiveSystemMessage timestamp, 'Join', "#{@now.name} has joined the chat."
+
   myNow = @now
   room = 'itp'
-  n = 10
 
   redis.llen 'messages:' + room, (err, length) ->
-    start = length - n
+    start = length - 10
     end = length - 1
 
     redis.lrange 'messages:' + room, start, end, (err, obj) ->
+      console.log obj.length
       for message in obj
+        # Redis returns the object as a string, turn it back to an object
         m = JSON.parse(message)
-        # myNow.receiveMessage 'SERVER', message
+        # Send these previous messages to the client
+        myNow.receivePreviousMessage(m.timestamp, m.sender, m.message)
 
 nowjs.on 'disconnect', ->
   timestamp = Date.now()
@@ -135,16 +138,17 @@ nowjs.on 'disconnect', ->
 #_____________________________________________________
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
-everyone.ircClient = new irc.Client(ircHost, ircNick, {
+everyone.ircClient = new irc.Client ircHost, ircNick,
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
   userName: process.env.ITPIRL_IRC_USERNAME || ''
   password: process.env.ITPIRL_IRC_PASSWORD || ''
-})
 
 # Listen for messages to the ITP room and send them to Now.
 everyone.ircClient.addListener 'message#itp', (from, message) ->
-  everyone.now.distributeChatMessage from, message, {'room':'itp'}
+  timestamp = Date.now()
+  logMessage timestamp, from, message, {'room':'itp'}
+  everyone.now.receiveChatMessage timestamp, from, message, {'room':'itp'}
 
 # LISTEN ON A PORT
 #_____________________________________________________

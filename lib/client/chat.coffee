@@ -23,7 +23,13 @@ updateName = (raw) ->
 
 # Convert a timestamp into a readable time.
 formatTime = (timestamp) ->
-  timestamp
+  time = new Date(timestamp)
+  hours = time.getHours()
+  minutes = time.getMinutes()
+  marker = if hours > 12 then 'P' else 'A'
+  minutes = if minutes > 9 then minutes else '0' + minutes
+  hours = if hours > 12 then hours - 12 else hours
+  "#{hours}:#{minutes}#{marker}"
 
 # System messages are nicer than chat messages
 parseSystemMessage = (message) ->
@@ -44,39 +50,19 @@ parseMessage = (message) ->
     .replace /(http[s]*:\/\/\S+)/g, (match) ->
       "<a href='#{match}' target='_blank'>#{match}</a>"
 
+renderMessage = (template, timestamp, sender, message, classes='') ->
+  @template = template
+  # Render the chat to the browser
+  $('#chat-log').append Mustache.render @template,
+    name:sender
+    message:parseMessage(message)
+    time:formatTime(timestamp)
+    classes:classes
+  # Scroll the chat log with a slight animation.
+  $('#chat-log-container').animate {'scrollTop' : $('#chat-log').height()}, 200
+  true
+
 jQuery ->
-  # timestamp, sender, message, destination
-  now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
-    @template = $('#message-template').html()
-    $('#chat-log').append Mustache.render @template,
-      name:type
-      message:parseSystemMessage(message)
-      time:formatTime(timestamp)
-      classes:'system-notice'
-  now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
-    @template = $('#message-template').html()
-    nowName = @now.name
-    # {name, message, time, classes:classifyName(name, now.name)}
-    # Render the chat to the browser
-    $('#chat-log').append Mustache.render @template,
-      name:sender
-      message:parseMessage(message)
-      time:formatTime(timestamp)
-      classes:classifyName(sender, nowName)
-    # Scroll the chat log with a slight animation.
-    $('#chat-log-container').animate {'scrollTop' : $('#chat-log').height()}, 200
-
-  # Send a new message
-  $("#new-message").live 'keypress', (event) ->
-    message = $("#new-message-input").val()
-    if(message.length > 80)
-      $('#new-message-input').attr('rows',2)
-    if(event.which == 13)
-      event.preventDefault()
-      if(message.length > 0)
-        now.distributeChatMessage(now.name, $("#new-message-input").val())
-        $("#new-message-input").val('').attr('rows',1)
-
   while now.name == undefined || now.name == ""
     now.name = prompt("What's your name?", "")
     if now.name != undefined || now.name.length > 0
@@ -84,4 +70,23 @@ jQuery ->
 
   $('#chat-name').focusout ->
     updateName ($ this).val()
+  now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
+    renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} system-notice"
+
+  now.ready ->
+    now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
+      renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
+    now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
+      renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
+
+    # Send a new message
+    $("#new-message").live 'keypress', (event) ->
+      message = $("#new-message-input").val()
+      if(message.length > 80)
+        $('#new-message-input').attr('rows',2)
+      if(event.which == 13)
+        event.preventDefault()
+        if(message.length > 0)
+          now.distributeChatMessage(now.name, $("#new-message-input").val())
+          $("#new-message-input").val('').attr('rows',1)
 

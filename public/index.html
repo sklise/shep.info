@@ -117,6 +117,13 @@
     </form>
   </script>
 
+  <script type="text/template" id="system-message-template">
+  <li class="{{ classes }}">
+    <div class="message-time">{{ time }}</div>
+    <div class="system-message">{{{ message }}}</div>
+  </li>
+  </script>
+
   <script type="text/template" id="message-template">
   <li class="{{ classes }}">
     <div class="chatter">{{ name }}</div>
