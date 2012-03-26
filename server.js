@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, helpers, http, irc, ircHost, ircNick, logMessage, mustache, nowjs, port, querystring, redis;
+  var app, ejs, everyone, express, helpers, http, irc, ircConnections, ircHost, ircNick, logMessage, mustache, nowjs, port, querystring, redis;
 
   http = require('http');
 
@@ -18,6 +18,8 @@
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
   helpers = require('./helpers.js');
+
+  ircConnections = {};
 
   app = express.createServer(express.logger());
 
@@ -72,12 +74,9 @@
         'room': 'itp'
       };
     }
+    ircConnections[this.user.clientId].say("#" + destination.room, message);
     timestamp = helpers.setTimestamp();
-    logMessage(timestamp, sender, message, destination);
-    if (destination.room !== void 0) {
-      everyone.ircClient.say("#" + destination.room, message);
-    }
-    return everyone.now.receiveChatMessage(timestamp, sender, message, destination);
+    return logMessage(timestamp, sender, message, destination);
   };
 
   everyone.now.distributeSystemMessage = function(type, message, destination) {
@@ -109,6 +108,11 @@
 
   nowjs.on('connect', function() {
     var myNow, room, timestamp;
+    ircConnections[this.user.clientId] = new irc.Client('irc.freenode.net', this.now.name, {
+      channels: ['#itp'],
+      port: 6667
+    });
+    ircConnections[this.user.clientId].connect;
     timestamp = Date.now();
     logMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
     everyone.now.receiveSystemMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
@@ -133,20 +137,20 @@
 
   nowjs.on('disconnect', function() {
     var timestamp;
+    ircConnections[this.user.clientId].disconnect('seeya');
     timestamp = Date.now();
-    logMessage(timestamp, 'Leave', "" + this.now.name + " has joined the chat.");
+    logMessage(timestamp, 'Leave', "" + this.now.name + " has left the chat.");
     return everyone.now.receiveSystemMessage(timestamp, 'Leave', "" + this.now.name + " has left the chat.");
   });
 
-  ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net';
+  ircHost = 'irc.freenode.net';
 
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon';
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: process.env.ITPIRL_IRC_PORT || 6667,
-    userName: process.env.ITPIRL_IRC_USERNAME || '',
-    password: process.env.ITPIRL_IRC_PASSWORD || ''
+    port: 6667,
+    autoConnect: true
   });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {

@@ -11,6 +11,10 @@ redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://local
 
 helpers = require './helpers.js'
 
+ircConnections = {}
+ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+
+
 # SETUP EXPRESS APP
 #_____________________________________________________
 app = express.createServer(express.logger())
@@ -62,16 +66,17 @@ logMessage = (timestamp, sender, message, destination={'room':'itp'}) ->
 # Send a chat message, => {sender, message, destination}
 # Timestamps are set by this method
 everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'}) ->
+  ircConnections[@user.clientId].say("##{destination.room}", message)
   timestamp = helpers.setTimestamp()
   logMessage timestamp, sender, message, destination
 
-  if destination.room != undefined
-    everyone.ircClient.say("##{destination.room}", message)
+  # if destination.room != undefined
+    # everyone.ircClient.say("##{destination.room}", message)
   # Currently no method for sending direct messages. And that's ok...for now.
   # At least until I get ircClients happening per client.
 
   # Destination will come in to play in who receive the message.
-  everyone.now.receiveChatMessage timestamp, sender, message, destination
+  # everyone.now.receiveChatMessage timestamp, sender, message, destination
 
 ## System Messages
 
@@ -113,6 +118,7 @@ nowjs.on 'connect', ->
   ircConnections[@user.clientId] = new irc.Client ircHost, @now.name,
     channels: ['#itp']
     port: process.env.ITPIRL_IRC_PORT || 6667
+  ircConnections[@user.clientId].connect
   timestamp = Date.now()
   logMessage timestamp, 'Join', "#{@now.name} has joined the chat."
   everyone.now.receiveSystemMessage timestamp, 'Join', "#{@now.name} has joined the chat."
@@ -132,19 +138,23 @@ nowjs.on 'connect', ->
         myNow.receivePreviousMessage(m.timestamp, m.sender, m.message)
 
 nowjs.on 'disconnect', ->
+  ircConnections[@user.clientId].disconnect('seeya')
   timestamp = Date.now()
-  logMessage timestamp, 'Leave', "#{@now.name} has joined the chat."
+  logMessage timestamp, 'Leave', "#{@now.name} has left the chat."
   everyone.now.receiveSystemMessage timestamp, 'Leave', "#{@now.name} has left the chat."
 
 # SETUP IRC
 #_____________________________________________________
-ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+
+# Create an IRC client for the server. Though many clients can speak to IRC
+# I only want one client listening to prevent sending multiple messages.
 ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
 everyone.ircClient = new irc.Client ircHost, ircNick,
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
-  userName: process.env.ITPIRL_IRC_USERNAME || ''
-  password: process.env.ITPIRL_IRC_PASSWORD || ''
+  autoConnect: true
+  # userName: process.env.ITPIRL_IRC_USERNAME || ''
+  # password: process.env.ITPIRL_IRC_PASSWORD || ''
 
 # Listen for messages to the ITP room and send them to Now.
 everyone.ircClient.addListener 'message#itp', (from, message) ->

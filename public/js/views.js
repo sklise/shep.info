@@ -67,11 +67,20 @@
 
       MessagesView.prototype.el = '#chat-window';
 
+      MessagesView.prototype.initialize = function(options) {
+        var fit;
+        fit = this.fitHeight;
+        return $(window).bind('resize', function() {
+          return fit($(this).height());
+        });
+      };
+
       MessagesView.prototype.fitHeight = function(windowHeight) {
         var chatInterior, chatWindowHeight, headerHeight, toolbarHeight;
         headerHeight = $('#header').height();
         toolbarHeight = $('#toolbars').height();
-        $(this.el).css('height', windowHeight - headerHeight - toolbarHeight);
+        console.log($(this.el));
+        $('#chat-window').css('height', (windowHeight - headerHeight - toolbarHeight) + 'px');
         chatWindowHeight = windowHeight - headerHeight - toolbarHeight;
         chatInterior = chatWindowHeight - this.$('#new-message').height();
         this.$('#chat-log-container').height(chatInterior);
@@ -99,6 +108,14 @@
       EventsView.prototype.tagName = 'ul';
 
       EventsView.prototype.template = ($('#events-template')).html();
+
+      EventsView.prototype.initialize = function(options) {
+        var fit;
+        fit = this.fitHeight;
+        return $(window).bind('resize', function() {
+          return fit($(this).height());
+        });
+      };
 
       EventsView.prototype.fitHeight = function(windowHeight) {
         var headerHeight, toolbarHeight;
