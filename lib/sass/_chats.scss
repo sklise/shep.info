@@ -16,10 +16,12 @@
 }
 
 #chat-log {
+  @include box-sizing;
   background-color: $chat-background;
   min-height: 400px;
   overflow-x: hidden;
   overflow-y: auto;
+  padding: 0 0 1em;
 
   li {
     @include grid-row;
@@ -28,11 +30,15 @@
     position: relative;
     word-wrap: break-word;
 
+    &.system-notice {
+      padding: 0.2em 0;
+    }
+
     // Show consecutive messages from the same chatter closer together and
     // hide the chatter's name in consecutive messages.
     &.consecutive {
-      padding: 0.3em 0;
-      
+      padding: 0.2em 0;
+
       .chatter {
         opacity: 0;
       }
@@ -84,7 +90,8 @@
 }
 
 .chatter,
-.message {
+.message,
+.system-message {
   display: block;
   @include box-sizing;
 }
@@ -96,9 +103,14 @@
   text-align: right;
 }
 
-.message {
+.message,
+.system-message {
   @include grid-column(10);
   padding-right: 1em;
+}
+
+.system-message {
+  @include grid-offset(2);
 }
 
 // NEW MESSAGE

@@ -1,38 +1,3 @@
-@font-face {
-  font-family: 'ColaborateThinRegular';
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabThi-webfont.eot");
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabThi-webfont.eot?#iefix") format("embedded-opentype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabThi-webfont.woff") format("woff"), url("http://sklise.s3.amazonaws.com/colaborate/ColabThi-webfont.ttf") format("truetype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabThi-webfont.svg#ColaborateThinRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: 'ColaborateLightRegular';
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabLig-webfont.eot");
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabLig-webfont.eot?#iefix") format("embedded-opentype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabLig-webfont.woff") format("woff"), url("http://sklise.s3.amazonaws.com/colaborate/ColabLig-webfont.ttf") format("truetype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabLig-webfont.svg#ColaborateLightRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: 'ColaborateRegular';
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabReg-webfont.eot");
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabReg-webfont.eot?#iefix") format("embedded-opentype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabReg-webfont.woff") format("woff"), url("http://sklise.s3.amazonaws.com/colaborate/ColabReg-webfont.ttf") format("truetype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabReg-webfont.svg#ColaborateRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: 'ColaborateMediumRegular';
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabMed-webfont.eot");
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabMed-webfont.eot?#iefix") format("embedded-opentype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabMed-webfont.woff") format("woff"), url("http://sklise.s3.amazonaws.com/colaborate/ColabMed-webfont.ttf") format("truetype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabMed-webfont.svg#ColaborateMediumRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
-  font-family: 'ColaborateBoldRegular';
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabBol-webfont.eot");
-  src: url("http://sklise.s3.amazonaws.com/colaborate/ColabBol-webfont.eot?#iefix") format("embedded-opentype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabBol-webfont.woff") format("woff"), url("http://sklise.s3.amazonaws.com/colaborate/ColabBol-webfont.ttf") format("truetype"), url("http://sklise.s3.amazonaws.com/colaborate/ColabBol-webfont.svg#ColaborateBoldRegular") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -195,10 +160,14 @@ h2 {
   overflow-y: scroll; }
 
 #chat-log {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   background-color: #f5f8ff;
   min-height: 400px;
   overflow-x: hidden;
-  overflow-y: auto; }
+  overflow-y: auto;
+  padding: 0 0 1em; }
   #chat-log li {
     width: auto;
     margin: 0 -0.667%;
@@ -206,8 +175,10 @@ h2 {
     padding: 1em 0 0.3em;
     position: relative;
     word-wrap: break-word; }
+    #chat-log li.system-notice {
+      padding: 0.2em 0; }
     #chat-log li.consecutive {
-      padding: 0.3em 0; }
+      padding: 0.2em 0; }
       #chat-log li.consecutive .chatter {
         opacity: 0; }
     #chat-log li:hover .message-time {
@@ -239,7 +210,8 @@ h2 {
   transition: opacity 200ms ease-in-out; }
 
 .chatter,
-.message {
+.message,
+.system-message {
   display: block;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -253,11 +225,15 @@ h2 {
   overflow-x: hidden;
   text-align: right; }
 
-.message {
+.message,
+.system-message {
   margin: 0 0.667%;
   float: left;
   width: 82%;
   padding-right: 1em; }
+
+.system-message {
+  margin-left: 17.333%; }
 
 #new-message {
   /*  @include grid-row;*/
