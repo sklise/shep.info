@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, helpers, http, irc, ircConnections, ircHost, ircNick, logMessage, mustache, nowjs, port, querystring, redis;
+  var app, ejs, everyone, express, helpers, http, irc, ircBridge, ircConnections, ircHost, ircNick, logAndForward, logMessage, mustache, nowjs, port, querystring, redis;
 
   http = require('http');
 
@@ -20,6 +20,36 @@
   helpers = require('./helpers.js');
 
   ircConnections = {};
+
+  ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net';
+
+  ircBridge = (function() {
+
+    function ircBridge(name, callback) {
+      var _this = this;
+      this.name = name;
+      this.client = new irc.Client(ircHost, this.name, {
+        channels: ['#itp'],
+        port: process.env.ITPIRL_IRC_PORT || 6667,
+        autoConnect: true
+      });
+      this.client.addListener('pm', function(from, message) {
+        return console.log("PRIVATE MESSAGE FROM: " + from + ":", message);
+      });
+      this.client.addListener('error', function(message) {
+        return console.log("ERROR:", message);
+      });
+      this.client.addListener('notice', function(nick, to, text, message) {
+        return console.log("NOTICE: " + nick + ": " + to + " : " + text + " : " + message);
+      });
+      this.client.addListener('names', function(channel, nicks) {
+        return callback(_this.client.nick);
+      });
+    }
+
+    return ircBridge;
+
+  })();
 
   app = express.createServer(express.logger());
 
@@ -67,16 +97,26 @@
     });
   };
 
-  everyone.now.distributeChatMessage = function(sender, message, destination) {
+  logAndForward = function(sender, message, destination, callback) {
     var timestamp;
     if (destination == null) {
       destination = {
         'room': 'itp'
       };
     }
-    ircConnections[this.user.clientId].say("#" + destination.room, message);
-    timestamp = helpers.setTimestamp();
-    return logMessage(timestamp, sender, message, destination);
+    timestamp = Date.now();
+    logMessage(timestamp, sender, message);
+    return callback(timestamp, sender, message);
+  };
+
+  everyone.now.distributeChatMessage = function(sender, message, destination) {
+    if (destination == null) {
+      destination = {
+        'room': 'itp'
+      };
+    }
+    ircConnections[this.user.clientId].client.say("#" + destination.room, message);
+    return this.now.serverChangedName(ircConnections[this.user.clientId].client.nick);
   };
 
   everyone.now.distributeSystemMessage = function(type, message, destination) {
@@ -107,28 +147,20 @@
   };
 
   everyone.now.changeNick = function(oldNick, newNick) {
-    var destination, message, timestamp, type;
-    destination = {
-      'room': 'itp'
-    };
-    type = 'NICK';
-    message = "" + oldNick + " is now known as " + newNick;
-    timestamp = helpers.setTimestamp();
-    logMessage(timestamp, type, message, destination);
-    everyone.now.receiveSystemMessage(timestamp, type, message);
-    return ircConnections[this.user.clientId].send("NICK " + newNick);
+    ircConnections[this.user.clientId].client.nick = newNick;
+    return ircConnections[this.user.clientId].client.send("NICK " + newNick);
   };
 
   nowjs.on('connect', function() {
-    var myNow, room, timestamp;
-    ircConnections[this.user.clientId] = new irc.Client('irc.freenode.net', this.now.name, {
-      channels: ['#itp'],
-      port: 6667
+    var myNow, room;
+    myNow = this.now;
+    ircConnections[this.user.clientId] = new ircBridge(this.now.name, function(name) {
+      myNow.name = name;
+      return myNow.serverChangedName(name);
     });
-    ircConnections[this.user.clientId].connect;
-    timestamp = Date.now();
-    logMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
-    everyone.now.receiveSystemMessage(timestamp, 'Join', "" + this.now.name + " has joined the chat.");
+    logAndForward('Join', "" + this.now.name + " has joined the chat.", {
+      'room': 'itp'
+    }, everyone.now.receiveSystemMessage);
     myNow = this.now;
     room = 'itp';
     return redis.llen('messages:' + room, function(err, length) {
@@ -149,32 +181,30 @@
   });
 
   nowjs.on('disconnect', function() {
-    var timestamp;
-    ircConnections[this.user.clientId].disconnect('seeya');
-    timestamp = Date.now();
-    logMessage(timestamp, 'Leave', "" + this.now.name + " has left the chat.");
-    return everyone.now.receiveSystemMessage(timestamp, 'Leave', "" + this.now.name + " has left the chat.");
+    ircConnections[this.user.clientId].client.disconnect('seeya');
+    return logAndForward('Leave', "" + this.now.name + " has left the chat.", {
+      'room': 'itp'
+    }, everyone.now.receiveSystemMessage);
   });
 
-  ircHost = 'irc.freenode.net';
-
-  ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon';
+  ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server';
 
   everyone.ircClient = new irc.Client(ircHost, ircNick, {
     channels: ['#itp'],
-    port: 6667,
+    port: process.env.ITPIRL_IRC_PORT || 6667,
     autoConnect: true
   });
 
+  everyone.ircClient.addListener('nick', function(oldnick, newnick, channels, message) {
+    return logAndForward('NICK', "" + oldnick + " is now known as " + newnick, {
+      'room': 'itp'
+    }, everyone.now.receiveSystemMessage);
+  });
+
   everyone.ircClient.addListener('message#itp', function(from, message) {
-    var timestamp;
-    timestamp = Date.now();
-    logMessage(timestamp, from, message, {
+    return logAndForward(from, message, {
       'room': 'itp'
-    });
-    return everyone.now.receiveChatMessage(timestamp, from, message, {
-      'room': 'itp'
-    });
+    }, everyone.now.receiveChatMessage);
   });
 
   port = process.env.PORT || 3000;

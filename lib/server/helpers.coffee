@@ -2,7 +2,7 @@ exports.setTimestamp = ->
   Date.now()
 
 # MUSTACHE FOR EXPRESS
-#_____________________________________________________
+#-----------------------------------------------------
 # Adapted to coffeescript from:
 # http://bitdrift.com/post/2376383378/using-mustache-templates-in-express
 exports.mustache_template =

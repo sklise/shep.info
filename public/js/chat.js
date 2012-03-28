@@ -91,12 +91,15 @@
     });
     now.receivePreviousMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';
-      console.log('hi');
       if (sender === 'Join' || sender === 'Leave') {
         return renderMessage($('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message');
       } else {
         return renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " previous-message");
       }
+    };
+    now.serverChangedName = function(name) {
+      this.now.name = name;
+      return $('#chat-name').val(name);
     };
     $('#chat-name').focusout(function() {
       return updateName(($(this)).val());

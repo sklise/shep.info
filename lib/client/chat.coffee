@@ -81,13 +81,14 @@ jQuery ->
       $('#user-list').remove();
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
-    console.log 'hi'
     if sender in ['Join', 'Leave']
       renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
     else
       renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
 
-
+  now.serverChangedName = (name) ->
+    @now.name = name
+    $('#chat-name').val(name)
 
   $('#chat-name').focusout ->
     updateName ($ this).val()

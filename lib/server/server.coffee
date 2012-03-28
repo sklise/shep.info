@@ -1,5 +1,5 @@
 # REQUIRE MODULES
-#_____________________________________________________
+#-----------------------------------------------------
 http = require 'http' # posting to cakemix
 querystring = require 'querystring' # stringifying posts to cakemix
 nowjs = require 'now'
@@ -9,14 +9,33 @@ mustache = require 'mustache' # templating
 ejs = require 'ejs' # templating
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
+# Load other files.
 helpers = require './helpers.js'
 
 ircConnections = {}
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 
+class ircBridge
+  constructor: (@name, callback) ->
+    @client = new irc.Client ircHost, @name,
+      channels: ['#itp']
+      port: process.env.ITPIRL_IRC_PORT || 6667
+      autoConnect: true
+
+    # Listen for IRC events relating to this user.
+    @client.addListener 'pm', (from, message) ->
+      console.log "PRIVATE MESSAGE FROM: #{from}:", message
+    @client.addListener 'error', (message) ->
+      console.log "ERROR:", message
+    @client.addListener 'notice', (nick, to, text, message) ->
+      console.log "NOTICE: #{nick}: #{to} : #{text} : #{message}"
+    @client.addListener 'names', (channel, nicks) =>
+      # Tell Now.js what your actual name is.
+      callback(@client.nick)
+
 
 # SETUP EXPRESS APP
-#_____________________________________________________
+#-----------------------------------------------------
 app = express.createServer(express.logger())
 app.configure ->
   # Setup static file server
@@ -25,7 +44,7 @@ app.configure ->
   app.register(".mustache", helpers.mustache_template)
 
 # ROUTES
-#_____________________________________________________
+#-----------------------------------------------------
 app.get '/', (request, response) ->
   response.render 'index.ejs'
 
@@ -37,24 +56,30 @@ app.post '/feedback/new', (request, response) ->
   response.send '{sucess:hopefully}'
 
 # SETUP NOW.JS
-#_____________________________________________________
+#-----------------------------------------------------
 everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
 
-# LOG MESSAGES TO REDIS
-#_____________________________________________________
-# This function is only to be called within distribute message functions.
-# Saves messages to Redis
+# LOGGING MESSAGES TO REDIS
+#-----------------------------------------------------
+
+##### LogMessage
 logMessage = (timestamp, sender, message, destination={'room':'itp'}) ->
   redis.incr 'nextId', (err,id) ->
     newMessage = { id, sender, message, destination, timestamp }
     redis.rpush 'messages:'+destination.room, JSON.stringify(newMessage)
 
+##### Log and Forward
+# Log a message and send it out via a Now.js function. I found myself writing
+# these three lines often and got tired of it.
+logAndForward = (sender, message, destination={'room':'itp'}, callback) ->
+  timestamp = Date.now()
+  logMessage timestamp, sender, message
+  callback(timestamp, sender, message)
+
 # NOW CHAT
-#_____________________________________________________
+#-----------------------------------------------------
 
-## Messages are of two types: Chat and System.
-
-## Chat Messages
+#### Chat Messages
 
 # A Chat message is initiated by textual input from a client. This includes
 # all humans and bots. Chat messages are simple, they have a sender name,
@@ -63,22 +88,15 @@ logMessage = (timestamp, sender, message, destination={'room':'itp'}) ->
 # client. Chat messages are assigned timestamps by the server to avoid any
 # problems with clients' clocks or system lag.
 
-# Send a chat message, => {sender, message, destination}
-# Timestamps are set by this method
+# Triggered when a Now.js client sends a message. Simply forwards the message
+# to IRC. Currently no method for sending direct messages. And that's ok...for
+# now. At least until I get ircClients happening per client.
 everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'}) ->
-  ircConnections[@user.clientId].say("##{destination.room}", message)
-  timestamp = helpers.setTimestamp()
-  logMessage timestamp, sender, message, destination
+  ircConnections[@user.clientId].client.say("##{destination.room}", message)
+  # Check to see
+  @now.serverChangedName ircConnections[@user.clientId].client.nick
 
-  # if destination.room != undefined
-    # everyone.ircClient.say("##{destination.room}", message)
-  # Currently no method for sending direct messages. And that's ok...for now.
-  # At least until I get ircClients happening per client.
-
-  # Destination will come in to play in who receive the message.
-  # everyone.now.receiveChatMessage timestamp, sender, message, destination
-
-## System Messages
+#### System Messages
 
 # A System message is initiated by the server. Client actions can trigger a
 # System message but cannot initiate their own system message... I think.
@@ -92,14 +110,14 @@ everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'
 
 # I NEED TO BE SURE THIS METHOD IS PRIVATE
 
-# { type:MESSAGE_TYPE,
-#   message: MESSAGE_BODY,
-#   destination: {
-#     room:____
-#     XOR
-#     name:____ <- is this better to be a name or a clientID?
-#   }
-# }
+#      { type:MESSAGE_TYPE,
+#        message: MESSAGE_BODY,
+#        destination: {
+#          room:____
+#          XOR
+#          name:____ <- is this better to be a name or a clientID?
+#        }
+#      }
 everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'})  ->
   timestamp = helpers.setTimestamp()
   logMessage timestamp, type, message, destination
@@ -115,24 +133,22 @@ everyone.now.getUserList = ->
 
 # Propogate name change to IRC and send out a message.
 everyone.now.changeNick = (oldNick, newNick) ->
-  destination = {'room':'itp'}
-  type = 'NICK'
-  message = "#{oldNick} is now known as #{newNick}"
-  timestamp = helpers.setTimestamp()
-  logMessage timestamp, type, message, destination
-  everyone.now.receiveSystemMessage timestamp, type, message
-  ircConnections[@user.clientId].send "NICK #{newNick}"
+  ircConnections[@user.clientId].client.nick = newNick
+  ircConnections[@user.clientId].client.send "NICK #{newNick}"
 
+#### Connecting to Now.js
+# On the connect event create an `ircBridge` for the new user with `@now.name`
+# and log to Redis that a new user has joined.
 nowjs.on 'connect', ->
-  # Create an irc client for the new user.
-  ircConnections[@user.clientId] = new irc.Client ircHost, @now.name,
-    channels: ['#itp']
-    port: process.env.ITPIRL_IRC_PORT || 6667
-  ircConnections[@user.clientId].connect
-  timestamp = Date.now()
-  logMessage timestamp, 'Join', "#{@now.name} has joined the chat."
-  everyone.now.receiveSystemMessage timestamp, 'Join', "#{@now.name} has joined the chat."
+  # Create an ircBridge object for the new user. And tell everyone there is a
+  # new user.
+  myNow = @now
+  ircConnections[@user.clientId] = new ircBridge @now.name, (name) ->
+    myNow.name = name
+    myNow.serverChangedName name
+  logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
+  # Get recent messages from Redis and send them only to this user.
   myNow = @now
   room = 'itp'
 
@@ -148,17 +164,18 @@ nowjs.on 'connect', ->
         myNow.receivePreviousMessage(m.timestamp, m.sender, m.message)
 
 nowjs.on 'disconnect', ->
-  ircConnections[@user.clientId].disconnect('seeya')
-  timestamp = Date.now()
-  logMessage timestamp, 'Leave', "#{@now.name} has left the chat."
-  everyone.now.receiveSystemMessage timestamp, 'Leave', "#{@now.name} has left the chat."
+  # Disconnect that user from IRC.
+  # I PROBABLY NEED TO DESTROY THIS OBJECT?
+  ircConnections[@user.clientId].client.disconnect('seeya')
+  logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
-# SETUP IRC
-#_____________________________________________________
-
+# SETUP IRC ON NODE.JS SERVER
+#-----------------------------------------------------
 # Create an IRC client for the server. Though many clients can speak to IRC
-# I only want one client listening to prevent sending multiple messages.
-ircNick = process.env.ITPIRL_IRC_NICK || 'itpanon'
+# I only want one client listening for non-system messages to prevent sending
+# and logging messages multiple times.
+
+ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
 everyone.ircClient = new irc.Client ircHost, ircNick,
   channels: ['#itp']
   port: process.env.ITPIRL_IRC_PORT || 6667
@@ -166,14 +183,23 @@ everyone.ircClient = new irc.Client ircHost, ircNick,
   # userName: process.env.ITPIRL_IRC_USERNAME || ''
   # password: process.env.ITPIRL_IRC_PASSWORD || ''
 
+# Nick change notifications go to everyone and since some people may sign in
+# with IRC directly and not via itpirl.com if each client listens for nick
+# changes the log will just get super huge. Let's only listen for these on the
+# server account.
+everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
+  logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
+# everyone.ircClient.addListener 'names', (channel, nicks) ->
+#   console.log channel, nicks
+# everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
+#   console.log "Notice", "#{nick}: #{to} : #{text} : #{message}"
+
 # Listen for messages to the ITP room and send them to Now.
 everyone.ircClient.addListener 'message#itp', (from, message) ->
-  timestamp = Date.now()
-  logMessage timestamp, from, message, {'room':'itp'}
-  everyone.now.receiveChatMessage timestamp, from, message, {'room':'itp'}
+  logAndForward from, message, {'room':'itp'}, everyone.now.receiveChatMessage
 
 # LISTEN ON A PORT
-#_____________________________________________________
+#-----------------------------------------------------
 port = process.env.PORT || 3000
 app.listen port, ->
   console.log("Listening on " + port)
