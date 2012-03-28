@@ -4,9 +4,6 @@
 
   jQuery(function() {
     var AppView, EventDateView, EventView, EventsView, MessageView, MessagesView, _ref;
-    _.templateSettings = {
-      interpolate: /\{\{([\s\S]+?)\}\}/g
-    };
     AppView = (function(_super) {
 
       __extends(AppView, _super);

@@ -1,8 +1,4 @@
 jQuery ->
-  _.templateSettings = {
-      interpolate : /\{\{([\s\S]+?)\}\}/g
-  }
-  
   class AppView extends Backbone.View
     el: '#content'
     initialize: (options) ->
@@ -14,7 +10,8 @@ jQuery ->
       @messagesview.render().el
   
   # Chat Message
-  #___________________________________________________
+  #---------------------------------------------------
+  
   class MessageView extends Backbone.View
     className: 'message'
     tagName: 'li'
@@ -22,9 +19,10 @@ jQuery ->
     render: ->
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
-  
+
   # Chat Window
-  #___________________________________________________
+  #---------------------------------------------------
+  
   class MessagesView extends Backbone.View
     el: '#chat-window'
     initialize: (options) ->
@@ -44,8 +42,9 @@ jQuery ->
       @fitHeight $(window).height()
       @
   
+
   # Events Roll
-  #___________________________________________________
+  #---------------------------------------------------
   class EventsView extends Backbone.View
     id: 'event-feed'
     tagName: 'ul'
@@ -69,7 +68,7 @@ jQuery ->
       @
 
   # Event Date
-  #___________________________________________________
+  #---------------------------------------------------
   class EventDateView extends Backbone.View
     tagName: 'li'
     className: 'event-date'
@@ -80,7 +79,7 @@ jQuery ->
 
 
   # Event View
-  #___________________________________________________
+  #---------------------------------------------------
   class EventView extends Backbone.View
     className: 'event'
     tagName: 'li'
