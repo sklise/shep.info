@@ -2,6 +2,13 @@
 
 ## Changelog
 
+### 0.8.0 - 2012/03/28
+
+- Create a separate IRC Client instance for every itpirl.com user.
+- Route messages from Now.js => IRC => Now.js.
+- Create custom message receive and distribute methods.
+- Move files from app/ to lib/ and split CoffeeScripts between client and server.
+
 ### 0.7.4 - 2012/03/21
 
 - Fluid layout with minimum width of 960px. This fixes the scrollbars issue.
