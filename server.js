@@ -106,6 +106,19 @@
     });
   };
 
+  everyone.now.changeNick = function(oldNick, newNick) {
+    var destination, message, timestamp, type;
+    destination = {
+      'room': 'itp'
+    };
+    type = 'NICK';
+    message = "" + oldNick + " is now known as " + newNick;
+    timestamp = helpers.setTimestamp();
+    logMessage(timestamp, type, message, destination);
+    everyone.now.receiveSystemMessage(timestamp, type, message);
+    return ircConnections[this.user.clientId].send("NICK " + newNick);
+  };
+
   nowjs.on('connect', function() {
     var myNow, room, timestamp;
     ircConnections[this.user.clientId] = new irc.Client('irc.freenode.net', this.now.name, {

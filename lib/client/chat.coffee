@@ -16,7 +16,7 @@ updateName = (raw) ->
   if raw != now.name
     oldname = now.name
     now.name = raw
-    now.distributeMessage("#{oldname} is now known as #{now.name}",'Nickname')
+    now.changeNick oldname, now.name
     true
   else
     false

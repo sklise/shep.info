@@ -113,6 +113,16 @@ everyone.now.getUserList = ->
       nowjs.getClient user, ->
         everyone.now.addUserToList @now.name
 
+# Propogate name change to IRC and send out a message.
+everyone.now.changeNick = (oldNick, newNick) ->
+  destination = {'room':'itp'}
+  type = 'NICK'
+  message = "#{oldNick} is now known as #{newNick}"
+  timestamp = helpers.setTimestamp()
+  logMessage timestamp, type, message, destination
+  everyone.now.receiveSystemMessage timestamp, type, message
+  ircConnections[@user.clientId].send "NICK #{newNick}"
+
 nowjs.on 'connect', ->
   # Create an irc client for the new user.
   ircConnections[@user.clientId] = new irc.Client ircHost, @now.name,
