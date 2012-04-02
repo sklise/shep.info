@@ -191,8 +191,8 @@ everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
   logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
 # everyone.ircClient.addListener 'names', (channel, nicks) ->
 #   console.log channel, nicks
-# everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
-#   console.log "Notice", "#{nick}: #{to} : #{text} : #{message}"
+everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
+  console.log "System Notice", "#{nick}: #{to} : #{text} : #{message}"
 
 # Listen for messages to the ITP room and send them to Now.
 everyone.ircClient.addListener 'message#itp', (from, message) ->

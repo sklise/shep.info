@@ -201,6 +201,10 @@
     }, everyone.now.receiveSystemMessage);
   });
 
+  everyone.ircClient.addListener('notice', function(nick, to, text, message) {
+    return console.log("System Notice", "" + nick + ": " + to + " : " + text + " : " + message);
+  });
+
   everyone.ircClient.addListener('message#itp', function(from, message) {
     return logAndForward(from, message, {
       'room': 'itp'
