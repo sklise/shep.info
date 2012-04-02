@@ -26,7 +26,7 @@ formatTime = (timestamp) ->
   time = new Date(timestamp)
   hours = time.getHours()
   minutes = time.getMinutes()
-  marker = if hours > 12 then 'P' else 'A'
+  marker = if hours >= 12 then 'P' else 'A'
   minutes = if minutes > 9 then minutes else '0' + minutes
   hours = if hours > 12 then hours - 12 else hours
   "#{hours}:#{minutes}#{marker}"
@@ -87,7 +87,7 @@ jQuery ->
       renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
 
   now.serverChangedName = (name) ->
-    @now.name = name
+    now.name = name
     $('#chat-name').val(name)
 
   $('#chat-name').focusout ->

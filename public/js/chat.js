@@ -32,7 +32,7 @@
     time = new Date(timestamp);
     hours = time.getHours();
     minutes = time.getMinutes();
-    marker = hours > 12 ? 'P' : 'A';
+    marker = hours >= 12 ? 'P' : 'A';
     minutes = minutes > 9 ? minutes : '0' + minutes;
     hours = hours > 12 ? hours - 12 : hours;
     return "" + hours + ":" + minutes + marker;
@@ -98,7 +98,7 @@
       }
     };
     now.serverChangedName = function(name) {
-      this.now.name = name;
+      now.name = name;
       return $('#chat-name').val(name);
     };
     $('#chat-name').focusout(function() {
