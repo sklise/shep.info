@@ -7,9 +7,9 @@
 // 6. DRY: Colors and snippets used more than once should be mixins.
 // 7. Use comments with lines of underscores to column 55.
 
-$column-width: 7%;
-$gutter-width: 1.33333333333333333333333333%;
-@import 'colaborate';
+// 370 / 10 = 37
+$column-width: 21px;
+$gutter-width: 16px;
 @import 'util';
 @import 'reset';
 @import 'modular-scale';
@@ -18,6 +18,7 @@ $gutter-width: 1.33333333333333333333333333%;
 $black: rgba(0,0,0,1);
 $gold: rgba(255,180,0,1);
 $blue: rgba(17, 13, 245, 1);
+$bright-blue: rgba(0,110,214,1);
 $divider-dark-gray: rgb(219, 215, 212);
 
 $toolbar-chat-background: rgb(139, 211, 245);
@@ -29,81 +30,85 @@ $shep-name: rgb(224, 169, 20);
 /* Calendar colors */
 $event-color: rgba(147, 32, 214, 1);
 
+// FONTS
+//----------------------------------------------------
+.tk-colaborate {
+}
+
+.tk-museo-sans {
+}
+
 .pictos {
   font-family: "Pictos";
 }
 
+$main-font: "museo-sans", "Myriad Pro", "Helvetica Neue", "Helvetica", sans-serif;
+$header-font: "colaborate", "Helvetica Neue", "Helvetica", sans-serif;
+
 $base-size: 10px 350px;
 $alt-size: 8px 320px;
 
-$main-font: "Helvetica";
-$header-font: "ColaborateLightRegular", "Lucida Grande", sans-serif;
-$header-bold: "ColaborateMediumRegular", "Lucida Grande", sans-serif;
 
 $base: 18px 150px;
 
 body {
-  font-family: "Myriad Pro";
+  font-family: $main-font;
   font-size: ms(1, $base-size, $golden);
   line-height: ms(2, $base-size, $golden);
-  background-color: rgb(242, 242, 242);
+  background-color: rgb(255,255,255);
   margin: 0 auto;
+  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: $header-font;
 }
 
+h1 {
+  font-size: ms(8, $base-size, $golden);
+  font-weight: 600;
+  line-height: ms(9, $base-size, $golden);
+}
+
 h2 {
-  font-family: $header-bold;
   font-size: ms(5, $base-size, $golden);
+  font-weight: 600;
   line-height: ms(6, $base-size, $golden);
   margin: 0.5em 0;
 }
 
+a {
+  color: $bright-blue;
+}
+
 #wrapper {
-  @include grid-page(12);
-  @include grid-row(true);
+  @include box-sizing;
+  @include grid-page(34);
   font-size: modular-scale(2, $base-size, $golden);
   line-height: modular-scale(3, $base-size, $golden);
   font-family: $main-font;
   clear: both;
   overflow: auto;
-  min-width: 960px;
 }
 
-#header {
-  @include grid-page(12);
-  background-color: black;
-  clear: both;
-  color: rgb(255,255,255);
-  margin: 0 auto;
-  overflow: auto;
+#footer {
+}
+
+#feedback {
   position: relative;
-  
-  h1 {
-    @include grid-column(2);
-    font-family: 'Colaborate-Medium', $header-font;
-    font-size: modular-scale(3, $base-size, $golden);
-    line-height: modular-scale(4, $base-size, $golden);
+
+  #feedback-button:hover {
+    color: $bright-blue;
+    cursor: pointer;
   }
-  
-  #feedback {
-    @include grid-column(2);
-    @include grid-offset(4);
-    float: right;
-    position: relative;
-    text-align: right;
-    
-    #feedback-button:hover {
-      color: rgba(0,110,214,1);
-      cursor: pointer;
-    }
-    
-    .feedback-form {
-      position: absolute;
-      z-index: 10;
-    }
+  #feedback-send {
+    clear: both;
+    display: block;
+  }
+  label {
+    clear: both;
+    display: block;
+    font-size: ms(1, $base-size, $golden);
   }
 }
 
@@ -142,6 +147,6 @@ h2 {
   p {
     font-size: ms(2, $alt-size, $golden);
     line-height: ms(3, $alt-size, $golden);
-    margin: 0 0 1em;
+    margin: 0.5em 0;
   }
 }

@@ -4,9 +4,9 @@ jQuery ->
     initialize: (options) ->
       @collection.bind 'reset', @render, @
       @messagesview = new MessagesView collection: @collection
-      @eventsview = new EventsView collection: @collection
+      # @eventsview = new EventsView collection: @collection
     render: ->
-      $(@el).find('#event-window').append @eventsview.render().el
+      # $(@el).find('#event-window').append @eventsview.render().el
       @messagesview.render().el
   
   # Chat Message
@@ -45,37 +45,35 @@ jQuery ->
 
   # Events Roll
   #---------------------------------------------------
-  class EventsView extends Backbone.View
-    id: 'event-feed'
-    tagName: 'ul'
-    template: ($ '#events-template').html()
-    initialize: (options) ->
-      fit = @fitHeight
-      $(window).bind 'resize', ->
-        fit($(this).height())
-    fitHeight: (windowHeight) ->
-      headerHeight = $('#header').height()
-      toolbarHeight = $('#toolbars').height()
-      $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight)
-    render: ->
-      $(@el).empty()
-      for event in @collection.models
-        eventView = new EventView model: event
-        $(@el).append(eventView.render().el)
-      @fitHeight $(window).height()
-      # eventWindow = windowHeight - headerHeight
-      # $('#event-window').height(eventWindow)
-      @
+  # class EventsView extends Backbone.View
+  #   id: 'event-feed'
+  #   tagName: 'ul'
+  #   template: ($ '#events-template').html()
+  #   initialize: (options) ->
+  #     fit = @fitHeight
+  #     $(window).bind 'resize', ->
+  #       fit($(this).height())
+  #   fitHeight: (windowHeight) ->
+  #     headerHeight = $('#header').height()
+  #     toolbarHeight = $('#toolbars').height()
+  #     $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight)
+  #   render: ->
+  #     $(@el).empty()
+  #     for event in @collection.models
+  #       eventView = new EventView model: event
+  #       $(@el).append(eventView.render().el)
+  #     @fitHeight $(window).height()
+  #     @
 
   # Event Date
   #---------------------------------------------------
-  class EventDateView extends Backbone.View
-    tagName: 'li'
-    className: 'event-date'
-    template: ($ '#event-date').html()
-    render: ->
-      $(@el).html Mustache.render(@template, @model.toJSON())
-      @
+  # class EventDateView extends Backbone.View
+  #   tagName: 'li'
+  #   className: 'event-date'
+  #   template: ($ '#event-date').html()
+  #   render: ->
+  #     $(@el).html Mustache.render(@template, @model.toJSON())
+  #     @
 
 
   # Event View

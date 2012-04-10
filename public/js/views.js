@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, EventDateView, EventView, EventsView, MessageView, MessagesView, _ref;
+    var AppView, EventView, MessageView, MessagesView, _ref;
     AppView = (function(_super) {
 
       __extends(AppView, _super);
@@ -16,16 +16,12 @@
 
       AppView.prototype.initialize = function(options) {
         this.collection.bind('reset', this.render, this);
-        this.messagesview = new MessagesView({
-          collection: this.collection
-        });
-        return this.eventsview = new EventsView({
+        return this.messagesview = new MessagesView({
           collection: this.collection
         });
       };
 
       AppView.prototype.render = function() {
-        $(this.el).find('#event-window').append(this.eventsview.render().el);
         return this.messagesview.render().el;
       };
 
@@ -90,75 +86,6 @@
       };
 
       return MessagesView;
-
-    })(Backbone.View);
-    EventsView = (function(_super) {
-
-      __extends(EventsView, _super);
-
-      function EventsView() {
-        EventsView.__super__.constructor.apply(this, arguments);
-      }
-
-      EventsView.prototype.id = 'event-feed';
-
-      EventsView.prototype.tagName = 'ul';
-
-      EventsView.prototype.template = ($('#events-template')).html();
-
-      EventsView.prototype.initialize = function(options) {
-        var fit;
-        fit = this.fitHeight;
-        return $(window).bind('resize', function() {
-          return fit($(this).height());
-        });
-      };
-
-      EventsView.prototype.fitHeight = function(windowHeight) {
-        var headerHeight, toolbarHeight;
-        headerHeight = $('#header').height();
-        toolbarHeight = $('#toolbars').height();
-        return $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight);
-      };
-
-      EventsView.prototype.render = function() {
-        var event, eventView, _i, _len, _ref;
-        $(this.el).empty();
-        _ref = this.collection.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          event = _ref[_i];
-          eventView = new EventView({
-            model: event
-          });
-          $(this.el).append(eventView.render().el);
-        }
-        this.fitHeight($(window).height());
-        return this;
-      };
-
-      return EventsView;
-
-    })(Backbone.View);
-    EventDateView = (function(_super) {
-
-      __extends(EventDateView, _super);
-
-      function EventDateView() {
-        EventDateView.__super__.constructor.apply(this, arguments);
-      }
-
-      EventDateView.prototype.tagName = 'li';
-
-      EventDateView.prototype.className = 'event-date';
-
-      EventDateView.prototype.template = ($('#event-date')).html();
-
-      EventDateView.prototype.render = function() {
-        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
-        return this;
-      };
-
-      return EventDateView;
 
     })(Backbone.View);
     EventView = (function(_super) {

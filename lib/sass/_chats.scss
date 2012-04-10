@@ -1,5 +1,5 @@
 #chat-window {
-  @include grid-column(7);
+  @include grid-row;
   font-size: modular-scale(1, $base-size, $golden);
   line-height: modular-scale(2, $base-size, $golden);
   color: #000;
@@ -10,7 +10,8 @@
 // CHAT LOG
 //____________________________________________________
 #chat-log-container {
-  @include box-sizing;
+  @include grid-row;
+  @include grid-column(24);
   height: 500px;
   overflow-y: scroll;
 }
@@ -117,7 +118,7 @@
 // NEW MESSAGE
 //____________________________________________________
 #new-message {
-/*  @include grid-row;*/
+  @include grid-offset(10);
   background-color: lighten($chat-background, 1%);
   border-top: 2px solid $divider-dark-gray;
   position: absolute;
@@ -127,7 +128,7 @@
 }
 
 #new-message-input {
-  @include grid-column(9);
+  @include grid-column(18);
   -webkit-appearance: none;
   -moz-appearance: none;
   resize:none;
@@ -147,7 +148,7 @@
 }
 
 #chat-name {
-  @include grid-column(3);
+  @include grid-column(6);
   background-color: transparent;
   overflow: hidden;
   resize: none;
@@ -156,10 +157,10 @@
 
 #new-message-input,
 #chat-name {
+  @include box-sizing;
   border: 1px solid transparent;
   font-size: ms(2, $base-size, $golden);
   line-height: ms(3, $base-size, $golden);
-  @include box-sizing;
   padding: 0.5em 0.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em;

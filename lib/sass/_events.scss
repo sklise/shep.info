@@ -1,10 +1,37 @@
 // EVENTS
 //____________________________________________________
-#event-window {
-  @include grid-column(5);
+#menu-window {
+  @include grid-column(10);
   position: relative;
   max-height: 100%;
   overflow-y: scroll;
+}
+
+#heading {
+  @include box-sizing;
+  background-image: url('/images/shep.jpg');
+  background-position: left top;
+  background-repeat: no-repeat;
+  -webkit-background-size: grid-width(5) grid-width(5);
+  -moz-background-size: grid-width(5) grid-width(5);
+  background-size: grid-width(5) grid-width(5);
+  height: grid-width(6);
+  padding-left: grid-width(5);
+  padding-top: grid-width(3);
+  position: relative;
+
+  h1, h3 {
+    position: absolute;
+    bottom: grid-width(1);
+  }
+
+  h3 a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 #event-filters {
