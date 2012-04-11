@@ -144,7 +144,7 @@ a {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  display: inline-block;
+  float: left;
   margin-bottom: 14px;
   padding: 1em 1em 0.7em;
   position: relative; }
