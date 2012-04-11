@@ -1,41 +1,121 @@
 #chat-window {
-  @include grid-column(24);
+  float: left;
   font-size: modular-scale(1, $base-size, $golden);
   line-height: modular-scale(2, $base-size, $golden);
   color: #000;
   position: relative;
   height: 600px;
+  width: grid-width(24,$gutter-width);
 }
 
 #chat-toolbar {
   @include grid-row;
   @include grid-column(24);
+  margin-bottom: -14px;
 }
 
 #chat-room-list {
-  overflow-y: auto;
 
   li {
     @include box-sizing;
-    float: left;
-    padding: 1em;
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 1em 1em 0.7em;
+    position: relative;
+
+    &:hover {
+      cursor: pointer;
+      text-shadow: 0 0 3px $bright-blue;
+    }
 
     div {
-      display: inline;
+      float: left;
     }
+
+    &.current-room {
+      background-color: $bright-blue;
+      color: $white;
+
+      .underline {
+        visibility: hidden;
+      }
+    }
+    
+    &.current-room::after {
+      background-image: url('/images/room-indicator.png');
+      background-repeat: no-repeat;
+      background-position-x: 50%;
+      content: " ";
+      display: block;
+      height: 14px;
+      position: absolute;
+      bottom: -28px;
+      z-index: 5;
+      width: 100%;
+      height: 28px;
+      left: 0;
+    }
+    
+
   }
+}
+
+// Indicator for updates in rooms.
+.underline {
+  background: url('/images/new-status-indicator.png');
+  background-repeat: no-repeat;
+      
+  display: block;
+  height: 4px;
+  left: 0;
+  margin: -2px auto 0;
+  position: absolute;
+  right: 0;
+  width: 20px;
 }
 
 .room-status-icon {
   @extend .pictos;
   font-size: ms(2, $base-size, $golden);
+  width: ms(2, $base-size, $golden);
+  height: ms(2, $base-size, $golden);
+}
+
+.shep-icon {
+  background-image: url('/images/shep.jpg');
+  background-position: left top;
+  background-repeat: no-repeat;
+  -webkit-background-size: 16px 16px;
+  -moz-background-size: 16px 16px;
+  background-size: 16px 16px;
+  display: block;
+  width: ms(2, $base-size, $golden);
+  height: ms(2, $base-size, $golden);
+}
+
+.room-status-icon, .shep-icon {
+  margin-right: 4px;
+}
+
+.room-name {
+  position: relative;
+}
+
+.room-menu-icon {
+  @extend .pictos;
+  font-size: ms(3, $base-size, $golden);
 }
 
 // CHAT LOG
 //____________________________________________________
 #chat-log-container {
+  @include grid-column(24);
   height: 500px;
   overflow-y: scroll;
+  position: relative;
+}
+
+#user-list {
 }
 
 #chat-log {
@@ -140,7 +220,6 @@
 // NEW MESSAGE
 //____________________________________________________
 #new-message {
-  @include grid-row;
   @include grid-column(24);
   background-color: lighten($chat-background, 1%);
   border-top: 2px solid $divider-dark-gray;
@@ -171,7 +250,7 @@
 }
 
 #chat-name {
-  @include grid-column(6);
+
   background-color: transparent;
   overflow: hidden;
   resize: none;
@@ -181,6 +260,7 @@
 #new-message-input,
 #chat-name {
   @include box-sizing;
+  float: left;
   border: 1px solid transparent;
   font-size: ms(2, $base-size, $golden);
   line-height: ms(3, $base-size, $golden);
