@@ -127,8 +127,8 @@ a {
   padding: 1em 1em 0.7em;
   position: relative; }
   #chat-room-list li:hover {
-    cursor: pointer;
-    text-shadow: 0 0 3px #006ed6; }
+    background-color: #dbd7d4;
+    cursor: pointer; }
   #chat-room-list li div {
     float: left; }
   #chat-room-list li.current-room {
@@ -136,8 +136,11 @@ a {
     color: white; }
     #chat-room-list li.current-room .underline {
       visibility: hidden; }
+  #chat-room-list li:hover::after {
+    background-image: url("/images/room-indicator-gray.png"); }
   #chat-room-list li.current-room::after {
-    background-image: url("/images/room-indicator.png");
+    background-image: url("/images/room-indicator.png"); }
+  #chat-room-list li.current-room::after, #chat-room-list li:hover::after {
     background-repeat: no-repeat;
     background-position-x: 50%;
     content: " ";

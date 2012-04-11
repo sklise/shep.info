@@ -24,8 +24,8 @@
     position: relative;
 
     &:hover {
+      background-color: $divider-dark-gray;
       cursor: pointer;
-      text-shadow: 0 0 3px $bright-blue;
     }
 
     div {
@@ -40,9 +40,17 @@
         visibility: hidden;
       }
     }
-    
+
+    &:hover::after {
+      background-image: url('/images/room-indicator-gray.png');
+    }
+
     &.current-room::after {
       background-image: url('/images/room-indicator.png');
+    }
+
+    &.current-room::after,
+    &:hover::after {
       background-repeat: no-repeat;
       background-position-x: 50%;
       content: " ";
@@ -55,7 +63,6 @@
       height: 14px;
       left: 0;
     }
-    
 
   }
 }
