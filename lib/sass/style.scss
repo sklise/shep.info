@@ -113,17 +113,6 @@ a {
   }
 }
 
-#toolbars {
-  clear: both;
-  font-size: modular-scale(2, $alt-size, $golden);
-  line-height: modular-scale(2, $base-size, $golden);
-  overflow-y: auto;
-}
-
-#content {
-  clear: both;
-}
-
 @import 'chats';
 @import 'events';
 
