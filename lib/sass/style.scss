@@ -133,8 +133,8 @@ a {
   @include box-sizing;
   
   p {
-    font-size: ms(2, $alt-size, $golden);
-    line-height: ms(3, $alt-size, $golden);
+    font-size: ms(1, $base-size, $golden);
+    line-height: ms(2, $base-size, $golden);
     margin: 0.5em 0;
   }
 }

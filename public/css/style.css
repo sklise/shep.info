@@ -427,6 +427,6 @@ a {
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
   .introduction p {
-    font-size: 13px;
-    line-height: 18px;
+    font-size: 12px;
+    line-height: 16px;
     margin: 0.5em 0; }
