@@ -66,14 +66,14 @@
 
     -webkit-box-shadow: inset 0 1px 2px rgba(244, 244, 244, 0.25), inset 0px -1px 2px rgba(12, 12, 12, 0.25);
   }
-  
+
   .more,
   .less {
     float: right;
     margin-right: -0.8em;
     text-shadow: 0 1px 1px rgba(244, 244, 244, 0.4), 0 -1px 1px rgba(12, 12, 12, 0.35);
     color: rgba(40, 40, 40, 1);
-  
+
     &:hover {
       cursor: pointer;
     }
@@ -87,7 +87,7 @@
     color: rgba(0,0,0, 0.3);
     float: right;
     text-decoration: none;
-    
+
     &:hover {
       color: rgba(0,0,0,1);
     }
@@ -95,7 +95,7 @@
 
   // EVENT CATEGORIES
   //__________________________________________________
-  
+
   // DriveBy, Theory Club, Softlab, Rare Groove
   .group, li:nth-child(5n)        { background-color: rgba(0,110,214,1); }
   // Product orders

@@ -48,7 +48,7 @@ em {
   font-style: italic; }
 
 /* Calendar colors */
-.pictos {
+.pictos, .room-status-icon {
   font-family: "Pictos"; }
 
 body {
@@ -107,16 +107,6 @@ a {
   line-height: 16px;
   overflow-y: auto; }
 
-#chat-toolbar {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  margin: 0 8px;
-  float: left;
-  width: 243px;
-  background-color: #8bd3f5;
-  overflow-y: auto; }
-
 #user-toggle {
   margin: 0 8px;
   float: left;
@@ -134,20 +124,37 @@ a {
   clear: both; }
 
 #chat-window {
-  width: auto;
-  margin: 0 -8px;
+  margin: 0 8px;
+  float: left;
+  width: 872px;
   font-size: 12px;
   line-height: 16px;
   color: #000;
   position: relative;
   height: 600px; }
 
-#chat-log-container {
+#chat-toolbar {
   width: auto;
   margin: 0 -8px;
   margin: 0 8px;
   float: left;
-  width: 872px;
+  width: 872px; }
+
+#chat-room-list {
+  overflow-y: auto; }
+  #chat-room-list li {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    padding: 1em; }
+    #chat-room-list li div {
+      display: inline; }
+
+.room-status-icon {
+  font-size: 16px; }
+
+#chat-log-container {
   height: 500px;
   overflow-y: scroll; }
 
@@ -212,7 +219,7 @@ a {
 .chatter {
   margin: 0 8px;
   float: left;
-  width: 58px;
+  width: 169px;
   font-weight: bold;
   overflow-x: hidden;
   text-align: right; }
@@ -221,14 +228,18 @@ a {
 .system-message {
   margin: 0 8px;
   float: left;
-  width: 354px;
+  width: 687px;
   padding-right: 1em; }
 
 .system-message {
-  margin-left: 82px; }
+  margin-left: 193px; }
 
 #new-message {
-  margin-left: 378px;
+  width: auto;
+  margin: 0 -8px;
+  margin: 0 8px;
+  float: left;
+  width: 872px;
   background-color: #fafcff;
   border-top: 2px solid #dbd7d4;
   position: absolute;

@@ -1,5 +1,5 @@
 #chat-window {
-  @include grid-row;
+  @include grid-column(24);
   font-size: modular-scale(1, $base-size, $golden);
   line-height: modular-scale(2, $base-size, $golden);
   color: #000;
@@ -7,11 +7,33 @@
   height: 600px;
 }
 
+#chat-toolbar {
+  @include grid-row;
+  @include grid-column(24);
+}
+
+#chat-room-list {
+  overflow-y: auto;
+
+  li {
+    @include box-sizing;
+    float: left;
+    padding: 1em;
+
+    div {
+      display: inline;
+    }
+  }
+}
+
+.room-status-icon {
+  @extend .pictos;
+  font-size: ms(2, $base-size, $golden);
+}
+
 // CHAT LOG
 //____________________________________________________
 #chat-log-container {
-  @include grid-row;
-  @include grid-column(24);
   height: 500px;
   overflow-y: scroll;
 }
@@ -99,7 +121,7 @@
 }
 
 .chatter {
-  @include grid-column(2);
+  @include grid-column(5);
   font-weight: bold;
   overflow-x: hidden;
   text-align: right;
@@ -107,18 +129,19 @@
 
 .message,
 .system-message {
-  @include grid-column(10);
+  @include grid-column(19);
   padding-right: 1em;
 }
 
 .system-message {
-  @include grid-offset(2);
+  @include grid-offset(5);
 }
 
 // NEW MESSAGE
 //____________________________________________________
 #new-message {
-  @include grid-offset(10);
+  @include grid-row;
+  @include grid-column(24);
   background-color: lighten($chat-background, 1%);
   border-top: 2px solid $divider-dark-gray;
   position: absolute;
