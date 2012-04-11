@@ -69,12 +69,11 @@
       };
 
       MessagesView.prototype.fitHeight = function(windowHeight) {
-        var chatInterior, chatWindowHeight, headerHeight, toolbarHeight;
-        headerHeight = $('#header').height();
-        toolbarHeight = $('#toolbars').height();
+        var chatInterior, chatWindowHeight, toolbarHeight;
+        toolbarHeight = $('#chat-toolbar').height();
         console.log($(this.el));
-        $('#chat-window').css('height', (windowHeight - headerHeight - toolbarHeight) + 'px');
-        chatWindowHeight = windowHeight - headerHeight - toolbarHeight;
+        $('#chat-window').css('height', windowHeight + 'px');
+        chatWindowHeight = windowHeight - toolbarHeight;
         chatInterior = chatWindowHeight - this.$('#new-message').height();
         this.$('#chat-log-container').height(chatInterior);
         return this.$('#chat-log').css('min-height', chatInterior);

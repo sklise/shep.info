@@ -30,11 +30,10 @@ jQuery ->
       $(window).bind 'resize', ->
         fit($(this).height())
     fitHeight: (windowHeight) ->
-      headerHeight = $('#header').height()
-      toolbarHeight = $('#toolbars').height()
+      toolbarHeight = $('#chat-toolbar').height()
       console.log $(@el)
-      $('#chat-window').css('height', (windowHeight - headerHeight - toolbarHeight) + 'px')
-      chatWindowHeight = windowHeight - headerHeight - toolbarHeight
+      $('#chat-window').css('height', (windowHeight) + 'px')
+      chatWindowHeight = windowHeight - toolbarHeight
       chatInterior = chatWindowHeight - @$('#new-message').height()
       @$('#chat-log-container').height(chatInterior)
       @$('#chat-log').css('min-height', chatInterior)
