@@ -69,11 +69,14 @@ jQuery ->
       $('#chat-name').val(now.name)
 
   windowBlurred = false
+  pageIsBlinking = false
   pageTitle = $(document).attr('title')
   titleFlash = ''
 
   triggerBlink= ->
-    titleFlash = setInterval (-> blinkTitle()), 1500
+    if not pageIsBlinking
+      pageIsBlinking = true
+      titleFlash = setInterval (-> blinkTitle()), 1500
 
   $(window).blur ->
     windowBlurred = true
@@ -81,6 +84,7 @@ jQuery ->
   $(window).focus -> unBlinkTitle()
 
   unBlinkTitle = ->
+    pageIsBlinking = false
     windowBlurred = false
     clearInterval(titleFlash)
     $(document).attr('title', pageTitle)
@@ -168,7 +172,7 @@ jQuery ->
     renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
 
   now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
-    triggerBlink()
+    triggerBlink() if windowBlurred
     renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
 
   # Send a new message

@@ -68,7 +68,7 @@
   };
 
   jQuery(function() {
-    var blinkTitle, pageTitle, titleFlash, triggerBlink, unBlinkTitle, windowBlurred;
+    var blinkTitle, pageIsBlinking, pageTitle, titleFlash, triggerBlink, unBlinkTitle, windowBlurred;
     while (now.name === void 0 || now.name === "") {
       now.name = prompt("What's your name?", "");
       if (now.name !== void 0 || now.name.length > 0) {
@@ -76,12 +76,16 @@
       }
     }
     windowBlurred = false;
+    pageIsBlinking = false;
     pageTitle = $(document).attr('title');
     titleFlash = '';
     triggerBlink = function() {
-      return titleFlash = setInterval((function() {
-        return blinkTitle();
-      }), 1500);
+      if (!pageIsBlinking) {
+        pageIsBlinking = true;
+        return titleFlash = setInterval((function() {
+          return blinkTitle();
+        }), 1500);
+      }
     };
     $(window).blur(function() {
       return windowBlurred = true;
@@ -90,6 +94,7 @@
       return unBlinkTitle();
     });
     unBlinkTitle = function() {
+      pageIsBlinking = false;
       windowBlurred = false;
       clearInterval(titleFlash);
       return $(document).attr('title', pageTitle);
@@ -188,7 +193,7 @@
     };
     now.receiveChatMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';
-      triggerBlink();
+      if (windowBlurred) triggerBlink();
       return renderMessage($('#message-template').html(), timestamp, sender, message, classifyName(sender, this.now.name));
     };
     return $("#new-message").live('keypress', function(event) {
