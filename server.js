@@ -104,13 +104,6 @@
     return response.send('Hello World');
   });
 
-  app.post('/feedback/new', function(request, response) {
-    logging.logMessage(request.body.name, request.body.message, {
-      room: 'itpirl-feedback'
-    });
-    return response.send('{sucess:hopefully}');
-  });
-
   everyone = nowjs.initialize(app, {
     socketio: {
       transports: ['xhr-polling', 'jsonp-polling']
@@ -128,15 +121,19 @@
   };
 
   everyone.now.distributeSystemMessage = function(type, message, destination) {
-    var timestamp;
     if (destination == null) {
       destination = {
         'room': 'itp'
       };
     }
-    timestamp = setTimestamp();
-    logMessage(type, message, destination);
-    return everyone.now.receiveSystemMessage(timestamp, type, message);
+    logging.logMessage(type, message, destination);
+    return everyone.now.receiveSystemMessage(Date.now(), type, message);
+  };
+
+  everyone.now.logFeedback = function(sender, message) {
+    return logging.logMessage(sender, message, {
+      room: 'itpirl-feedback'
+    });
   };
 
   everyone.now.getUserList = function() {

@@ -68,6 +68,28 @@ jQuery ->
     if now.name != undefined || now.name.length > 0
       $('#chat-name').val(now.name)
 
+  # Renders feedback form to the page prepopulated with current chat name or if
+  # the form is already on the page, removes it.
+  #
+  # Returns nothing.
+  $('#feedback-button').click ->
+    event.preventDefault()
+    $feedbackForm = $('#feedback-form')
+    if($feedbackForm.html().length == 0)
+      $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {name:now.name}))
+    else
+      $feedbackForm.empty()
+
+  # When the "Send Feedback" button is clicked, save the feedback message to
+  # Redis and empty the feedback form.
+  #
+  # Returns nothing.
+  $('#feedback-send').live 'click', ->
+    event.preventDefault()
+    sender = $('#feedback-name').val()
+    message = $('#feedback-message').val()
+    now.logFeedback sender, message
+
   $('#user-toggle').click ->
     if $('#user-toggle').find('#user-list').length == 0
       now.getUserList()

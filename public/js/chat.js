@@ -74,6 +74,25 @@
         $('#chat-name').val(now.name);
       }
     }
+    $('#feedback-button').click(function() {
+      var $feedbackForm;
+      event.preventDefault();
+      $feedbackForm = $('#feedback-form');
+      if ($feedbackForm.html().length === 0) {
+        return $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {
+          name: now.name
+        }));
+      } else {
+        return $feedbackForm.empty();
+      }
+    });
+    $('#feedback-send').live('click', function() {
+      var message, sender;
+      event.preventDefault();
+      sender = $('#feedback-name').val();
+      message = $('#feedback-message').val();
+      return now.logFeedback(sender, message);
+    });
     $('#user-toggle').click(function() {
       var $userList, names;
       if ($('#user-toggle').find('#user-list').length === 0) {

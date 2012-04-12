@@ -19,31 +19,6 @@
   <script src="/js/views.js"></script>
   <script src="/js/itpirl.js"></script>
   <script src="/js/chat.js"></script>
-  <script>
-    // Implement this stuff with Backbone.js
-    $(document).ready(function(){
-      $('#feedback-button').click(function(){
-        event.preventDefault();
-        $feedbackForm = $('#feedback-form');
-        if($feedbackForm.html().length == 0) {
-          $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {name:now.name}));
-        } else {
-          $feedbackForm.empty();
-        }
-      });
-
-      $('#feedback-send').live('click', function(){
-        event.preventDefault();
-        data = {
-          name:$('#feedback-name').val(),
-          message:$('#feedback-message').val()
-        }
-        $.post('/feedback/new', data, function(response){
-          $('#feedback-form').empty();
-        });
-      });
-    });
-  </script>
 
   <title>Shep</title>
 </head>

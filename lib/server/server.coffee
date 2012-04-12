@@ -81,10 +81,6 @@ app.get '/', (request, response) ->
 app.get '/help', (request, response) ->
   response.send 'Hello World'
 
-app.post '/feedback/new', (request, response) ->
-  logging.logMessage request.body.name, request.body.message, room:'itpirl-feedback'
-  response.send '{sucess:hopefully}'
-
 # SETUP NOW.JS
 #-----------------------------------------------------
 everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
@@ -132,9 +128,11 @@ everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'
 #        }
 #      }
 everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'})  ->
-  timestamp = setTimestamp()
-  logMessage type, message, destination
-  everyone.now.receiveSystemMessage timestamp, type, message
+  logging.logMessage type, message, destination
+  everyone.now.receiveSystemMessage Date.now(), type, message
+
+everyone.now.logFeedback = (sender, message) ->
+  logging.logMessage sender, message, {room:'itpirl-feedback'}
 
 # Get the names of all connected Now.js clientss
 everyone.now.getUserList = ->
