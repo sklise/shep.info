@@ -68,12 +68,67 @@
   };
 
   jQuery(function() {
+    var blinkTitle, pageTitle, titleFlash, triggerBlink, unBlinkTitle, windowBlurred;
     while (now.name === void 0 || now.name === "") {
       now.name = prompt("What's your name?", "");
       if (now.name !== void 0 || now.name.length > 0) {
         $('#chat-name').val(now.name);
       }
     }
+    windowBlurred = false;
+    pageTitle = $(document).attr('title');
+    titleFlash = '';
+    triggerBlink = function() {
+      return titleFlash = setInterval((function() {
+        return blinkTitle();
+      }), 1500);
+    };
+    $(window).blur(function() {
+      return windowBlurred = true;
+    });
+    $(window).focus(function() {
+      return unBlinkTitle();
+    });
+    unBlinkTitle = function() {
+      windowBlurred = false;
+      clearInterval(titleFlash);
+      return $(document).attr('title', pageTitle);
+    };
+    blinkTitle = function() {
+      var $doc, docTitle;
+      $doc = $(document);
+      docTitle = $doc.attr('title');
+      if (docTitle === pageTitle) {
+        $doc.attr('title', "New Message " + pageTitle);
+      } else {
+        $doc.attr('title', pageTitle);
+      }
+    };
+    $('.exitable-room').live('mouseenter', (function() {
+      return $(this).html('*');
+    }));
+    $('.exitable-room').live('mouseleave', (function() {
+      return $(this).html('q');
+    }));
+    $('.exitable-room').live('click', function() {
+      var channelName,
+        _this = this;
+      channelName = $(this).closest('li').data('channel-name');
+      console.log($(this));
+      console.log($(this).closest('li'));
+      return new ui.Confirmation({
+        title: "Leave " + channelName + " channel",
+        message: 'are you sure?'
+      }).show(function(ok) {
+        if (ok) {
+          $(_this).closest('li').remove();
+          return ui.dialog('Seeya!').show().hide(1500);
+        }
+      });
+    });
+    $('.shep-icon').click(function() {
+      return now.joinChannel('appnewtech');
+    });
     $('#feedback-button').click(function() {
       var $feedbackForm;
       event.preventDefault();
@@ -133,6 +188,7 @@
     };
     now.receiveChatMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';
+      triggerBlink();
       return renderMessage($('#message-template').html(), timestamp, sender, message, classifyName(sender, this.now.name));
     };
     return $("#new-message").live('keypress', function(event) {

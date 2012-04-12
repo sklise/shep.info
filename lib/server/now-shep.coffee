@@ -91,6 +91,10 @@ nowShep = (app, logging) ->
     ircConnections[@user.clientId].client.nick = newNick
     ircConnections[@user.clientId].client.send "NICK #{newNick}"
 
+  everyone.now.joinChannel = (channelName) ->
+    console.log channelName
+    ircConnections[@user.clientId].client.send "JOIN ##{channelName}"
+
   #### Connecting to Now.js
   # On the connect event create an `ircBridge` for the new user with `@now.name`
   # and log to Redis that a new user has joined.
@@ -135,8 +139,8 @@ nowShep = (app, logging) ->
     channels: ['#itp']
     port: process.env.ITPIRL_IRC_PORT || 6667
     autoConnect: true
-    # userName: process.env.ITPIRL_IRC_USERNAME || ''
-    # password: process.env.ITPIRL_IRC_PASSWORD || ''
+    userName: process.env.ITPIRL_IRC_USERNAME || ''
+    password: process.env.ITPIRL_IRC_PASSWORD || ''
 
   # Nick change notifications go to everyone and since some people may sign in
   # with IRC directly and not via itpirl.com if each client listens for nick

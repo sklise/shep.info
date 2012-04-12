@@ -68,6 +68,32 @@ jQuery ->
     if now.name != undefined || now.name.length > 0
       $('#chat-name').val(now.name)
 
+  windowBlurred = false
+  pageTitle = $(document).attr('title')
+  titleFlash = ''
+
+  triggerBlink= ->
+    titleFlash = setInterval (-> blinkTitle()), 1500
+
+  $(window).blur ->
+    windowBlurred = true
+
+  $(window).focus -> unBlinkTitle()
+
+  unBlinkTitle = ->
+    windowBlurred = false
+    clearInterval(titleFlash)
+    $(document).attr('title', pageTitle)
+
+  blinkTitle = ->
+    $doc = $(document)
+    docTitle = $doc.attr('title')
+    if docTitle == pageTitle
+      $doc.attr('title', "New Message #{pageTitle}")
+    else
+      $doc.attr('title', pageTitle)
+    return
+
   # Renders feedback form to the page prepopulated with current chat name or if
   # the form is already on the page, removes it.
   #
@@ -122,6 +148,7 @@ jQuery ->
     renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
 
   now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
+    triggerBlink()
     renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
 
   # Send a new message
