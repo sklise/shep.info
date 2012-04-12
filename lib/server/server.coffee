@@ -1,18 +1,17 @@
 # REQUIRE MODULES
 #-----------------------------------------------------
 require('coffee-script')
-
-http = require 'http' # posting to cakemix
-querystring = require 'querystring' # stringifying posts to cakemix
+http = require 'http'
+querystring = require 'querystring'
 nowjs = require 'now'
 express = require 'express'
-irc = require 'irc' # irc client for node.js
-mustache = require 'mustache' # templating
-ejs = require 'ejs' # templating
-redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+irc = require 'irc'
+mustache = require 'mustache'
+ejs = require 'ejs'
 
-# Load other files.
-helpers = require('./lib/server/helpers')(app)
+RedisStore = require('connect-redis')(express)
+redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
 ircConnections = {}
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
@@ -35,16 +34,44 @@ class ircBridge
       # Tell Now.js what your actual name is.
       callback(@client.nick)
 
+# MUSTACHE FOR EXPRESS
+#-----------------------------------------------------
+# Adapted to coffeescript from:
+# http://bitdrift.com/post/2376383378/using-mustache-templates-in-express
+mustache_template =
+  compile: (source, options) ->
+    if (typeof source == 'string')
+      (options) ->
+        options.locals = options.locals || {}
+        options.partials = options.partials || {}
+        if (options.body) # for express.js > v1.0
+          locals.body = options.body
+        mustache.to_html(source, options.locals, options.partials)
+    else
+      source
+  render: (template, options) ->
+    template = this.compile(template, options)
+    template(options)
 
 # SETUP EXPRESS APP
 #-----------------------------------------------------
 app = express.createServer(express.logger())
+
 app.configure ->
   # Setup static file server
   app.use express.static(__dirname + '/public')
   app.use express.bodyParser()
-  app.register(".mustache", helpers.mustache_template)
+  app.use express.cookieParser()
+  app.use express.session({
+    secret: "lkashjgfekfleljfkjwjekfwekf",
+    store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]})
+  })
+  app.register(".mustache", mustache_template)
+  return
+
+# Load other app files
 require('./lib/server/redis-logging')(app)
+require('./lib/server/helpers')(app)
 
 # ROUTES
 #-----------------------------------------------------
@@ -105,7 +132,7 @@ everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'
 #        }
 #      }
 everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'})  ->
-  timestamp = helpers.setTimestamp()
+  timestamp = setTimestamp()
   logMessage timestamp, type, message, destination
   everyone.now.receiveSystemMessage timestamp, type, message
 
