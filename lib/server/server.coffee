@@ -44,6 +44,7 @@ app.configure ->
   app.use express.static(__dirname + '/public')
   app.use express.bodyParser()
   app.register(".mustache", helpers.mustache_template)
+require('./lib/server/redis-logging')(app)
 
 # ROUTES
 #-----------------------------------------------------
@@ -60,23 +61,6 @@ app.post '/feedback/new', (request, response) ->
 # SETUP NOW.JS
 #-----------------------------------------------------
 everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
-
-# LOGGING MESSAGES TO REDIS
-#-----------------------------------------------------
-
-##### LogMessage
-logMessage = (timestamp, sender, message, destination={'room':'itp'}) ->
-  redis.incr 'nextId', (err,id) ->
-    newMessage = { id, sender, message, destination, timestamp }
-    redis.rpush 'messages:'+destination.room, JSON.stringify(newMessage)
-
-##### Log and Forward
-# Log a message and send it out via a Now.js function. I found myself writing
-# these three lines often and got tired of it.
-logAndForward = (sender, message, destination={'room':'itp'}, callback) ->
-  timestamp = Date.now()
-  logMessage timestamp, sender, message
-  callback(timestamp, sender, message)
 
 # NOW CHAT
 #-----------------------------------------------------
