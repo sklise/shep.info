@@ -91,7 +91,8 @@
       event.preventDefault();
       sender = $('#feedback-name').val();
       message = $('#feedback-message').val();
-      return now.logFeedback(sender, message);
+      now.logFeedback(sender, message);
+      return $('#feedback-form').empty();
     });
     $('#user-toggle').click(function() {
       var $userList, names;

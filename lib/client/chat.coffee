@@ -89,6 +89,7 @@ jQuery ->
     sender = $('#feedback-name').val()
     message = $('#feedback-message').val()
     now.logFeedback sender, message
+    $('#feedback-form').empty()
 
   $('#user-toggle').click ->
     if $('#user-toggle').find('#user-list').length == 0
