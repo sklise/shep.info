@@ -1,23 +1,26 @@
 {
-  "name" : "itpirl",
-  "version" : "0.0.1",
-  "author" : "Steven Klise",
-  "description" : "web chat, events and dashboard for ITP",
-  "licenses" : [{
-    "type" : "MIT",
-    "url" : "http://github.com/stevenklise/itpirl/raw/master/License.md"
-  }],
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/stevenklise/itpirl.git"
+  "name": "itpirl",
+  "version": "0.0.1",
+  "author": "Steven Klise",
+  "description": "web chat, events and dashboard for ITP",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/stevenklise/itpirl/raw/master/License.md"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/stevenklise/itpirl.git"
   },
-  "dependencies" : {
-    "irc" : "0.3.3",
-    "express" : "latest",
-    "now" : "0.8.0",
-    "mustache" : "0.4.0",
-    "ejs" : "",
-    "redis-url" : "0.1.0",
-    "coffee-script" : "latest"
+  "dependencies": {
+    "irc": "0.3.3",
+    "express": "latest",
+    "now": "0.8.0",
+    "mustache": "0.4.0",
+    "ejs": "",
+    "redis-url": "0.1.0",
+    "coffee-script": "latest",
+    "connect-redis": "~1.3.0"
   }
 }
