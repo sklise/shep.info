@@ -51,8 +51,12 @@
         pass: (_ref = redisUrl.auth) != null ? _ref.split(":")[1] : void 0
       })
     }));
-    app.register(".mustache", mustache_template);
+    app.set('views', __dirname + '/views');
+    app.set('view engine', 'ejs');
+    return app.register(".mustache", mustache_template);
   });
+
+  require('./lib/server/authentication/routes')(app);
 
   logging = require('./lib/server/logging')(app);
 
@@ -60,12 +64,16 @@
 
   require('./lib/server/now-shep')(app, logging);
 
-  app.get('/', function(request, response) {
-    return response.render('index.ejs');
+  app.get('/', function(req, res) {
+    return res.render('index.ejs', {
+      title: "Shep"
+    });
   });
 
-  app.get('/help', function(request, response) {
-    return response.send('Hello World');
+  app.get('/help', function(req, res) {
+    return res.render('authentication/login.ejs', {
+      title: "Login"
+    });
   });
 
   port = process.env.PORT || 3000;

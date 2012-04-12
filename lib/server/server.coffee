@@ -42,21 +42,27 @@ app.configure ->
     secret: "lkashjgfekfleljfkjwjekfwekf",
     store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]})
   })
+
+  app.set('views', __dirname + '/views')
+  app.set('view engine', 'ejs')
+
   app.register(".mustache", mustache_template)
-  return
 
 # Load other app files
+require('./lib/server/authentication/routes')(app)
 logging = require('./lib/server/logging')(app)
 require('./lib/server/helpers')(app)
 require('./lib/server/now-shep')(app, logging)
 
 # ROUTES
 #-----------------------------------------------------
-app.get '/', (request, response) ->
-  response.render 'index.ejs'
+app.get '/', (req, res) ->
+  res.render 'index.ejs',
+    title: "Shep"
 
-app.get '/help', (request, response) ->
-  response.send 'Hello World'
+app.get '/help', (req, res) ->
+  res.render 'authentication/login.ejs',
+    title: "Login"
 
 # LISTEN ON A PORT
 #-----------------------------------------------------
