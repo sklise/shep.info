@@ -3,7 +3,7 @@ logging = (app) ->
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
   ##### LogMessage
-  logMessage: (timestamp, sender, message, destination={'room':'itp'}) ->
+  logMessage: (sender, message, destination={'room':'itp'}) ->
     timestamp = Date.now()
     redis.incr 'nextId', (err,id) ->
       newMessage = { id, sender, message, destination, timestamp }

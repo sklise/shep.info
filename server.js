@@ -105,7 +105,9 @@
   });
 
   app.post('/feedback/new', function(request, response) {
-    logging.logMessage(request.body.name, request.body.message, Date.now(), 'itpirl-feedback');
+    logging.logMessage(request.body.name, request.body.message, {
+      room: 'itpirl-feedback'
+    });
     return response.send('{sucess:hopefully}');
   });
 
@@ -133,7 +135,7 @@
       };
     }
     timestamp = setTimestamp();
-    logMessage(timestamp, type, message, destination);
+    logMessage(type, message, destination);
     return everyone.now.receiveSystemMessage(timestamp, type, message);
   };
 

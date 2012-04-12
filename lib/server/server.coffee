@@ -82,7 +82,7 @@ app.get '/help', (request, response) ->
   response.send 'Hello World'
 
 app.post '/feedback/new', (request, response) ->
-  logging.logMessage request.body.name, request.body.message, Date.now(), 'itpirl-feedback'
+  logging.logMessage request.body.name, request.body.message, room:'itpirl-feedback'
   response.send '{sucess:hopefully}'
 
 # SETUP NOW.JS
@@ -133,7 +133,7 @@ everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'
 #      }
 everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'})  ->
   timestamp = setTimestamp()
-  logMessage timestamp, type, message, destination
+  logMessage type, message, destination
   everyone.now.receiveSystemMessage timestamp, type, message
 
 # Get the names of all connected Now.js clientss
