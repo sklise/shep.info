@@ -70,7 +70,7 @@ app.configure ->
   return
 
 # Load other app files
-require('./lib/server/redis-logging')(app)
+logging = require('./lib/server/logging')(app)
 require('./lib/server/helpers')(app)
 
 # ROUTES
@@ -82,7 +82,7 @@ app.get '/help', (request, response) ->
   response.send 'Hello World'
 
 app.post '/feedback/new', (request, response) ->
-  logMessage request.body.name, request.body.message, Date.now(), 'itpirl-feedback'
+  logging.logMessage request.body.name, request.body.message, Date.now(), 'itpirl-feedback'
   response.send '{sucess:hopefully}'
 
 # SETUP NOW.JS
@@ -159,7 +159,7 @@ nowjs.on 'connect', ->
   ircConnections[@user.clientId] = new ircBridge @now.name, (name) ->
     myNow.name = name
     myNow.serverChangedName name
-  logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+  logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
   # Get recent messages from Redis and send them only to this user.
   myNow = @now
@@ -180,7 +180,7 @@ nowjs.on 'disconnect', ->
   # Disconnect that user from IRC.
   # I PROBABLY NEED TO DESTROY THIS OBJECT?
   ircConnections[@user.clientId].client.disconnect('seeya')
-  logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+  logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
 # SETUP IRC ON NODE.JS SERVER
 #-----------------------------------------------------
@@ -201,7 +201,7 @@ everyone.ircClient = new irc.Client ircHost, ircNick,
 # changes the log will just get super huge. Let's only listen for these on the
 # server account.
 everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
-  logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
+  logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
 # everyone.ircClient.addListener 'names', (channel, nicks) ->
 #   console.log channel, nicks
 everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
@@ -209,7 +209,7 @@ everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
 
 # Listen for messages to the ITP room and send them to Now.
 everyone.ircClient.addListener 'message#itp', (from, message) ->
-  logAndForward from, message, {'room':'itp'}, everyone.now.receiveChatMessage
+  logging.logAndForward from, message, {'room':'itp'}, everyone.now.receiveChatMessage
 
 # LISTEN ON A PORT
 #-----------------------------------------------------

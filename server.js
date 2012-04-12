@@ -1,5 +1,5 @@
 (function() {
-  var app, ejs, everyone, express, helpers, http, irc, ircBridge, ircConnections, ircHost, ircNick, logAndForward, logMessage, mustache, nowjs, port, querystring, redis;
+  var RedisStore, app, ejs, everyone, express, http, irc, ircBridge, ircConnections, ircHost, ircNick, logging, mustache, mustache_template, nowjs, port, querystring, redis, redisUrl;
 
   require('coffee-script');
 
@@ -17,9 +17,11 @@
 
   ejs = require('ejs');
 
-  redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+  RedisStore = require('connect-redis')(express);
 
-  helpers = require('./lib/server/helpers');
+  redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+
+  redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
   ircConnections = {};
 
@@ -53,13 +55,46 @@
 
   })();
 
+  mustache_template = {
+    compile: function(source, options) {
+      if (typeof source === 'string') {
+        return function(options) {
+          options.locals = options.locals || {};
+          options.partials = options.partials || {};
+          if (options.body) locals.body = options.body;
+          return mustache.to_html(source, options.locals, options.partials);
+        };
+      } else {
+        return source;
+      }
+    },
+    render: function(template, options) {
+      template = this.compile(template, options);
+      return template(options);
+    }
+  };
+
   app = express.createServer(express.logger());
 
   app.configure(function() {
+    var _ref;
     app.use(express.static(__dirname + '/public'));
     app.use(express.bodyParser());
-    return app.register(".mustache", helpers.mustache_template);
+    app.use(express.cookieParser());
+    app.use(express.session({
+      secret: "lkashjgfekfleljfkjwjekfwekf",
+      store: new RedisStore({
+        port: redisUrl.port,
+        host: redisUrl.hostname,
+        pass: (_ref = redisUrl.auth) != null ? _ref.split(":")[1] : void 0
+      })
+    }));
+    app.register(".mustache", mustache_template);
   });
+
+  logging = require('./lib/server/logging')(app);
+
+  require('./lib/server/helpers')(app);
 
   app.get('/', function(request, response) {
     return response.render('index.ejs');
@@ -70,7 +105,7 @@
   });
 
   app.post('/feedback/new', function(request, response) {
-    logMessage(request.body.name, request.body.message, Date.now(), 'itpirl-feedback');
+    logging.logMessage(request.body.name, request.body.message, Date.now(), 'itpirl-feedback');
     return response.send('{sucess:hopefully}');
   });
 
@@ -79,37 +114,6 @@
       transports: ['xhr-polling', 'jsonp-polling']
     }
   });
-
-  logMessage = function(timestamp, sender, message, destination) {
-    if (destination == null) {
-      destination = {
-        'room': 'itp'
-      };
-    }
-    return redis.incr('nextId', function(err, id) {
-      var newMessage;
-      newMessage = {
-        id: id,
-        sender: sender,
-        message: message,
-        destination: destination,
-        timestamp: timestamp
-      };
-      return redis.rpush('messages:' + destination.room, JSON.stringify(newMessage));
-    });
-  };
-
-  logAndForward = function(sender, message, destination, callback) {
-    var timestamp;
-    if (destination == null) {
-      destination = {
-        'room': 'itp'
-      };
-    }
-    timestamp = Date.now();
-    logMessage(timestamp, sender, message);
-    return callback(timestamp, sender, message);
-  };
 
   everyone.now.distributeChatMessage = function(sender, message, destination) {
     if (destination == null) {
@@ -128,7 +132,7 @@
         'room': 'itp'
       };
     }
-    timestamp = helpers.setTimestamp();
+    timestamp = setTimestamp();
     logMessage(timestamp, type, message, destination);
     return everyone.now.receiveSystemMessage(timestamp, type, message);
   };
@@ -160,7 +164,7 @@
       myNow.name = name;
       return myNow.serverChangedName(name);
     });
-    logAndForward('Join', "" + this.now.name + " has joined the chat.", {
+    logging.logAndForward('Join', "" + this.now.name + " has joined the chat.", {
       'room': 'itp'
     }, everyone.now.receiveSystemMessage);
     myNow = this.now;
@@ -184,7 +188,7 @@
 
   nowjs.on('disconnect', function() {
     ircConnections[this.user.clientId].client.disconnect('seeya');
-    return logAndForward('Leave', "" + this.now.name + " has left the chat.", {
+    return logging.logAndForward('Leave', "" + this.now.name + " has left the chat.", {
       'room': 'itp'
     }, everyone.now.receiveSystemMessage);
   });
@@ -198,7 +202,7 @@
   });
 
   everyone.ircClient.addListener('nick', function(oldnick, newnick, channels, message) {
-    return logAndForward('NICK', "" + oldnick + " is now known as " + newnick, {
+    return logging.logAndForward('NICK', "" + oldnick + " is now known as " + newnick, {
       'room': 'itp'
     }, everyone.now.receiveSystemMessage);
   });
@@ -208,7 +212,7 @@
   });
 
   everyone.ircClient.addListener('message#itp', function(from, message) {
-    return logAndForward(from, message, {
+    return logging.logAndForward(from, message, {
       'room': 'itp'
     }, everyone.now.receiveChatMessage);
   });
