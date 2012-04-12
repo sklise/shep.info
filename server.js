@@ -1,6 +1,8 @@
 (function() {
   var app, ejs, everyone, express, helpers, http, irc, ircBridge, ircConnections, ircHost, ircNick, logAndForward, logMessage, mustache, nowjs, port, querystring, redis;
 
+  require('coffee-script');
+
   http = require('http');
 
   querystring = require('querystring');
@@ -17,7 +19,7 @@
 
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
-  helpers = require('./helpers.js');
+  helpers = require('./lib/server/helpers');
 
   ircConnections = {};
 

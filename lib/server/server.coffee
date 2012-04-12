@@ -12,7 +12,7 @@ ejs = require 'ejs' # templating
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
 # Load other files.
-helpers = require './helpers.js'
+helpers = require('./lib/server/helpers')
 
 ircConnections = {}
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
