@@ -1,6 +1,13 @@
-# ITPIRL
+# Shep's yard
 
 ## Changelog
+
+### 0.9.0 - 2012/4/12
+
+- No longer called "itpirl"
+- Brand new design.
+- Improving design of code.
+- Blink title of page when a message is received and the window is out of focus.
 
 ### 0.8.0 - 2012/03/28
 
