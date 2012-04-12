@@ -124,7 +124,7 @@ a {
   box-sizing: border-box;
   float: left;
   margin-bottom: 14px;
-  padding: 1em 1em 0.7em;
+  padding: 1em 1em 0.8em;
   position: relative; }
   #chat-room-list li:hover {
     background-color: #dbd7d4;

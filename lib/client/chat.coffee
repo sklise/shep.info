@@ -94,6 +94,26 @@ jQuery ->
       $doc.attr('title', pageTitle)
     return
 
+  # Replaces the chat room icon with an X on hover. A CSS rule turns the X red.
+  $('.exitable-room').live 'mouseenter', (-> $(this).html('*'))
+  $('.exitable-room').live 'mouseleave', (-> $(this).html('q'))
+
+  # When a room-status-icon is clicked call a function on the server to leave
+  # the channel on IRC.
+  $('.exitable-room').live 'click', ->
+    channelName = $(this).closest('li').data('channel-name')
+    console.log $(this)
+    console.log $(this).closest('li')
+    new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
+      .show (ok) =>
+        if ok
+          $(this).closest('li').remove()
+          ui.dialog('Seeya!').show().hide(1500)
+          # TODO: navigate away. UGH, this should really be in Backbone...
+
+  $('.shep-icon').click ->
+    now.joinChannel('appnewtech')
+
   # Renders feedback form to the page prepopulated with current chat name or if
   # the form is already on the page, removes it.
   #

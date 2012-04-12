@@ -20,7 +20,7 @@
     @include box-sizing;
     float: left;
     margin-bottom: 14px;
-    padding: 1em 1em 0.7em;
+    padding: 1em 1em 0.8em;
     position: relative;
 
     &:hover {
@@ -106,6 +106,12 @@
 
 .room-name {
   position: relative;
+}
+
+.exitable-room {
+  &:hover {
+    color: $red;
+  }
 }
 
 .room-menu-icon {
