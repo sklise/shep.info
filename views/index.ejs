@@ -47,3 +47,59 @@
     </script>
   </form>
 </div>
+
+<script type="text/template" id="rooms-menu">
+  <li>Add A Room</li>
+</script>
+
+<script type="text/template" id="messages-template">
+  <div id="chat-log-container">
+    <ul id="chat-log">
+    </ul>
+  </div>
+  <form id="new-message">
+    <div id="ask-shep" class="pictos">p</div>
+    <textarea id="new-message-input" rows=1></textarea>
+  </form>
+</script>
+
+<script type="text/template" id="system-message-template">
+<li class="{{ classes }}">
+  <div class="message-time">{{ time }}</div>
+  <div class="system-message">{{{ message }}}</div>
+</li>
+</script>
+
+<script type="text/template" id="message-template">
+<li class="{{ classes }}">
+  <div class="chatter">{{ name }}</div>
+  <div class="message-time">{{ time }}</div>
+  <div class="message">{{{ message }}}</div>
+</li>
+</script>
+
+<script type="text/template" id="events-template">
+  <ul>
+  </ul>
+</script>
+
+<script type="text/template" id="event-template">
+  <div>
+    <span class="time">{{ startTime }}-{{ endTime }}</span> {{ title }} 
+    <a class="calendar-link pictos" title="Open in Google Calendar" target="_blank" href="{{ url }}">\</a>
+    <div class="details">
+      <p class="location">{{ location }}</p>
+      <div>{{ description }}</p>
+    </div>
+  </div>
+</script>
+
+<script type="text/template" id="feedback-form-template">
+  <div>
+    <label>Your Name:</label>
+    <input type="text" id="feedback-name" value="{{ name }}"/>
+    <label>Feedback:</label>
+    <textarea id="feedback-message"></textarea>
+    <button id="feedback-send">Send Feedback</button>
+  </div>
+</script>
