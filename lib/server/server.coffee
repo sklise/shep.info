@@ -1,5 +1,7 @@
 # REQUIRE MODULES
 #-----------------------------------------------------
+require('coffee-script')
+
 http = require 'http' # posting to cakemix
 querystring = require 'querystring' # stringifying posts to cakemix
 nowjs = require 'now'
