@@ -186,6 +186,9 @@ a {
 .room-name {
   position: relative; }
 
+.exitable-room:hover {
+  color: #f03528; }
+
 .room-menu-icon {
   font-size: 20px; }
 
@@ -256,19 +259,19 @@ a {
   box-sizing: border-box; }
 
 .chatter {
-  margin: 0 8px;
   float: left;
-  width: 169px;
+  margin: 0 0.9009009%;
+  width: 19.0315315%;
   font-weight: bold;
   overflow-x: hidden;
   text-align: right; }
 
 .message,
 .system-message {
-  margin: 0 8px;
   float: left;
-  width: 687px;
-  padding-right: 1em; }
+  margin: 0 0.9009009%;
+  padding-right: 1em;
+  width: 77.3648649%; }
 
 .system-message {
   margin-left: 193px; }

@@ -214,7 +214,9 @@
 }
 
 .chatter {
-  @include grid-column(5);
+  float: left;
+  margin: 0 0.9009009%;
+  width: 19.0315315%;
   font-weight: bold;
   overflow-x: hidden;
   text-align: right;
@@ -222,8 +224,10 @@
 
 .message,
 .system-message {
-  @include grid-column(19);
+  float: left;
+  margin: 0 0.9009009%;
   padding-right: 1em;
+  width: 77.3648649%;
 }
 
 .system-message {
