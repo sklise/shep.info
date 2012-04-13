@@ -13,7 +13,7 @@ logging = (app) ->
   # these three lines often and got tired of it.
   logAndForward: (sender, message, destination={'room':'itp'}, callback) ->
     timestamp = Date.now()
-    @logMessage timestamp, sender, message
+    @logMessage sender, message, destination
     callback(timestamp, sender, message)
 
 module.exports = logging
