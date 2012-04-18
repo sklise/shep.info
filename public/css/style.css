@@ -110,6 +110,10 @@ a {
   height: 600px;
   width: 888px; }
 
+#loading-screen {
+  margin: 25% auto;
+  width: 300px; }
+
 #chat-toolbar {
   width: auto;
   margin: 0 -8px;
@@ -306,14 +310,14 @@ a {
     background-color: #ffffff;
     border: 1px solid blue; }
 
-#chat-name {
+.chat-name {
   background-color: transparent;
   overflow: hidden;
   resize: none;
   text-align: right; }
 
 #new-message-input,
-#chat-name {
+.chat-name {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -325,7 +329,7 @@ a {
   margin-top: 0.5em;
   margin-bottom: 0.5em; }
   #new-message-input:focus,
-  #chat-name:focus {
+  .chat-name:focus {
     cursor: blink;
     outline: none; }
 

@@ -8,6 +8,11 @@
   width: grid-width(24,$gutter-width);
 }
 
+#loading-screen {
+  margin: 25% auto;
+  width: 300px;
+}
+
 #chat-toolbar {
   @include grid-row;
   @include grid-column(24);
@@ -266,8 +271,7 @@
   }
 }
 
-#chat-name {
-
+.chat-name {
   background-color: transparent;
   overflow: hidden;
   resize: none;
@@ -275,7 +279,7 @@
 }
 
 #new-message-input,
-#chat-name {
+.chat-name {
   @include box-sizing;
   float: left;
   border: 1px solid transparent;
