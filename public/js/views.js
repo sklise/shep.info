@@ -67,6 +67,8 @@
         'mouseleave .exitable-room': 'hideX',
         'blur .chat-name': 'updateName',
         'keyup .new-message-input': 'resizeInput',
+        'paste .new-message-input': 'resizeInput',
+        'cut .new-message-input': 'resizeInput',
         'keypress .new-message-input': 'sendMessage'
       };
 
