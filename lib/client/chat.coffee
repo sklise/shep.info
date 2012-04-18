@@ -10,27 +10,6 @@ classifyName = (senderName, nowName) ->
     classes.push 'consecutive'
   classes.join(' ')
 
-# Change the value of now.name and send a message to all other clients
-# notifying of name change.
-updateName = (raw) ->
-  if raw != now.name
-    oldname = now.name
-    now.name = raw
-    now.changeNick oldname, now.name
-    true
-  else
-    false
-
-# Convert a timestamp into a readable time.
-formatTime = (timestamp) ->
-  time = new Date(timestamp)
-  hours = time.getHours()
-  minutes = time.getMinutes()
-  marker = if hours >= 12 then 'P' else 'A'
-  minutes = if minutes > 9 then minutes else '0' + minutes
-  hours = if hours > 12 then hours - 12 else hours
-  "#{hours}:#{minutes}#{marker}"
-
 # System messages are nicer than chat messages
 parseSystemMessage = (message) ->
   message
@@ -56,18 +35,13 @@ renderMessage = (template, timestamp, sender, message, classes='') ->
   $('#chat-log').append Mustache.render @template,
     name:sender
     message:parseMessage(message)
-    time:formatTime(timestamp)
+    time:window.app.Helpers.formatTime(timestamp)
     classes:classes
   # Scroll the chat log with a slight animation.
   $('#chat-log-container').animate {'scrollTop' : $('#chat-log').height()}, 200
   true
 
 jQuery ->
-  while now.name == undefined || now.name == ""
-    now.name = prompt("What's your name?", "")
-    if now.name != undefined || now.name.length > 0
-      $('#chat-name').val(now.name)
-
   windowBlurred = false
   pageIsBlinking = false
   pageTitle = $(document).attr('title')
@@ -98,23 +72,6 @@ jQuery ->
       $doc.attr('title', pageTitle)
     return
 
-  # Replaces the chat room icon with an X on hover. A CSS rule turns the X red.
-  $('.exitable-room').live 'mouseenter', (-> $(this).html('*'))
-  $('.exitable-room').live 'mouseleave', (-> $(this).html('q'))
-
-  # When a room-status-icon is clicked call a function on the server to leave
-  # the channel on IRC.
-  $('.exitable-room').live 'click', ->
-    channelName = $(this).closest('li').data('channel-name')
-    console.log $(this)
-    console.log $(this).closest('li')
-    new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
-      .show (ok) =>
-        if ok
-          $(this).closest('li').remove()
-          ui.dialog('Seeya!').show().hide(1500)
-          # TODO: navigate away. UGH, this should really be in Backbone...
-
   $('.shep-icon').click ->
     now.joinChannel('appnewtech')
 
@@ -141,17 +98,17 @@ jQuery ->
     now.logFeedback sender, message
     $('#feedback-form').empty()
 
-  $('#user-toggle').click ->
-    if $('#user-toggle').find('#user-list').length == 0
-      now.getUserList()
-      $userList = $('<div/>').attr('id','user-list')
-      $('#user-toggle').append($userList)
-      names= ""
-      _.each now.userList, (name) ->
-        names+= '<li>'+name+'</li>'
-      $userList.html('<ul>'+names+'</ul>').css('width',$('#user-toggle').width());
-    else
-      $('#user-list').remove();
+  # $('#user-toggle').click ->
+  #   if $('#user-toggle').find('#user-list').length == 0
+  #     now.getUserList()
+  #     $userList = $('<div/>').attr('id','user-list')
+  #     $('#user-toggle').append($userList)
+  #     names= ""
+  #     _.each now.userList, (name) ->
+  #       names+= '<li>'+name+'</li>'
+  #     $userList.html('<ul>'+names+'</ul>').css('width',$('#user-toggle').width());
+  #   else
+  #     $('#user-list').remove();
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
     if sender in ['Join', 'Leave']
@@ -159,30 +116,9 @@ jQuery ->
     else
       renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
 
-  now.serverChangedName = (name) ->
-    now.name = name
-    $('#chat-name').val(name)
-
-  $('#chat-name').focusout ->
-    updateName ($ this).val()
-  now.addUserToList = (name) ->
-    now.userList.push name
-
   now.receiveSystemMessage = (timestamp, type, message, destination='itp') ->
     renderMessage $('#system-message-template').html(), timestamp, type, message, 'system-notice'
 
   now.receiveChatMessage = (timestamp, sender, message, destination='itp') ->
     triggerBlink() if windowBlurred
     renderMessage $('#message-template').html(), timestamp, sender, message, classifyName(sender, @now.name)
-
-  # Send a new message
-  $("#new-message").live 'keypress', (event) ->
-    message = $("#new-message-input").val()
-    if(message.length > 80)
-      $('#new-message-input').attr('rows',2)
-    if(event.which == 13)
-      event.preventDefault()
-      if(message.length > 0)
-        now.distributeChatMessage(now.name, $("#new-message-input").val())
-        $("#new-message-input").val('').attr('rows',1)
-

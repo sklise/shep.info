@@ -1,4 +1,8 @@
 class Message extends Backbone.Model
+  # Types: Chat, Shep, System, Self, Transcript, Consecutive
+  defaults:
+    type: 'Chat'
+  initialize: (attributes, options) ->
 
 class Event extends Backbone.Model  
   initialize: (attributes, options) ->

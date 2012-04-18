@@ -11,6 +11,12 @@
       Message.__super__.constructor.apply(this, arguments);
     }
 
+    Message.prototype.defaults = {
+      type: 'Chat'
+    };
+
+    Message.prototype.initialize = function(attributes, options) {};
+
     return Message;
 
   })(Backbone.Model);

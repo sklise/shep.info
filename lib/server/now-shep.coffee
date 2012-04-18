@@ -1,4 +1,6 @@
 nowShep = (app, logging) ->
+
+  channelName = '#itp-test'
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
   nowjs = require 'now'
@@ -10,7 +12,7 @@ nowShep = (app, logging) ->
   class ircBridge
     constructor: (@name, callback) ->
       @client = new irc.Client ircHost, @name,
-        channels: ['#itp']
+        channels: ["#{channelName}"]
         port: process.env.ITPIRL_IRC_PORT || 6667
         autoConnect: true
 
@@ -21,9 +23,12 @@ nowShep = (app, logging) ->
         console.log "ERROR:", message
       @client.addListener 'notice', (nick, to, text, message) ->
         console.log "NOTICE: #{nick}: #{to} : #{text} : #{message}"
-      @client.addListener 'names', (channel, nicks) =>
+      @client.addListener 'join', (channel, nicks) =>
+        callback()
+      # @client.addListener "names#{channelName}", (channel, nicks) =>
         # Tell Now.js what your actual name is.
-        callback(@client.nick)
+      @client.addListener 'message', (from, channel, message) ->
+        console.log "#{from} #{channel} #{message}"
 
   # SETUP NOW.JS
   #-----------------------------------------------------
@@ -43,11 +48,9 @@ nowShep = (app, logging) ->
 
   # Triggered when a Now.js client sends a message. Simply forwards the message
   # to IRC. Currently no method for sending direct messages. And that's ok...for
-  # now. At least until I get ircClients happening per client.
-  everyone.now.distributeChatMessage = (sender, message, destination={'room':'itp'}) ->
-    ircConnections[@user.clientId].client.say("##{destination.room}", message)
-    # Check to see
-    @now.serverChangedName ircConnections[@user.clientId].client.nick
+  # now.
+  everyone.now.distributeChatMessage = (sender, message, destination={'room':channelName}) ->
+    ircConnections[@user.clientId].client.say("#{destination.room}", message)
 
   #### System Messages
 
@@ -91,8 +94,11 @@ nowShep = (app, logging) ->
     ircConnections[@user.clientId].client.nick = newNick
     ircConnections[@user.clientId].client.send "NICK #{newNick}"
 
+  everyone.now.changeName = (newName) ->
+    @now.name = newName
+    everyone.now.changeNick('something', newName)
+
   everyone.now.joinChannel = (channelName) ->
-    console.log channelName
     ircConnections[@user.clientId].client.send "JOIN ##{channelName}"
 
   #### Connecting to Now.js
@@ -101,10 +107,11 @@ nowShep = (app, logging) ->
   nowjs.on 'connect', ->
     # Create an ircBridge object for the new user. And tell everyone there is a
     # new user.
-    myNow = @now
-    ircConnections[@user.clientId] = new ircBridge @now.name, (name) ->
-      myNow.name = name
-      myNow.serverChangedName name
+    console.log "New user"
+    @now.name ?= "itp#{Date.now()}"
+    ircConnections[@user.clientId] = new ircBridge (@now.name), =>
+      console.log ircConnections[@user.clientId].client.nick
+      console.log "CONNECTED!"
     logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
     # Get recent messages from Redis and send them only to this user.
@@ -126,7 +133,7 @@ nowShep = (app, logging) ->
     # Disconnect that user from IRC.
     # I PROBABLY NEED TO DESTROY THIS OBJECT?
     ircConnections[@user.clientId].client.disconnect('seeya')
-    logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+    logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp-test'}, everyone.now.receiveSystemMessage
 
   # SETUP IRC ON NODE.JS SERVER
   #-----------------------------------------------------
@@ -136,7 +143,7 @@ nowShep = (app, logging) ->
 
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
   everyone.ircClient = new irc.Client ircHost, ircNick,
-    channels: ['#itp']
+    channels: ["#{channelName}"]
     port: process.env.ITPIRL_IRC_PORT || 6667
     autoConnect: true
     userName: process.env.ITPIRL_IRC_USERNAME || ''
@@ -154,7 +161,7 @@ nowShep = (app, logging) ->
     console.log "System Notice", "#{nick}: #{to} : #{text} : #{message}"
 
   # Listen for messages to the ITP room and send them to Now.
-  everyone.ircClient.addListener 'message#itp', (from, message) ->
-    logging.logAndForward from, message, {'room':'itp'}, everyone.now.receiveChatMessage
+  everyone.ircClient.addListener "message#{channelName}", (from, message) ->
+    logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
 
 module.exports = nowShep
