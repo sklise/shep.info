@@ -90,10 +90,10 @@ a {
 
 #feedback {
   position: relative; }
-  #feedback #feedback-button:hover {
+  #feedback .feedback-button:hover {
     color: #006ed6;
     cursor: pointer; }
-  #feedback #feedback-send {
+  #feedback .feedback-send {
     clear: both;
     display: block; }
   #feedback label {

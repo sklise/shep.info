@@ -4,4 +4,5 @@ jQuery ->
   # @app.router = new app.ChannelRouter
   # Backbone.history.start({pushState:true})
 
-  new app.AppView
+  (new app.AppView).render().el
+  

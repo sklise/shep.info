@@ -100,11 +100,12 @@ a {
 #feedback {
   position: relative;
 
-  #feedback-button:hover {
+  .feedback-button:hover {
     color: $bright-blue;
     cursor: pointer;
   }
-  #feedback-send {
+
+  .feedback-send {
     clear: both;
     display: block;
   }

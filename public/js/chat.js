@@ -83,26 +83,6 @@
     $('.shep-icon').click(function() {
       return now.joinChannel('appnewtech');
     });
-    $('#feedback-button').click(function() {
-      var $feedbackForm;
-      event.preventDefault();
-      $feedbackForm = $('#feedback-form');
-      if ($feedbackForm.html().length === 0) {
-        return $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {
-          name: now.name
-        }));
-      } else {
-        return $feedbackForm.empty();
-      }
-    });
-    $('#feedback-send').live('click', function() {
-      var message, sender;
-      event.preventDefault();
-      sender = $('#feedback-name').val();
-      message = $('#feedback-message').val();
-      now.logFeedback(sender, message);
-      return $('#feedback-form').empty();
-    });
     now.receivePreviousMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';
       if (sender === 'Join' || sender === 'Leave') {

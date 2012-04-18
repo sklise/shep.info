@@ -21,10 +21,6 @@
     <p><strong>PRIVACY:</strong> This site is private only in the sense that probably no one knows about it. All content is currently publicly accessible. So watch ur lolz.</p>
     <p><strong>LICENSE:</strong> <a href="https://github.com/stevenklise/itpirl/blob/master/License.md" target="_blank">MIT License</a>.</p>
     <p><strong>CODE:</strong> Available on <a href="https://github.com/stevenklise/itpirl" target="_blank">Github</a>.</p>
-    <div id="feedback">
-      <button id="feedback-button"><span class="pictos">W</span> Leave Feedback</button>
-      <div id="feedback-form"></div>
-    </div>
   </div>
 
   <div id="footer">
@@ -69,6 +65,7 @@
   <div id="chat-log-container">
     <ul id="chat-log">
     </ul>
+    <ul id="user-list"></ul>
   </div>
 
   <form id="new-message">
@@ -123,12 +120,17 @@
   </div>
 </script>
 
+<script type="text/template" id="feedback-template">
+  <button class="feedback-button"><span class="pictos">W</span> Leave Feedback</button>
+  <div id="feedback-form"></div>
+</script>
+
 <script type="text/template" id="feedback-form-template">
   <div>
     <label>Your Name:</label>
     <input type="text" id="feedback-name" value="{{ name }}"/>
     <label>Feedback:</label>
     <textarea id="feedback-message"></textarea>
-    <button id="feedback-send">Send Feedback</button>
+    <button class="feedback-send">Send Feedback</button>
   </div>
 </script>

@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, EventsView, MessageView, MessagesView, _ref;
+    var AppView, EventsView, FeedbackView, MessageView, MessagesView, _ref;
     AppView = (function(_super) {
 
       __extends(AppView, _super);
@@ -15,15 +15,66 @@
       AppView.prototype.el = '#content';
 
       AppView.prototype.initialize = function(options) {
-        this.collection.bind('reset', this.render, this);
+        this.feedbackview = new FeedbackView;
         return this.messagesview = new MessagesView({
-          collection: this.collection
+          collection: app.Messages
         });
       };
 
-      AppView.prototype.render = function() {};
+      AppView.prototype.render = function() {
+        this.feedbackview.render().el;
+        return this;
+      };
 
       return AppView;
+
+    })(Backbone.View);
+    FeedbackView = (function(_super) {
+
+      __extends(FeedbackView, _super);
+
+      function FeedbackView() {
+        FeedbackView.__super__.constructor.apply(this, arguments);
+      }
+
+      FeedbackView.prototype.events = {
+        'click .feedback-button': 'toggleForm',
+        'click .feedback-send': 'sendFeedback'
+      };
+
+      FeedbackView.prototype.initialize = function(options) {};
+
+      FeedbackView.prototype.template = $('#feedback-template').html();
+
+      FeedbackView.prototype.render = function() {
+        console.log('hi');
+        $('.introduction').append(Mustache.render(this.template, {}));
+        return this;
+      };
+
+      FeedbackView.prototype.toggleForm = function(e) {
+        var $feedbackForm;
+        $feedbackForm = $('#feedback-form');
+        if ($feedbackForm.html().length === 0) {
+          $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {
+            name: now.name
+          }));
+        } else {
+          $feedbackForm.empty();
+        }
+        return false;
+      };
+
+      FeedbackView.prototype.sendFeedback = function(e) {
+        var message, sender;
+        sender = $('#feedback-name').val();
+        message = $('#feedback-message').val();
+        now.logFeedback(sender, message);
+        $('#feedback-form').empty();
+        return false;
+      };
+
+      return FeedbackView;
 
     })(Backbone.View);
     MessageView = (function(_super) {
@@ -84,7 +135,6 @@
       MessagesView.prototype.fitHeight = function(windowHeight) {
         var chatInterior, chatWindowHeight, toolbarHeight;
         toolbarHeight = $('#chat-toolbar').height();
-        console.log($(this.el));
         $('#chat-window').css('height', windowHeight + 'px');
         chatWindowHeight = windowHeight - toolbarHeight;
         chatInterior = chatWindowHeight - this.$('#new-message').height();
@@ -154,7 +204,6 @@
       MessagesView.prototype.updateName = function(e) {
         var oldname, raw;
         raw = $(e.target).val();
-        console.log(raw);
         if (raw !== now.name) {
           oldname = now.name;
           now.name = raw;

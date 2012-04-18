@@ -75,40 +75,6 @@ jQuery ->
   $('.shep-icon').click ->
     now.joinChannel('appnewtech')
 
-  # Renders feedback form to the page prepopulated with current chat name or if
-  # the form is already on the page, removes it.
-  #
-  # Returns nothing.
-  $('#feedback-button').click ->
-    event.preventDefault()
-    $feedbackForm = $('#feedback-form')
-    if($feedbackForm.html().length == 0)
-      $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {name:now.name}))
-    else
-      $feedbackForm.empty()
-
-  # When the "Send Feedback" button is clicked, save the feedback message to
-  # Redis and empty the feedback form.
-  #
-  # Returns nothing.
-  $('#feedback-send').live 'click', ->
-    event.preventDefault()
-    sender = $('#feedback-name').val()
-    message = $('#feedback-message').val()
-    now.logFeedback sender, message
-    $('#feedback-form').empty()
-
-  # $('#user-toggle').click ->
-  #   if $('#user-toggle').find('#user-list').length == 0
-  #     now.getUserList()
-  #     $userList = $('<div/>').attr('id','user-list')
-  #     $('#user-toggle').append($userList)
-  #     names= ""
-  #     _.each now.userList, (name) ->
-  #       names+= '<li>'+name+'</li>'
-  #     $userList.html('<ul>'+names+'</ul>').css('width',$('#user-toggle').width());
-  #   else
-  #     $('#user-list').remove();
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
     if sender in ['Join', 'Leave']

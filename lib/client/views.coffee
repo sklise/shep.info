@@ -2,12 +2,50 @@ jQuery ->
   class AppView extends Backbone.View
     el: '#content'
     initialize: (options) ->
-      @collection.bind 'reset', @render, @
-      @messagesview = new MessagesView collection: @collection
+      # @collection.bind 'reset', @render, @
+      @feedbackview = new FeedbackView
+      @messagesview = new MessagesView collection: app.Messages
     render: ->
+      @feedbackview.render().el
       # $(@el).find('#event-window').append @eventsview.render().el
       # @messagesview.render().el
-  
+      @
+
+  # Feedback Form
+  #---------------------------------------------------
+  # 
+  class FeedbackView extends Backbone.View
+    events:
+      'click .feedback-button' : 'toggleForm'
+      'click .feedback-send' : 'sendFeedback'
+
+    initialize: (options) ->
+      return
+    template: $('#feedback-template').html()
+    render: ->
+      console.log 'hi'
+      $('.introduction').append Mustache.render(@template, {})
+      @
+
+    # Renders feedback form to the page prepopulated with current chat name or if
+    # the form is already on the page, removes it.
+    toggleForm: (e) ->
+      $feedbackForm = $('#feedback-form')
+      if($feedbackForm.html().length == 0)
+        $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {name:now.name}))
+      else
+        $feedbackForm.empty()
+      return false
+
+    # When the "Send Feedback" button is clicked, save the feedback message to
+    # Redis and empty the feedback form.
+    sendFeedback: (e) ->
+      sender = $('#feedback-name').val()
+      message = $('#feedback-message').val()
+      now.logFeedback sender, message
+      $('#feedback-form').empty()
+      return false
+
   # Chat Message
   #---------------------------------------------------
   # Individual message view. Sets the template based on the valu eof model.type
@@ -45,7 +83,6 @@ jQuery ->
     # Stretch the chat window to fill the height of the window.
     fitHeight: (windowHeight) ->
       toolbarHeight = $('#chat-toolbar').height()
-      console.log $(@el)
       $('#chat-window').css('height', (windowHeight) + 'px')
       chatWindowHeight = windowHeight - toolbarHeight
       chatInterior = chatWindowHeight - @$('#new-message').height()
@@ -115,7 +152,6 @@ jQuery ->
     # notifying of name change.
     updateName: (e) ->
       raw = $(e.target).val()
-      console.log raw
       if raw != now.name
         oldname = now.name
         now.name = raw
