@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, EventDateView, EventView, EventsView, MessageView, MessagesView, _ref;
+    var AppView, EventsView, MessageView, MessagesView, _ref;
     AppView = (function(_super) {
 
       __extends(AppView, _super);
@@ -236,58 +236,6 @@
       };
 
       return EventsView;
-
-    })(Backbone.View);
-    EventDateView = (function(_super) {
-
-      __extends(EventDateView, _super);
-
-      function EventDateView() {
-        EventDateView.__super__.constructor.apply(this, arguments);
-      }
-
-      EventDateView.prototype.tagName = 'li';
-
-      EventDateView.prototype.className = 'event-date';
-
-      EventDateView.prototype.template = ($('#event-date')).html();
-
-      EventDateView.prototype.render = function() {
-        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
-        return this;
-      };
-
-      return EventDateView;
-
-    })(Backbone.View);
-    EventView = (function(_super) {
-
-      __extends(EventView, _super);
-
-      function EventView() {
-        EventView.__super__.constructor.apply(this, arguments);
-      }
-
-      EventView.prototype.className = 'event';
-
-      EventView.prototype.tagName = 'li';
-
-      EventView.prototype.template = ($('#event-template')).html();
-
-      EventView.prototype.events = {
-        'click': 'toggleExpanded'
-      };
-
-      EventView.prototype.render = function() {
-        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
-        return this;
-      };
-
-      EventView.prototype.toggleExpanded = function() {
-        return this.$('.details').toggle();
-      };
-
-      return EventView;
 
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};

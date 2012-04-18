@@ -4,7 +4,6 @@ jQuery ->
     initialize: (options) ->
       @collection.bind 'reset', @render, @
       @messagesview = new MessagesView collection: @collection
-      # @eventsview = new EventsView collection: @collection
     render: ->
       # $(@el).find('#event-window').append @eventsview.render().el
       # @messagesview.render().el
@@ -166,34 +165,6 @@ jQuery ->
         $(@el).append(eventView.render().el)
       @fitHeight $(window).height()
       @
-
-  # Event Date
-  #---------------------------------------------------
-  class EventDateView extends Backbone.View
-    tagName: 'li'
-    className: 'event-date'
-    template: ($ '#event-date').html()
-    render: ->
-      $(@el).html Mustache.render(@template, @model.toJSON())
-      @
-
-
-  # Event View
-  #---------------------------------------------------
-  class EventView extends Backbone.View
-    className: 'event'
-    tagName: 'li'
-    template: ($ '#event-template').html()
-    events:
-      'click' : 'toggleExpanded'
-    render: ->
-      $(@el).html Mustache.render(@template, @model.toJSON())
-      @
-    toggleExpanded: ->
-      # I don't like how this is working currently. When you click on the link
-      # for Google Calendar it toggles. Also clicking this one doesn't close
-      # the rest.
-      @$('.details').toggle()
 
   @app = window.app ? {}
   @app.AppView = AppView
