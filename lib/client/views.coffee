@@ -93,7 +93,9 @@ jQuery ->
     # of four characters and maximum of 20. Sets submitted value to now.name.
     promptUserName: ->
       # Create a new ui.Confirmation
-      namePrompt = new ui.Confirmation({ title: "Please enter a name.", message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input type="text">') })
+      namePrompt = new ui.Confirmation(
+        title: "Please enter a name."
+        message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">'))
         .modal()
         .show (ok) ->
           if ok

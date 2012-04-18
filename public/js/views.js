@@ -147,7 +147,7 @@
           _this = this;
         namePrompt = new ui.Confirmation({
           title: "Please enter a name.",
-          message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input type="text">')
+          message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">')
         }).modal().show(function(ok) {
           if (ok) return now.changeName($(this.el).find('input').val().trim());
         });
