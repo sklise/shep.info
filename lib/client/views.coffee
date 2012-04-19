@@ -75,12 +75,9 @@ jQuery ->
       'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
       # Bind the window reaize event to call fitHeight.
-      view = @
+      $(window).bind 'resize', => @fitHeight($(this).height())
       @attachMenu();
       @promptUserName()
-      $(window).bind 'resize', ->
-        view.fitHeight($(this).height())
-    
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
@@ -99,7 +96,7 @@ jQuery ->
       toolbarHeight = $('#chat-toolbar').height()
       $('#chat-window').css('height', (windowHeight) + 'px')
       chatWindowHeight = windowHeight - toolbarHeight
-      chatInterior = chatWindowHeight - @$('#new-message').height()
+      chatInterior = chatWindowHeight - @$('#new-message').height() + 14
       @$('#chat-log-container').height(chatInterior)
       @$('#chat-log').css('min-height', chatInterior)
 

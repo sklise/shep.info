@@ -47,7 +47,6 @@
       FeedbackView.prototype.template = $('#feedback-template').html();
 
       FeedbackView.prototype.render = function() {
-        console.log('hi');
         $('.introduction').append(Mustache.render(this.template, {}));
         return this;
       };
@@ -125,11 +124,9 @@
       };
 
       MessagesView.prototype.initialize = function(options) {
-        var view;
-        view = this;
-        this.promptUserName();
-        return $(window).bind('resize', function() {
-          return view.fitHeight($(this).height());
+        var _this = this;
+        $(window).bind('resize', function() {
+          return _this.fitHeight($(_this).height());
         });
         return this.attachMenu();
       };
@@ -160,7 +157,7 @@
         toolbarHeight = $('#chat-toolbar').height();
         $('#chat-window').css('height', windowHeight + 'px');
         chatWindowHeight = windowHeight - toolbarHeight;
-        chatInterior = chatWindowHeight - this.$('#new-message').height();
+        chatInterior = chatWindowHeight - this.$('#new-message').height() + 14;
         this.$('#chat-log-container').height(chatInterior);
         return this.$('#chat-log').css('min-height', chatInterior);
       };
