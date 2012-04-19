@@ -72,9 +72,9 @@ jQuery ->
       $doc.attr('title', pageTitle)
     return
 
-  $('.shep-icon').click ->
-    now.joinChannel('appnewtech')
-
+  now.triggerIRCLogin = ->
+    console.log "hi"
+    app.MessagesView.render().el
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
     if sender in ['Join', 'Leave']

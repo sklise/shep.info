@@ -80,9 +80,10 @@
         $doc.attr('title', pageTitle);
       }
     };
-    $('.shep-icon').click(function() {
-      return now.joinChannel('appnewtech');
-    });
+    now.triggerIRCLogin = function() {
+      console.log("hi");
+      return app.MessagesView.render().el;
+    };
     now.receivePreviousMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';
       if (sender === 'Join' || sender === 'Leave') {
