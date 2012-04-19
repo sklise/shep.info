@@ -18,17 +18,18 @@ nowShep = (app, logging) ->
 
       # Listen for IRC events relating to this user.
       @client.addListener 'pm', (from, message) ->
-        console.log "PRIVATE MESSAGE FROM: #{from}:", message
+        console.log "C PM FROM:   #{from}:", message
       @client.addListener 'error', (message) ->
-        console.log "ERROR:", message
+        console.log "C ERROR:     ", message
       @client.addListener 'notice', (nick, to, text, message) ->
-        console.log "NOTICE: #{nick}: #{to} : #{text} : #{message}"
-      @client.addListener 'join', (channel, nicks) =>
+        console.log "C NOTICE:    #{nick}: #{to} : #{text} : #{message}"
+      @client.addListener 'join', (channel, nick) =>
+        console.log "C JOIN:      #{channel} #{nick}"
         callback()
       # @client.addListener "names#{channelName}", (channel, nicks) =>
         # Tell Now.js what your actual name is.
       @client.addListener 'message', (from, channel, message) ->
-        console.log "#{from} #{channel} #{message}"
+        console.log "C MESSAGE:   #{from} #{channel} #{message}"
 
   # SETUP NOW.JS
   #-----------------------------------------------------
@@ -82,12 +83,12 @@ nowShep = (app, logging) ->
     logging.logMessage sender, message, {room:'itpirl-feedback'}
 
   # Get the names of all connected Now.js clientss
-  everyone.now.getUserList = ->
-    everyone.now.userList = []
-    everyone.getUsers (users) ->
-      for user in users
-        nowjs.getClient user, ->
-          everyone.now.addUserToList @now.name
+  # everyone.now.getUserList = ->
+  #   everyone.now.userList = []
+  #   everyone.getUsers (users) ->
+  #     for user in users
+  #       nowjs.getClient user, ->
+  #         everyone.now.addUserToList @now.name
 
   # Propogate name change to IRC and send out a message.
   everyone.now.changeNick = (oldNick, newNick) ->
@@ -107,27 +108,27 @@ nowShep = (app, logging) ->
   nowjs.on 'connect', ->
     # Create an ircBridge object for the new user. And tell everyone there is a
     # new user.
-    console.log "New user"
     @now.name ?= "itp#{Date.now()}"
-    ircConnections[@user.clientId] = new ircBridge (@now.name), =>
-      console.log ircConnections[@user.clientId].client.nick
-      console.log "CONNECTED!"
-    logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+
+    nowjs.getClient @user.clientId, ->
+      ircConnections[@user.clientId] = new ircBridge (@now.name), =>
+        console.log "CONNECTED"
+        @now.triggerIRCLogin()
+        logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
     # Get recent messages from Redis and send them only to this user.
-    myNow = @now
     room = 'itp'
 
-    redis.llen 'messages:' + room, (err, length) ->
+    redis.llen 'messages:' + room, (err, length) =>
       start = length - 10
       end = length - 1
 
-      redis.lrange 'messages:' + room, start, end, (err, obj) ->
+      redis.lrange 'messages:' + room, start, end, (err, obj) =>
         for message in obj
           # Redis returns the object as a string, turn it back to an object
           m = JSON.parse(message)
           # Send these previous messages to the client
-          myNow.receivePreviousMessage(m.timestamp, m.sender, m.message)
+          @now.receivePreviousMessage(m.timestamp, m.sender, m.message)
 
   nowjs.on 'disconnect', ->
     # Disconnect that user from IRC.
@@ -140,7 +141,6 @@ nowShep = (app, logging) ->
   # Create an IRC client for the server. Though many clients can speak to IRC
   # I only want one client listening for non-system messages to prevent sending
   # and logging messages multiple times.
-
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
   everyone.ircClient = new irc.Client ircHost, ircNick,
     channels: ["#{channelName}"]
@@ -158,8 +158,7 @@ nowShep = (app, logging) ->
   # everyone.ircClient.addListener 'names', (channel, nicks) ->
   #   console.log channel, nicks
   everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
-    console.log "System Notice", "#{nick}: #{to} : #{text} : #{message}"
-
+    console.log "S NOTICE:   ", "#{nick}: #{to} : #{text} : #{message}"
   # Listen for messages to the ITP room and send them to Now.
   everyone.ircClient.addListener "message#{channelName}", (from, message) ->
     logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
