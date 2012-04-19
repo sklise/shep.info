@@ -120,7 +120,7 @@
         'keyup .new-message-input': 'resizeInput',
         'paste .new-message-input': 'resizeInput',
         'cut .new-message-input': 'resizeInput',
-        'keypress .new-message-input': 'sendMessage'
+        'keypress .new-message-input': 'sendMessage',
         'click .channel-menu-button': 'toggleMenu'
       };
 
@@ -261,53 +261,6 @@
       };
 
       return MessagesView;
-
-    })(Backbone.View);
-    EventsView = (function(_super) {
-
-      __extends(EventsView, _super);
-
-      function EventsView() {
-        EventsView.__super__.constructor.apply(this, arguments);
-      }
-
-      EventsView.prototype.id = 'event-feed';
-
-      EventsView.prototype.tagName = 'ul';
-
-      EventsView.prototype.template = ($('#events-template')).html();
-
-      EventsView.prototype.initialize = function(options) {
-        var fit;
-        fit = this.fitHeight;
-        return $(window).bind('resize', function() {
-          return fit($(this).height());
-        });
-      };
-
-      EventsView.prototype.fitHeight = function(windowHeight) {
-        var headerHeight, toolbarHeight;
-        headerHeight = $('#header').height();
-        toolbarHeight = $('#toolbars').height();
-        return $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight);
-      };
-
-      EventsView.prototype.render = function() {
-        var event, eventView, _i, _len, _ref;
-        $(this.el).empty();
-        _ref = this.collection.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          event = _ref[_i];
-          eventView = new EventView({
-            model: event
-          });
-          $(this.el).append(eventView.render().el);
-        }
-        this.fitHeight($(window).height());
-        return this;
-      };
-
-      return EventsView;
 
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};

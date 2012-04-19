@@ -192,31 +192,6 @@ jQuery ->
           if ok
             $(@).closest('li').remove()
             ui.dialog('Seeya!').show().hide(1500)
-            # TODO: navigate away. UGH, this should really be in Backbone...
-
-  
-
-  # Events Roll
-  #---------------------------------------------------
-  class EventsView extends Backbone.View
-    id: 'event-feed'
-    tagName: 'ul'
-    template: ($ '#events-template').html()
-    initialize: (options) ->
-      fit = @fitHeight
-      $(window).bind 'resize', ->
-        fit($(this).height())
-    fitHeight: (windowHeight) ->
-      headerHeight = $('#header').height()
-      toolbarHeight = $('#toolbars').height()
-      $('#event-window').css('height', windowHeight - headerHeight - toolbarHeight)
-    render: ->
-      $(@el).empty()
-      for event in @collection.models
-        eventView = new EventView model: event
-        $(@el).append(eventView.render().el)
-      @fitHeight $(window).height()
-      @
 
   @app = window.app ? {}
   @app.AppView = AppView
