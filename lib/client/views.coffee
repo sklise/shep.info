@@ -110,8 +110,9 @@ jQuery ->
         .modal()
         .show (ok) ->
           if ok
-            # Set the value of the 
-            now.changeName $(this.el).find('input').val().trim()
+            name = $(this.el).find('input').val().trim()
+            $('.chat-name').val(name)
+            now.changeName name
       # Disable OK button and remove the cancel button
       namePrompt.el.find('.ok').attr('disabled','true').end().find('.cancel').remove()
 

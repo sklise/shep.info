@@ -169,7 +169,12 @@
           title: "Please enter a name.",
           message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">')
         }).modal().show(function(ok) {
-          if (ok) return now.changeName($(this.el).find('input').val().trim());
+          var name;
+          if (ok) {
+            name = $(this.el).find('input').val().trim();
+            $('.chat-name').val(name);
+            return now.changeName(name);
+          }
         });
         namePrompt.el.find('.ok').attr('disabled', 'true').end().find('.cancel').remove();
         $input = $(namePrompt.el).find('input');
