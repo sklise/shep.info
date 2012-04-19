@@ -45,9 +45,30 @@ jQuery ->
       $('#feedback-form').empty()
       return false
 
-  # Chat Message
+  # Chat Window
   #---------------------------------------------------
-  # Individual message view. Sets the template based on the valu eof model.type
+  # This view holds chat toolbar, chat log, user list and new message
+  # views. Call routing functions on this view and have the events 
+  # propagate through.
+  class ChatWindowView extends Backbone.View
+    
+
+  # Channels View
+  #---------------------------------------------------
+  # Toolbar of current channels as well as menu to create and join more.
+  class ChannelsView extends Backbone.View
+    template: $('#channels-template').html()
+    events:
+      'click .channel-tab' : 'goToChannel'
+    goToChannel: ->
+      return
+
+  class ChannelView extends Backbone.View
+    template: $('#channel-template').html()
+
+  # Message
+  #---------------------------------------------------
+  # Individual message view. Sets the template based on the value of model.type
   class MessageView extends Backbone.View
     className: 'message'
     tagName: 'li'
@@ -57,7 +78,7 @@ jQuery ->
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
 
-  # Chat Window
+  # Chat Log
   #---------------------------------------------------
   class MessagesView extends Backbone.View
     el: '#chat-window'
@@ -77,7 +98,12 @@ jQuery ->
       # Bind the window reaize event to call fitHeight.
       $(window).bind 'resize', => @fitHeight($(this).height())
       @attachMenu();
+    render: ->
       @promptUserName()
+      $(@el).empty().html(Mustache.render(@template), {name: now.name})
+      @fitHeight $(window).height()
+      @
+
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
@@ -139,10 +165,6 @@ jQuery ->
         else
           namePrompt.el.find('.ok').attr('disabled','disabled')
       #     $('#chat-name').val(now.name)
-    render: ->
-      $(@el).empty().html(Mustache.render(@template))
-      @fitHeight $(window).height()
-      @
 
     # NEW MESSAGE
     #-------------------------------------------------

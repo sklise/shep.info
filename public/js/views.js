@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, EventsView, FeedbackView, MessageView, MessagesView, _ref;
+    var AppView, ChannelView, ChannelsView, ChatWindowView, FeedbackView, MessageView, MessagesView, _ref;
     AppView = (function(_super) {
 
       __extends(AppView, _super);
@@ -76,6 +76,49 @@
       return FeedbackView;
 
     })(Backbone.View);
+    ChatWindowView = (function(_super) {
+
+      __extends(ChatWindowView, _super);
+
+      function ChatWindowView() {
+        ChatWindowView.__super__.constructor.apply(this, arguments);
+      }
+
+      return ChatWindowView;
+
+    })(Backbone.View);
+    ChannelsView = (function(_super) {
+
+      __extends(ChannelsView, _super);
+
+      function ChannelsView() {
+        ChannelsView.__super__.constructor.apply(this, arguments);
+      }
+
+      ChannelsView.prototype.template = $('#channels-template').html();
+
+      ChannelsView.prototype.events = {
+        'click .channel-tab': 'goToChannel'
+      };
+
+      ChannelsView.prototype.goToChannel = function() {};
+
+      return ChannelsView;
+
+    })(Backbone.View);
+    ChannelView = (function(_super) {
+
+      __extends(ChannelView, _super);
+
+      function ChannelView() {
+        ChannelView.__super__.constructor.apply(this, arguments);
+      }
+
+      ChannelView.prototype.template = $('#channel-template').html();
+
+      return ChannelView;
+
+    })(Backbone.View);
     MessageView = (function(_super) {
 
       __extends(MessageView, _super);
@@ -129,6 +172,15 @@
           return _this.fitHeight($(_this).height());
         });
         return this.attachMenu();
+      };
+
+      MessagesView.prototype.render = function() {
+        this.promptUserName();
+        $(this.el).empty().html(Mustache.render(this.template), {
+          name: now.name
+        });
+        this.fitHeight($(window).height());
+        return this;
       };
 
       MessagesView.prototype.attachMenu = function() {
@@ -197,12 +249,6 @@
             return namePrompt.el.find('.ok').attr('disabled', 'disabled');
           }
         });
-      };
-
-      MessagesView.prototype.render = function() {
-        $(this.el).empty().html(Mustache.render(this.template));
-        this.fitHeight($(window).height());
-        return this;
       };
 
       MessagesView.prototype.resizeInput = function(e) {
