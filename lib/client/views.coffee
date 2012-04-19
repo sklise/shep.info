@@ -23,7 +23,6 @@ jQuery ->
       return
     template: $('#feedback-template').html()
     render: ->
-      console.log 'hi'
       $('.introduction').append Mustache.render(@template, {})
       @
 
@@ -73,13 +72,28 @@ jQuery ->
       'paste .new-message-input' : 'resizeInput'
       'cut .new-message-input' : 'resizeInput'
       'keypress .new-message-input' : 'sendMessage'
+      'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
       # Bind the window reaize event to call fitHeight.
       view = @
+      @attachMenu();
       @promptUserName()
       $(window).bind 'resize', ->
         view.fitHeight($(this).height())
     
+    attachMenu: ->
+      @menu = ui.menu()
+        .add('Add Channel...')
+    toggleMenu: (e) ->
+      $menuButton = $('.channel-menu-button')
+      menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}
+      if e.target.className is "room-menu-icon pictos"
+        padding = ($menuButton.outerWidth() - $menuButton.width()) / 2
+        @menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height)
+      else
+        @menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height)
+      @menu.show()
+      return false
     # Stretch the chat window to fill the height of the window.
     fitHeight: (windowHeight) ->
       toolbarHeight = $('#chat-toolbar').height()

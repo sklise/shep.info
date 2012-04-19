@@ -121,6 +121,7 @@
         'paste .new-message-input': 'resizeInput',
         'cut .new-message-input': 'resizeInput',
         'keypress .new-message-input': 'sendMessage'
+        'click .channel-menu-button': 'toggleMenu'
       };
 
       MessagesView.prototype.initialize = function(options) {
@@ -130,6 +131,28 @@
         return $(window).bind('resize', function() {
           return view.fitHeight($(this).height());
         });
+        return this.attachMenu();
+      };
+
+      MessagesView.prototype.attachMenu = function() {
+        return this.menu = ui.menu().add('Add Channel...');
+      };
+
+      MessagesView.prototype.toggleMenu = function(e) {
+        var $menuButton, menuButtonDim, padding;
+        $menuButton = $('.channel-menu-button');
+        menuButtonDim = {
+          width: $menuButton.width(),
+          height: $menuButton.outerHeight()
+        };
+        if (e.target.className === "room-menu-icon pictos") {
+          padding = ($menuButton.outerWidth() - $menuButton.width()) / 2;
+          this.menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height);
+        } else {
+          this.menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height);
+        }
+        this.menu.show();
+        return false;
       };
 
       MessagesView.prototype.fitHeight = function(windowHeight) {
