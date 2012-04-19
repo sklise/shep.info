@@ -80,8 +80,22 @@
         $doc.attr('title', pageTitle);
       }
     };
+    now.updateUserList = function(channel, nicks) {
+      var name, value, _results;
+      $('#user-list').empty();
+      _results = [];
+      for (name in nicks) {
+        value = nicks[name];
+        $('#user-list').append("<li>" + name + "</li>");
+        _results.push(true);
+      }
+      return _results;
+    };
+    now.serverChangedName = function(name) {
+      now.name = name;
+      return $('.chat-name').val(name);
+    };
     now.triggerIRCLogin = function() {
-      console.log("hi");
       return app.MessagesView.render().el;
     };
     now.receivePreviousMessage = function(timestamp, sender, message, destination) {

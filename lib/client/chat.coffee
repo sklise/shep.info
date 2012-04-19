@@ -72,8 +72,23 @@ jQuery ->
       $doc.attr('title', pageTitle)
     return
 
+  # This is called from the server on nick changes and part/leave events.
+  # The user list is cleared and re-rendered with an updated list.
+  now.updateUserList = (channel, nicks) ->
+    $('#user-list').empty()
+    for name, value of nicks
+      $('#user-list').append("<li>#{name}</li>")
+      true
+
+  # Called from the server in the context of the userwhen IRC forces a nickname
+  # change. Updates now.name and renders the new name in the chat.
+  now.serverChangedName = (name) ->
+    now.name = name
+    $('.chat-name').val(name)
+
+  # Called from the server in the context of the user when login to IRC is
+  # complete. Renders the messages view.
   now.triggerIRCLogin = ->
-    console.log "hi"
     app.MessagesView.render().el
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
