@@ -16,6 +16,8 @@ nowShep = (app, logging) ->
         port: process.env.ITPIRL_IRC_PORT || 6667
         autoConnect: true
 
+      @loggedIn = false
+
       # Listen for IRC events relating to this user.
       @client.addListener 'pm', (from, message) ->
         console.log "C PM FROM:   #{from}:", message
@@ -23,11 +25,13 @@ nowShep = (app, logging) ->
         console.log "C ERROR:     ", message
       @client.addListener 'notice', (nick, to, text, message) ->
         console.log "C NOTICE:    #{nick}: #{to} : #{text} : #{message}"
+      @client.addListener 'part', (channel, nick) =>
+        @client.send "NAMES #{channel}"
+        console.log "C LEAVE:     #{channel} #{nick}"
       @client.addListener 'join', (channel, nick) =>
+        callback(@client.nick) if not @loggedIn
+        @loggedIn = true
         console.log "C JOIN:      #{channel} #{nick}"
-        callback()
-      # @client.addListener "names#{channelName}", (channel, nicks) =>
-        # Tell Now.js what your actual name is.
       @client.addListener 'message', (from, channel, message) ->
         console.log "C MESSAGE:   #{from} #{channel} #{message}"
 
@@ -39,7 +43,6 @@ nowShep = (app, logging) ->
   #-----------------------------------------------------
 
   #### Chat Messages
-
   # A Chat message is initiated by textual input from a client. This includes
   # all humans and bots. Chat messages are simple, they have a sender name,
   # a content and an optional destination. The default destination is the main
@@ -110,11 +113,11 @@ nowShep = (app, logging) ->
     # new user.
     @now.name ?= "itp#{Date.now()}"
 
-    nowjs.getClient @user.clientId, ->
-      ircConnections[@user.clientId] = new ircBridge (@now.name), =>
-        console.log "CONNECTED"
-        @now.triggerIRCLogin()
-        logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+    # nowjs.getClient @user.clientId, ->
+    ircConnections[@user.clientId] = new ircBridge (@now.name), (nick) =>
+        
+      @now.triggerIRCLogin()
+      logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
     # Get recent messages from Redis and send them only to this user.
     room = 'itp'
@@ -133,6 +136,7 @@ nowShep = (app, logging) ->
   nowjs.on 'disconnect', ->
     # Disconnect that user from IRC.
     # I PROBABLY NEED TO DESTROY THIS OBJECT?
+    everyone.ircClient.send "NAMES #{channelName}"
     ircConnections[@user.clientId].client.disconnect('seeya')
     logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp-test'}, everyone.now.receiveSystemMessage
 
@@ -154,13 +158,19 @@ nowShep = (app, logging) ->
   # changes the log will just get super huge. Let's only listen for these on the
   # server account.
   everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
+    for channel in channels
+      everyone.ircClient.send "NAMES #{channel}"
     logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
-  # everyone.ircClient.addListener 'names', (channel, nicks) ->
-  #   console.log channel, nicks
   everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
     console.log "S NOTICE:   ", "#{nick}: #{to} : #{text} : #{message}"
-  # Listen for messages to the ITP room and send them to Now.
   everyone.ircClient.addListener "message#{channelName}", (from, message) ->
     logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
+  everyone.ircClient.addListener "join", (channel, nick) =>
+    everyone.ircClient.send "NAMES #{channel}"
+  everyone.ircClient.addListener 'part', (channel, nick) =>
+    everyone.ircClient.send "NAMES #{channel}"
+  everyone.ircClient.addListener "names", (channel, nicks) =>
+    everyone.now.updateUserList(channel, nicks)
+
 
 module.exports = nowShep
