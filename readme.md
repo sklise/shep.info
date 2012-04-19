@@ -1,3 +1,5 @@
+![](http://shep.info/images/shep.jpg)
+
 # Shep's yard
 
 ## Changelog
