@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "irc": "0.3.3",
-    "express": "latest",
+    "express": "2.5.8",
     "now": "0.8.0",
     "mustache": "0.4.0",
     "ejs": "",
     "redis-url": "0.1.0",
-    "coffee-script": "latest",
+    "coffee-script": "1.2.0",
     "connect-redis": "~1.3.0"
   }
 }
