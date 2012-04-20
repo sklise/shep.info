@@ -27,8 +27,9 @@ $red: rgba(240,53,40,1);
 $toolbar-chat-background: rgb(139, 211, 245);
 
 $chat-background: rgba(245, 248, 255,1);
-$shep-background: rgb(255, 238, 195);
-$shep-name: rgb(224, 169, 20);
+$highlight-yellow: rgb(255, 238, 195);
+$shep-background: rgba(95, 206, 237, 0.3);
+$shep-name: rgb(219, 140, 61);
 
 /* Calendar colors */
 $event-color: rgba(147, 32, 214, 1);
@@ -45,7 +46,7 @@ $event-color: rgba(147, 32, 214, 1);
   font-family: "Pictos";
 }
 
-$main-font: "museo-sans", "Myriad Pro", "Helvetica Neue", "Helvetica", sans-serif;
+$main-font: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
 $header-font: "colaborate", "Helvetica Neue", "Helvetica", sans-serif;
 
 $base-size: 10px 350px;
@@ -77,6 +78,13 @@ h2 {
   font-size: ms(5, $base-size, $golden);
   font-weight: 600;
   line-height: ms(6, $base-size, $golden);
+  margin: 0.5em 0;
+}
+
+h4 {
+  font-size: ms(3, $base-size, $golden);
+  font-weight: 600;
+  line-height: ms(4, $base-size, $golden);
   margin: 0.5em 0;
 }
 
@@ -130,7 +138,7 @@ a {
 // INTRODUCTION BOX
 //____________________________________________________
 .introduction {
-  background-color: $shep-background;
+  background-color: $highlight-yellow;
   margin: 0;
   padding: 0.75em 1.5em;
   @include box-sizing;

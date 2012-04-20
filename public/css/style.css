@@ -52,7 +52,7 @@ em {
   font-family: "Pictos"; }
 
 body {
-  font-family: "museo-sans", "Myriad Pro", "Helvetica Neue", "Helvetica", sans-serif;
+  font-family: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
   font-size: 12px;
   line-height: 16px;
   background-color: white;
@@ -73,6 +73,12 @@ h2 {
   line-height: 42px;
   margin: 0.5em 0; }
 
+h4 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 26px;
+  margin: 0.5em 0; }
+
 a {
   color: #006ed6; }
 
@@ -84,7 +90,7 @@ a {
   margin: 0 auto;
   font-size: 16px;
   line-height: 20px;
-  font-family: "museo-sans", "Myriad Pro", "Helvetica Neue", "Helvetica", sans-serif;
+  font-family: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
   clear: both;
   overflow: auto; }
 
@@ -231,13 +237,27 @@ a {
     #chat-log li.self .chatter {
       color: #110df5; }
     #chat-log li.shep {
-      background: #ffeec3; }
+      background: rgba(95, 206, 237, 0.3); }
       #chat-log li.shep .chatter {
-        color: #e0a914; }
+        color: #db8c3d; }
     #chat-log li.system-notice, #chat-log li.previous-message {
       background-color: #f6f8ff;
       color: gray;
       font-style: italic; }
+
+#user-list {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #ffeec3;
+  color: #777777;
+  padding: 0.45em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 8px 0.9009009% 0;
+  /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=3 */
+  width: 10.6981982%; }
 
 .message-time {
   background-color: rgba(0, 0, 0, 0.5);
@@ -249,7 +269,7 @@ a {
   opacity: 0;
   padding: 0.2em 0.3em 0.15em;
   position: absolute;
-  right: 1em;
+  right: 12.5%;
   -moz-transition: opacity 200ms ease-in-out;
   -webkit-transition: opacity 200ms ease-in-out;
   transition: opacity 200ms ease-in-out; }
@@ -264,6 +284,8 @@ a {
 
 .chatter {
   float: left;
+  font-size: 110%;
+  line-height: 110%;
   margin: 0 0.9009009%;
   width: 19.0315315%;
   font-weight: bold;
@@ -274,7 +296,7 @@ a {
 .system-message {
   float: left;
   margin: 0 0.9009009%;
-  padding-right: 1em;
+  padding-right: 10.6981982%;
   width: 77.3648649%; }
 
 .system-message {

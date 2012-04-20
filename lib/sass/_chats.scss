@@ -133,9 +133,6 @@
   position: relative;
 }
 
-#user-list {
-}
-
 #chat-log {
   @include box-sizing;
   background-color: $chat-background;
@@ -193,6 +190,20 @@
   }
 }
 
+#user-list {
+  @include box-sizing;
+  background-color: $highlight-yellow;
+  color: rgb(119,119,119);
+  padding: 0.45em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  // Margin: (16/2) / 860
+  margin: 8px 0.9009009% 0;
+  /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=3 */
+  width: 10.6981982%;
+}
+
 // Timestamps are aligned along the right side of #chat-log and are transparent
 // until fading in and out
 .message-time {
@@ -205,7 +216,7 @@
   opacity: 0;
   padding: 0.2em 0.3em 0.15em;
   position: absolute;
-  right: 1em;
+  right: 12.5%;
   -moz-transition: opacity 200ms ease-in-out;
   -webkit-transition: opacity 200ms ease-in-out;
   transition: opacity 200ms ease-in-out;
@@ -220,6 +231,8 @@
 
 .chatter {
   float: left;
+  font-size: 110%;
+  line-height: 110%;
   margin: 0 0.9009009%;
   width: 19.0315315%;
   font-weight: bold;
@@ -231,7 +244,7 @@
 .system-message {
   float: left;
   margin: 0 0.9009009%;
-  padding-right: 1em;
+  padding-right: 10.6981982%;
   width: 77.3648649%;
 }
 
