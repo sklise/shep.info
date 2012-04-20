@@ -4,7 +4,14 @@
 
 ## Changelog
 
-### 0.9.0 - 2012/4/12
+### 1.0.0-rc1 2012/04/19
+
+- Show loading screen until client is logged in to IRC.
+- Switch to UIKit powered prompts, remove cancel option.
+- User list based on IRC /NAMES. Updates on join, part and nick events.
+- Consolidate much of client side scripting into Backbone.
+
+### 0.9.0 - 2012/04/12
 
 - No longer called "itpirl"
 - Brand new design.

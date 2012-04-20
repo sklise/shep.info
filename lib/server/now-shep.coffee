@@ -1,6 +1,6 @@
 nowShep = (app, logging) ->
 
-  channelName = '#itp-test'
+  channelName = '#itp'
   redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
   nowjs = require 'now'
@@ -138,7 +138,7 @@ nowShep = (app, logging) ->
     # I PROBABLY NEED TO DESTROY THIS OBJECT?
     everyone.ircClient.send "NAMES #{channelName}"
     ircConnections[@user.clientId].client.disconnect('seeya')
-    logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp-test'}, everyone.now.receiveSystemMessage
+    logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
 
   # SETUP IRC ON NODE.JS SERVER
   #-----------------------------------------------------
