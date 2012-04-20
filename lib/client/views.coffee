@@ -96,7 +96,8 @@ jQuery ->
       'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
       # Bind the window reaize event to call fitHeight.
-      $(window).bind 'resize', => @fitHeight($(this).height())
+      view = @
+      $(window).bind 'resize', -> view.fitHeight($(this).height())
       @attachMenu();
     render: ->
       @promptUserName()

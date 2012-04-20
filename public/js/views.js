@@ -167,9 +167,10 @@
       };
 
       MessagesView.prototype.initialize = function(options) {
-        var _this = this;
+        var view;
+        view = this;
         $(window).bind('resize', function() {
-          return _this.fitHeight($(_this).height());
+          return view.fitHeight($(this).height());
         });
         return this.attachMenu();
       };
