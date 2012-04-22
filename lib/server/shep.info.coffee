@@ -3,30 +3,10 @@
 http = require 'http'
 querystring = require 'querystring'
 express = require 'express'
-mustache = require 'mustache'
 ejs = require 'ejs'
 
 RedisStore = require('connect-redis')(express)
 redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
-
-# MUSTACHE FOR EXPRESS
-#-----------------------------------------------------
-# Adapted to coffeescript from:
-# http://bitdrift.com/post/2376383378/using-mustache-templates-in-express
-mustache_template =
-  compile: (source, options) ->
-    if (typeof source == 'string')
-      (options) ->
-        options.locals = options.locals || {}
-        options.partials = options.partials || {}
-        if (options.body) # for express.js > v1.0
-          locals.body = options.body
-        mustache.to_html(source, options.locals, options.partials)
-    else
-      source
-  render: (template, options) ->
-    template = this.compile(template, options)
-    template(options)
 
 # SETUP EXPRESS APP
 #-----------------------------------------------------
@@ -44,8 +24,6 @@ app.configure ->
 
   app.set('views', __dirname + '/../../views')
   app.set('view engine', 'ejs')
-
-  app.register(".mustache", mustache_template)
 
 # Load other app files
 require('./authentication/routes')(app)
