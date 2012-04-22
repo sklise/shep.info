@@ -3,9 +3,8 @@
 // 2. Inception Rule: Do not nest further than 3 levels.
 // 3. Keep IDs at top level as much as possible.
 // 4. Use descriptive state-based classes.
-// 5. List native elements first and classes after.
-// 6. DRY: Colors and snippets used more than once should be mixins.
-// 7. Use comments with lines of underscores to column 55.
+// 5. List elements first and id and class selectors after.
+// 6. Organize id and class selectors according to position in page.
 
 // 370 / 10 = 37
 $column-width: 21px;
@@ -102,7 +101,40 @@ a {
   overflow: auto;
 }
 
-#footer {
+// MENU WINDOW aka the Left Side of the site.
+//----------------------------------------------------
+#menu-window {
+  @include grid-column(10);
+  position: relative;
+  max-height: 100%;
+  overflow-y: scroll;
+}
+
+#heading {
+  @include box-sizing;
+  background-image: url('http://shep.info.s3.amazonaws.com/shep.jpg');
+  background-position: left top;
+  background-repeat: no-repeat;
+  -webkit-background-size: grid-width(10) grid-width(5);
+  -moz-background-size: grid-width(10) grid-width(5);
+  background-size: grid-width(10) grid-width(5);
+  height: grid-width(6);
+  padding-left: grid-width(5, $gutter-width);
+  padding-top: grid-width(3);
+  position: relative;
+
+  h1, h3 {
+    position: absolute;
+    bottom: grid-width(1);
+  }
+
+  h3 a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 #feedback {
@@ -124,17 +156,6 @@ a {
   }
 }
 
-@import 'chats';
-@import 'events';
-
-.date-time {
-  @include mono-font;
-  color: lighten($black, 88%);
-  font-size: modular-scale(2, $alt-size, $golden);
-  line-height: modular-scale(3, $alt-size, $golden);
-}
-
-
 // INTRODUCTION BOX
 //____________________________________________________
 .introduction {
@@ -148,4 +169,16 @@ a {
     line-height: ms(2, $base-size, $golden);
     margin: 0.5em 0;
   }
+}
+
+#footer {
+}
+
+@import 'chats';
+
+.date-time {
+  @include mono-font;
+  color: lighten($black, 88%);
+  font-size: modular-scale(2, $alt-size, $golden);
+  line-height: modular-scale(3, $alt-size, $golden);
 }

@@ -1,8 +1,13 @@
-![](http://shep.info/images/shep.jpg)
+![](http://shep.info.s3.amazonaws.com/shep.jpg)
 
 # Shep's yard
 
 ## Changelog
+
+### 1.0.0-rc2 2012/04/22
+
+- New logo, hosted on S3.
+
 
 ### 1.0.0-rc1 2012/04/19
 
