@@ -1,6 +1,5 @@
 # REQUIRE MODULES
 #-----------------------------------------------------
-require('coffee-script')
 http = require 'http'
 querystring = require 'querystring'
 express = require 'express'
@@ -35,7 +34,7 @@ app = express.createServer(express.logger())
 
 app.configure ->
   # Setup static file server
-  app.use express.static(__dirname + '/public')
+  app.use express.static(__dirname + '/../../public')
   app.use express.bodyParser()
   app.use express.cookieParser()
   app.use express.session({
@@ -43,16 +42,16 @@ app.configure ->
     store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]})
   })
 
-  app.set('views', __dirname + '/views')
+  app.set('views', __dirname + '/../../views')
   app.set('view engine', 'ejs')
 
   app.register(".mustache", mustache_template)
 
 # Load other app files
-require('./lib/server/authentication/routes')(app)
-logging = require('./lib/server/logging')(app)
-require('./lib/server/helpers')(app)
-require('./lib/server/now-shep')(app, logging)
+require('./authentication/routes')(app)
+logging = require('./logging')(app)
+require('./helpers')(app)
+require('./now-shep')(app, logging)
 
 # ROUTES
 #-----------------------------------------------------
@@ -61,8 +60,12 @@ app.get '/', (req, res) ->
     title: "Shep"
 
 app.get '/help', (req, res) ->
-  res.render 'authentication/login.ejs',
-    title: "Login"
+  res.render 'index.ejs',
+    title: "Shep ☞ Help"
+
+app.get '/channels/:name', (req, res) ->
+  res.render 'index.ejs',
+    title: "Shep ☞ #{req.params.name}"
 
 # LISTEN ON A PORT
 #-----------------------------------------------------
