@@ -7,13 +7,10 @@ jQuery ->
       @messagesview = new MessagesView collection: app.Messages
     render: ->
       @feedbackview.render().el
-      # $(@el).find('#event-window').append @eventsview.render().el
-      # @messagesview.render().el
       @
 
   # Feedback Form
   #---------------------------------------------------
-  # 
   class FeedbackView extends Backbone.View
     events:
       'click .feedback-button' : 'toggleForm'
@@ -100,11 +97,9 @@ jQuery ->
       $(window).bind 'resize', -> view.fitHeight($(this).height())
       @attachMenu();
     render: ->
-      @promptUserName()
       $(@el).empty().html(Mustache.render(@template), {name: now.name})
       @fitHeight $(window).height()
       @
-
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
@@ -135,9 +130,10 @@ jQuery ->
         title: "Please enter a name."
         message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">'))
         .modal()
-        .show (ok) ->
+        .show (ok) =>
           if ok
-            name = $(this.el).find('input').val().trim()
+            @render().el
+            name = $('#dialog').find('input').val().trim()
             $('.chat-name').val(name)
             now.changeName name
       # Disable OK button and remove the cancel button

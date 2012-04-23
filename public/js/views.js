@@ -176,7 +176,6 @@
       };
 
       MessagesView.prototype.render = function() {
-        this.promptUserName();
         $(this.el).empty().html(Mustache.render(this.template), {
           name: now.name
         });
@@ -224,7 +223,9 @@
         }).modal().show(function(ok) {
           var name;
           if (ok) {
-            name = $(this.el).find('input').val().trim();
+            _this.render().el;
+            console.log("oh my shit");
+            name = $('#dialog').find('input').val().trim() || "lkejflekjrlekjrlekjlkjk";
             $('.chat-name').val(name);
             return now.changeName(name);
           }
