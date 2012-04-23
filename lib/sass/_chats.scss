@@ -124,8 +124,8 @@
   font-size: ms(3, $base-size, $golden);
 }
 
-// CHAT LOG
-//____________________________________________________
+// CHAT LOG CONTAINER
+//----------------------------------------------------
 #chat-log-container {
   @include grid-column(24);
   height: 500px;
@@ -133,63 +133,8 @@
   position: relative;
 }
 
-#chat-log {
-  @include box-sizing;
-  background-color: $chat-background;
-  min-height: 400px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 0 0 1em;
-
-  li {
-    @include grid-row;
-    overflow-y: auto;
-    padding: 1em 0 0.3em;
-    position: relative;
-    word-wrap: break-word;
-
-    &.system-notice {
-      padding: 0.2em 0;
-    }
-
-    // Show consecutive messages from the same chatter closer together and
-    // hide the chatter's name in consecutive messages.
-    &.consecutive {
-      padding: 0.2em 0;
-
-      .chatter {
-        opacity: 0;
-      }
-    }
-
-    // Make the .message-time visible when the mouse hovers the containing li.
-    &:hover .message-time {
-      opacity: 1;
-    }
-
-    &.self .chatter {
-      color: $blue;
-    }
-
-    // Call out messages from Shep with a golden font color and a brighter
-    // background.
-    &.shep {
-      background: $shep-background;
-
-      .chatter {
-        color: $shep-name;
-      }
-    }
-
-    &.system-notice,
-    &.previous-message {
-      background-color: desaturate($chat-background, 10%);
-      color: gray;
-      font-style: italic;
-    }
-  }
-}
-
+// USER LIST
+//----------------------------------------------------
 #user-list {
   @include box-sizing;
   background-color: $highlight-yellow;
@@ -199,9 +144,70 @@
   right: 0;
   top: 0;
   // Margin: (16/2) / 860
-  margin: 8px 0.9009009% 0;
+  margin: 37px 0.9009009% 0;
   /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=3 */
   width: 10.6981982%;
+}
+
+// CHAT LOG
+//----------------------------------------------------
+#chat-log {
+  @include box-sizing;
+  background-color: $chat-background;
+  min-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 0 1em;
+}
+
+// MESSAGES
+//----------------------------------------------------
+#chat-log li {
+  @include grid-row;
+  overflow-y: auto;
+  padding: 1em 0 0.3em;
+  position: relative;
+  word-wrap: break-word;
+
+  &.system-notice {
+    padding: 0.2em 0;
+  }
+
+  // Show consecutive messages from the same chatter closer together and
+  // hide the chatter's name in consecutive messages.
+  &.consecutive {
+    padding: 0.2em 0;
+
+    .chatter {
+      opacity: 0;
+    }
+  }
+
+  // Make the .message-time visible when the mouse hovers the containing li.
+  &:hover .message-time {
+    opacity: 1;
+  }
+
+  &.self .chatter {
+    color: $blue;
+  }
+
+  // Call out messages from Shep with a golden font color and a brighter
+  // background.
+  &.shep {
+    background: $shep-background;
+
+    .chatter {
+      color: $shep-name;
+    }
+  }
+
+  &.system-notice,
+  &.previous-message {
+    background-color: desaturate($chat-background, 10%);
+    color: gray;
+    font-style: italic;
+  }
 }
 
 // Timestamps are aligned along the right side of #chat-log and are transparent

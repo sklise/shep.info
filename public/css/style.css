@@ -98,9 +98,10 @@ a {
   margin: 0 8px;
   float: left;
   width: 354px;
-  position: relative;
+  margin-top: 16px;
   max-height: 100%;
-  overflow-y: scroll; }
+  overflow-y: scroll;
+  position: relative; }
 
 #heading {
   -moz-box-sizing: border-box;
@@ -148,6 +149,10 @@ a {
     font-size: 12px;
     line-height: 16px;
     margin: 0.5em 0; }
+
+#footer {
+  color: #dbd7d4;
+  font-size: 11px; }
 
 #chat-window {
   float: left;
@@ -252,41 +257,6 @@ a {
   overflow-y: scroll;
   position: relative; }
 
-#chat-log {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  background-color: #f5f8ff;
-  min-height: 400px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 0 0 1em; }
-  #chat-log li {
-    width: auto;
-    margin: 0 -8px;
-    overflow-y: auto;
-    padding: 1em 0 0.3em;
-    position: relative;
-    word-wrap: break-word; }
-    #chat-log li.system-notice {
-      padding: 0.2em 0; }
-    #chat-log li.consecutive {
-      padding: 0.2em 0; }
-      #chat-log li.consecutive .chatter {
-        opacity: 0; }
-    #chat-log li:hover .message-time {
-      opacity: 1; }
-    #chat-log li.self .chatter {
-      color: #110df5; }
-    #chat-log li.shep {
-      background: rgba(95, 206, 237, 0.3); }
-      #chat-log li.shep .chatter {
-        color: #db8c3d; }
-    #chat-log li.system-notice, #chat-log li.previous-message {
-      background-color: #f6f8ff;
-      color: gray;
-      font-style: italic; }
-
 #user-list {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -297,9 +267,45 @@ a {
   position: absolute;
   right: 0;
   top: 0;
-  margin: 8px 0.9009009% 0;
+  margin: 37px 0.9009009% 0;
   /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=3 */
   width: 10.6981982%; }
+
+#chat-log {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #f5f8ff;
+  min-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 0 1em; }
+
+#chat-log li {
+  width: auto;
+  margin: 0 -8px;
+  overflow-y: auto;
+  padding: 1em 0 0.3em;
+  position: relative;
+  word-wrap: break-word; }
+  #chat-log li.system-notice {
+    padding: 0.2em 0; }
+  #chat-log li.consecutive {
+    padding: 0.2em 0; }
+    #chat-log li.consecutive .chatter {
+      opacity: 0; }
+  #chat-log li:hover .message-time {
+    opacity: 1; }
+  #chat-log li.self .chatter {
+    color: #110df5; }
+  #chat-log li.shep {
+    background: rgba(95, 206, 237, 0.3); }
+    #chat-log li.shep .chatter {
+      color: #db8c3d; }
+  #chat-log li.system-notice, #chat-log li.previous-message {
+    background-color: #f6f8ff;
+    color: gray;
+    font-style: italic; }
 
 .message-time {
   background-color: rgba(0, 0, 0, 0.5);

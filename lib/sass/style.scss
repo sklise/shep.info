@@ -105,9 +105,10 @@ a {
 //----------------------------------------------------
 #menu-window {
   @include grid-column(10);
-  position: relative;
+  margin-top: 16px;
   max-height: 100%;
   overflow-y: scroll;
+  position: relative;
 }
 
 #heading {
@@ -172,13 +173,9 @@ a {
 }
 
 #footer {
+  color: $divider-dark-gray;
+  font-size: ms(1, $alt-size, $golden);
 }
 
 @import 'chats';
-
-.date-time {
-  @include mono-font;
-  color: lighten($black, 88%);
-  font-size: modular-scale(2, $alt-size, $golden);
-  line-height: modular-scale(3, $alt-size, $golden);
-}
+@import 'ui';
