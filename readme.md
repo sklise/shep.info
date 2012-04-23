@@ -8,7 +8,7 @@
 
 - New logo, hosted on S3.
 - Change Github references from itpirl to shep.info.
-
+- Package javascripts to one request.
 
 ### 1.0.0-rc1 2012/04/19
 
