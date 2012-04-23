@@ -96,7 +96,7 @@
       return $('.chat-name').val(name);
     };
     now.triggerIRCLogin = function() {
-      return app.MessagesView.render().el;
+      return app.MessagesView.promptUserName();
     };
     now.receivePreviousMessage = function(timestamp, sender, message, destination) {
       if (destination == null) destination = 'itp';

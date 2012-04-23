@@ -89,7 +89,7 @@ jQuery ->
   # Called from the server in the context of the user when login to IRC is
   # complete. Renders the messages view.
   now.triggerIRCLogin = ->
-    app.MessagesView.render().el
+    app.MessagesView.promptUserName()
 
   now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
     if sender in ['Join', 'Leave']
