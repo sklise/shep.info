@@ -9,6 +9,9 @@
 - New logo, hosted on S3.
 - Change Github references from itpirl to shep.info.
 - Package javascripts to one request.
+- Implement sessions with Redis.
+- Call changeNick only to the targeted user and not for all users. This fixes
+  the random naming bug.
 
 ### 1.0.0-rc1 2012/04/19
 
