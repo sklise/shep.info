@@ -1,12 +1,12 @@
 {
-  "name": "itpirl",
+  "name": "shep.info",
   "version": "0.0.1",
   "author": "Steven Klise",
   "description": "web chat, events and dashboard for ITP",
   "licenses": [
     {
       "type": "MIT",
-      "url": "http://github.com/stevenklise/itpirl/raw/master/License.md"
+      "url": "http://github.com/stevenklise/shep.info/raw/master/License.md"
     }
   ],
   "repository": {

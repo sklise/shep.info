@@ -1,12 +1,13 @@
 ![](http://shep.info.s3.amazonaws.com/shep.jpg)
 
-# Shep's yard
+# Shep.info
 
 ## Changelog
 
 ### 1.0.0-rc2 2012/04/22
 
 - New logo, hosted on S3.
+- Change Github references from itpirl to shep.info.
 
 
 ### 1.0.0-rc1 2012/04/19
