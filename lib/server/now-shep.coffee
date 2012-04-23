@@ -1,46 +1,106 @@
-nowShep = (app, logging) ->
+nowjs = require 'now'
+irc = require 'irc'
+redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+connect = require('connect')
 
-  channelName = '#itp'
-  redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+channelName = '#itp'
+ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 
-  nowjs = require 'now'
-  irc = require 'irc'
+class ircBridge
+  constructor: (@name, callback) ->
+    @client = new irc.Client ircHost, @name,
+      channels: ["#{channelName}"]
+      port: process.env.ITPIRL_IRC_PORT || 6667
+      autoConnect: true
 
-  ircConnections = {}
-  ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+    @loggedIn = false
 
-  class ircBridge
-    constructor: (@name, callback) ->
-      @client = new irc.Client ircHost, @name,
-        channels: ["#{channelName}"]
-        port: process.env.ITPIRL_IRC_PORT || 6667
-        autoConnect: true
+    # Listen for IRC events relating to this user.
+    @client.addListener 'pm', (from, message) ->
+      console.log "C PM FROM:   #{from}:", message
+    @client.addListener 'error', (message) ->
+      console.log "C ERROR:     ", message
+    @client.addListener 'notice', (nick, to, text, message) ->
+      console.log "C NOTICE:    #{nick}: #{to} : #{text} : #{message}"
+    @client.addListener 'part', (channel, nick) =>
+      # @client.send "NAMES #{channel}"
+      # console.log "C LEAVE:     #{channel} #{nick}"
+    @client.addListener 'join', (channel, nick) =>
+      callback(@client.nick) if not @loggedIn
+      @loggedIn = true
+      # console.log "C JOIN:      #{channel} #{nick}"
+    @client.addListener 'message', (from, channel, message) ->
+      # console.log "C MESSAGE:   #{from} #{channel} #{message}"
 
-      @loggedIn = false
-
-      # Listen for IRC events relating to this user.
-      @client.addListener 'pm', (from, message) ->
-        console.log "C PM FROM:   #{from}:", message
-      @client.addListener 'error', (message) ->
-        console.log "C ERROR:     ", message
-      @client.addListener 'notice', (nick, to, text, message) ->
-        console.log "C NOTICE:    #{nick}: #{to} : #{text} : #{message}"
-      @client.addListener 'part', (channel, nick) =>
-        @client.send "NAMES #{channel}"
-        console.log "C LEAVE:     #{channel} #{nick}"
-      @client.addListener 'join', (channel, nick) =>
-        callback(@client.nick) if not @loggedIn
-        @loggedIn = true
-        console.log "C JOIN:      #{channel} #{nick}"
-      @client.addListener 'message', (from, channel, message) ->
-        console.log "C MESSAGE:   #{from} #{channel} #{message}"
+nowShep = (app, logging, sessionStore) ->
 
   # SETUP NOW.JS
   #-----------------------------------------------------
   everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
 
+  #### Connecting to Now.js
+  # On the connect event create an `ircBridge` for the new user with `@now.name`
+  # and log to Redis that a new user has joined.
+
+  chatters ?= {}
+
+  nowjs.on 'connect', ->
+    # Get the id of the user's cookie.
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+
+    sessionStore.get sid, (err, sess) =>
+      chatters[sid] = sess
+
+      chatters[sid].name ?= "itp#{Date.now()}"
+      @now.name = chatters[sid].name
+
+      chatters[sid].irc = new ircBridge (@now.name), (nick) =>
+        @now.triggerIRCLogin()
+        # Get recent messages from Redis and send them only to this user.
+        everyone.now.recentMessages 'itp'
+        # Save the session to Redis.
+        sessionStore.saveSession chatters, sid
+
+  nowjs.on 'disconnect', ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    chatters[sid].irc.client.disconnect('seeya')
+    everyone.ircClient.send "NAMES #{channelName}"
+
   # NOW CHAT
   #-----------------------------------------------------
+
+  everyone.now.recentMessages = (room) ->
+    redis.llen 'messages:' + room, (err, length) =>
+      start = length - 10
+      end = length - 1
+
+      redis.lrange 'messages:' + room, start, end, (err, obj) =>
+        for message in obj
+          # Redis returns the object as a string, turn it back to an object
+          m = JSON.parse(message)
+          # Send these previous messages to the client
+          @now.receivePreviousMessage(m.timestamp, m.sender, m.message)
+
+  # Propogate name change to IRC and send out a message.
+  everyone.now.changeNick = (oldNick, newNick) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    message = "NICK #{newNick}"
+    chatters[sid].irc.client.send message
+    sessionStore.saveSession chatters, sid
+    console.log sid
+
+  # Sets @now.name to the value of newName and changes the user's irc nickname.
+  # Saves the names to the session.
+  everyone.now.changeName = (newName) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    chatters[sid].name = newName
+    @now.name = newName
+    @now.changeNick('something', newName)
+    sessionStore.saveSession chatters, sid
+
+  everyone.now.inspectSession = ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    console.log "AWW YEA", chatters[sid]
 
   #### Chat Messages
   # A Chat message is initiated by textual input from a client. This includes
@@ -54,30 +114,14 @@ nowShep = (app, logging) ->
   # to IRC. Currently no method for sending direct messages. And that's ok...for
   # now.
   everyone.now.distributeChatMessage = (sender, message, destination={'room':channelName}) ->
-    ircConnections[@user.clientId].client.say("#{destination.room}", message)
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    chatters[sid].irc.client.say("#{destination.room}", message)
 
   #### System Messages
 
   # A System message is initiated by the server. Client actions can trigger a
   # System message but cannot initiate their own system message... I think.
   # Timestamps are set by this method.
-
-  # System Message Types:
-  # - Join
-  # - Leave
-  # - NickChange
-  # - Bulletin
-
-  # I NEED TO BE SURE THIS METHOD IS PRIVATE
-
-  #      { type:MESSAGE_TYPE,
-  #        message: MESSAGE_BODY,
-  #        destination: {
-  #          room:____
-  #          XOR
-  #          name:____ <- is this better to be a name or a clientID?
-  #        }
-  #      }
   everyone.now.distributeSystemMessage = (type, message, destination={'room':'itp'})  ->
     logging.logMessage type, message, destination
     everyone.now.receiveSystemMessage Date.now(), type, message
@@ -85,60 +129,9 @@ nowShep = (app, logging) ->
   everyone.now.logFeedback = (sender, message) ->
     logging.logMessage sender, message, {room:'itpirl-feedback'}
 
-  # Get the names of all connected Now.js clientss
-  # everyone.now.getUserList = ->
-  #   everyone.now.userList = []
-  #   everyone.getUsers (users) ->
-  #     for user in users
-  #       nowjs.getClient user, ->
-  #         everyone.now.addUserToList @now.name
-
-  # Propogate name change to IRC and send out a message.
-  everyone.now.changeNick = (oldNick, newNick) ->
-    ircConnections[@user.clientId].client.nick = newNick
-    ircConnections[@user.clientId].client.send "NICK #{newNick}"
-
-  everyone.now.changeName = (newName) ->
-    @now.name = newName
-    everyone.now.changeNick('something', newName)
-
   everyone.now.joinChannel = (channelName) ->
-    ircConnections[@user.clientId].client.send "JOIN ##{channelName}"
-
-  #### Connecting to Now.js
-  # On the connect event create an `ircBridge` for the new user with `@now.name`
-  # and log to Redis that a new user has joined.
-  nowjs.on 'connect', ->
-    # Create an ircBridge object for the new user. And tell everyone there is a
-    # new user.
-    @now.name ?= "itp#{Date.now()}"
-
-    # nowjs.getClient @user.clientId, ->
-    ircConnections[@user.clientId] = new ircBridge (@now.name), (nick) =>
-        
-      @now.triggerIRCLogin()
-      logging.logAndForward 'Join', "#{@now.name} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
-
-    # Get recent messages from Redis and send them only to this user.
-    room = 'itp'
-
-    redis.llen 'messages:' + room, (err, length) =>
-      start = length - 10
-      end = length - 1
-
-      redis.lrange 'messages:' + room, start, end, (err, obj) =>
-        for message in obj
-          # Redis returns the object as a string, turn it back to an object
-          m = JSON.parse(message)
-          # Send these previous messages to the client
-          @now.receivePreviousMessage(m.timestamp, m.sender, m.message)
-
-  nowjs.on 'disconnect', ->
-    # Disconnect that user from IRC.
-    # I PROBABLY NEED TO DESTROY THIS OBJECT?
-    everyone.ircClient.send "NAMES #{channelName}"
-    ircConnections[@user.clientId].client.disconnect('seeya')
-    logging.logAndForward 'Leave', "#{@now.name} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    chatters[sid].irc.client.send "JOIN ##{channelName}"
 
   # SETUP IRC ON NODE.JS SERVER
   #-----------------------------------------------------
@@ -166,11 +159,12 @@ nowShep = (app, logging) ->
   everyone.ircClient.addListener "message#{channelName}", (from, message) ->
     logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
   everyone.ircClient.addListener "join", (channel, nick) =>
+    logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
     everyone.ircClient.send "NAMES #{channel}"
   everyone.ircClient.addListener 'part', (channel, nick) =>
+    logging.logAndForward 'Leave', "#{nick} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
     everyone.ircClient.send "NAMES #{channel}"
   everyone.ircClient.addListener "names", (channel, nicks) =>
     everyone.now.updateUserList(channel, nicks)
-
 
 module.exports = nowShep
