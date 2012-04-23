@@ -1,6 +1,5 @@
-@app = window.app ? {}
-
 jQuery ->
+  @app = window.app ? {}
   # @app.router = new app.ChannelRouter
   # Backbone.history.start({pushState:true})
 
