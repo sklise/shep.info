@@ -6,7 +6,6 @@ express = require('express')
 connect = require('connect')
 ejs = require('ejs')
 assetManager = require('connect-assetmanager')
-assetHandler = require('connect-assetmanager-handlers')
 
 RedisStore = require('connect-redis')(express)
 redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
