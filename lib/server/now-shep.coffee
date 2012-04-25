@@ -92,19 +92,27 @@ nowShep = (app, logging, sessionStore) ->
   # Propogate name change to IRC and send out a message.
   everyone.now.changeNick = (oldNick, newNick) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    message = "NICK #{newNick}"
-    chatters[sid].irc.client.send message
-    sessionStore.saveSession chatters, sid
-    console.log sid
+    ircs[sid].client.nick = newNick
+    ircs[sid].client.send "NICK #{newNick}"
+    sessionStore.set sid, chatters[sid], (err, res) ->
+      console.log err, res
 
   # Sets @now.name to the value of newName and changes the user's irc nickname.
   # Saves the names to the session.
   everyone.now.changeName = (newName) ->
+    console.log "CHANGE NAME\n"
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     chatters[sid].name = newName
     @now.name = newName
     @now.changeNick('something', newName)
-    sessionStore.saveSession chatters, sid
+    sessionStore.set sid, chatters[sid], (err, res) ->
+      console.log err, res
+
+  everyone.now.savePair = (key, value) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    console.log chatters[sid][key] = value
+    sessionStore.set sid, chatters[sid], (err, res) ->
+      console.log err, res
 
   everyone.now.inspectSession = ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
@@ -123,7 +131,7 @@ nowShep = (app, logging, sessionStore) ->
   # now.
   everyone.now.distributeChatMessage = (sender, message, destination={'room':channelName}) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    chatters[sid].irc.client.say("#{destination.room}", message)
+    ircs[sid].client.say("#{destination.room}", message)
 
   #### System Messages
 
@@ -139,7 +147,7 @@ nowShep = (app, logging, sessionStore) ->
 
   everyone.now.joinChannel = (channelName) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    chatters[sid].irc.client.send "JOIN ##{channelName}"
+    ircs[sid].client.send "JOIN ##{channelName}"
 
   # SETUP IRC ON NODE.JS SERVER
   #-----------------------------------------------------
