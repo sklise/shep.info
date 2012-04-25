@@ -15,21 +15,17 @@ class ircBridge
     @loggedIn = false
 
     # Listen for IRC events relating to this user.
-    @client.addListener 'pm', (from, message) ->
-      console.log "C PM FROM:   #{from}:", message
     @client.addListener 'error', (message) ->
       console.log "C ERROR:     ", message
     @client.addListener 'notice', (nick, to, text, message) ->
       console.log "C NOTICE:    #{nick}: #{to} : #{text} : #{message}"
-    @client.addListener 'part', (channel, nick) =>
-      # @client.send "NAMES #{channel}"
-      # console.log "C LEAVE:     #{channel} #{nick}"
     @client.addListener 'join', (channel, nick) =>
       callback(@client.nick) if not @loggedIn
       @loggedIn = true
-      # console.log "C JOIN:      #{channel} #{nick}"
+    @client.addListener 'pm', (from, message) ->
+      console.log "C PM FROM:   #{from}:", message
     @client.addListener 'message', (from, channel, message) ->
-      # console.log "C MESSAGE:   #{from} #{channel} #{message}"
+      console.log "C MESSAGE:   #{from} #{channel} #{message}"
 
 nowShep = (app, logging, sessionStore) ->
 
