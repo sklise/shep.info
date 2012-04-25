@@ -31,7 +31,10 @@ nowShep = (app, logging, sessionStore) ->
 
   # SETUP NOW.JS
   #-----------------------------------------------------
-  everyone = nowjs.initialize(app, {socketio: {transports:['xhr-polling','jsonp-polling']}})
+  everyone = nowjs.initialize(app, {socketio:{
+    transports:['xhr-polling','jsonp-polling']
+    "polling duration": 10
+    }})
 
   #### Connecting to Now.js
   # On the connect event create an `ircBridge` for the new user with `@now.name`
