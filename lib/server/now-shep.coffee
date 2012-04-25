@@ -1,7 +1,6 @@
 nowjs = require 'now'
 irc = require 'irc'
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
-connect = require('connect')
 
 channelName = '#itp'
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
@@ -43,27 +42,36 @@ nowShep = (app, logging, sessionStore) ->
   # and log to Redis that a new user has joined.
 
   chatters ?= {}
+  ircs = {}
+
 
   nowjs.on 'connect', ->
     # Get the id of the user's cookie.
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
 
+    console.log sid, chatters
+
     sessionStore.get sid, (err, sess) =>
       chatters[sid] = sess
+      console.log "session", sess
+      # Fallback value for name
+      @now.name = chatters[sid].name ?= "itp#{Date.now()}"
 
-      chatters[sid].name ?= "itp#{Date.now()}"
-      @now.name = chatters[sid].name
-
-      chatters[sid].irc = new ircBridge (@now.name), (nick) =>
+      ircs[sid] = new ircBridge (@now.name), (nick) =>
+        console.log "and?"
         @now.triggerIRCLogin()
         # Get recent messages from Redis and send them only to this user.
-        everyone.now.recentMessages 'itp'
-        # Save the session to Redis.
-        sessionStore.saveSession chatters, sid
+        @now.recentMessages 'itp'
 
   nowjs.on 'disconnect', ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    chatters[sid].irc.client.disconnect('seeya')
+    ircs[sid].client.disconnect('seeya')
+    ircs[sid].loggedIn = false
+    # Save session to Redis and then destroy the cache.
+    sessionStore.set sid, chatters[sid], ->
+      console.log "Saving on disconnect"
+      delete chatters[sid]
+    # Ask IRC for the list of names.
     everyone.ircClient.send "NAMES #{channelName}"
 
   # NOW CHAT
@@ -146,6 +154,12 @@ nowShep = (app, logging, sessionStore) ->
     userName: process.env.ITPIRL_IRC_USERNAME || ''
     password: process.env.ITPIRL_IRC_PASSWORD || ''
 
+
+  objectLength = (object) ->
+    keys = for key, value of object
+      "#{key}"
+    keys.length
+
   # Nick change notifications go to everyone and since some people may sign in
   # with IRC directly and not via itpirl.com if each client listens for nick
   # changes the log will just get super huge. Let's only listen for these on the
@@ -153,18 +167,28 @@ nowShep = (app, logging, sessionStore) ->
   everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
     for channel in channels
       everyone.ircClient.send "NAMES #{channel}"
-    logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
+    if objectLength(nowjs.users) isnt 0
+      console.log "NICK LISTENER"
+      logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
   everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
-    console.log "S NOTICE:   ", "#{nick}: #{to} : #{text} : #{message}"
+    console.log("S NOTICE:   ", "#{nick}: #{to} : #{text} : #{message}")
   everyone.ircClient.addListener "message#{channelName}", (from, message) ->
-    logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
+    if objectLength(nowjs.users) isnt 0
+      console.log "MESSAGE LISTENER"
+      logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
   everyone.ircClient.addListener "join", (channel, nick) =>
-    logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
-    everyone.ircClient.send "NAMES #{channel}"
+    if objectLength(nowjs.users) isnt 0
+      console.log "S NOTICE:   JOIN"
+      logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+      everyone.ircClient.send "NAMES #{channel}"
   everyone.ircClient.addListener 'part', (channel, nick) =>
-    logging.logAndForward 'Leave', "#{nick} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
-    everyone.ircClient.send "NAMES #{channel}"
+    if objectLength(nowjs.users) isnt 0
+      console.log(color("PART #{nick}", "yellow"))
+      logging.logAndForward 'Leave', "#{nick} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+      everyone.ircClient.send "NAMES #{channel}"
   everyone.ircClient.addListener "names", (channel, nicks) =>
-    everyone.now.updateUserList(channel, nicks)
+    if objectLength(nowjs.users) isnt 0
+      console.log "S NOTICE:"
+      everyone.now.updateUserList(channel, nicks)
 
 module.exports = nowShep
