@@ -191,6 +191,8 @@
       MessagesView.prototype.ignoreKeys = function(e) {
         if (e.keyCode === 13 || e.keyCode === 32) {
           return false;
+        } else if ($(e.target).val().length >= 20) {
+          return false;
         } else {
           return true;
         }
@@ -262,13 +264,17 @@
       };
 
       MessagesView.prototype.resizeInput = function(e) {
-        var message;
+        var message, messageDec, rows;
         message = $(e.target).val();
-        if (message.length > 80) {
-          return $(e.target).attr('rows', 2);
-        } else {
-          return $(e.target).attr('rows', 1);
-        }
+        messageDec = function(ml) {
+          if (ml <= 78) {
+            return 1;
+          } else {
+            return ml / 78;
+          }
+        };
+        rows = Math.min(5, Math.ceil(messageDec(message.length)));
+        return $(e.target).attr('rows', rows);
       };
 
       MessagesView.prototype.sendMessage = function(e) {

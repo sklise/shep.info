@@ -107,6 +107,8 @@ jQuery ->
     ignoreKeys: (e) ->
       if e.keyCode is 13 or e.keyCode is 32
         return false
+      else if $(e.target).val().length >= 20
+        return false
       else
         return true
     toggleMenu: (e) ->
@@ -174,10 +176,13 @@ jQuery ->
 
     resizeInput: (e) ->
       message = $(e.target).val()
-      if message.length > 80
-        $(e.target).attr('rows', 2)
-      else
-        $(e.target).attr('rows', 1)
+      messageDec = (ml) ->
+        if ml <= 78
+          return 1
+        else
+          return (ml / 78)
+      rows = Math.min(5, Math.ceil(messageDec(message.length)))
+      $(e.target).attr('rows', rows)
 
     sendMessage: (e) ->
       message = $(e.target).val().trim()
