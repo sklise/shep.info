@@ -159,6 +159,7 @@
         'mouseenter .exitable-room': 'showX',
         'mouseleave .exitable-room': 'hideX',
         'blur .chat-name': 'updateName',
+        'keypress .chat-name': 'ignoreKeys',
         'keyup .new-message-input': 'resizeInput',
         'paste .new-message-input': 'resizeInput',
         'cut .new-message-input': 'resizeInput',
@@ -185,6 +186,14 @@
 
       MessagesView.prototype.attachMenu = function() {
         return this.menu = ui.menu().add('Add Channel...');
+      };
+
+      MessagesView.prototype.ignoreKeys = function(e) {
+        if (e.keyCode === 13 || e.keyCode === 32) {
+          return false;
+        } else {
+          return true;
+        }
       };
 
       MessagesView.prototype.toggleMenu = function(e) {
@@ -224,8 +233,7 @@
           var name;
           if (ok) {
             _this.render().el;
-            console.log("oh my shit");
-            name = $('#dialog').find('input').val().trim() || "lkejflekjrlekjrlekjlkjk";
+            name = $('#dialog').find('input').val().trim();
             $('.chat-name').val(name);
             return now.changeName(name);
           }

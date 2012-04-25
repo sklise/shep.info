@@ -86,6 +86,7 @@ jQuery ->
       'mouseenter .exitable-room' : 'showX'
       'mouseleave .exitable-room' : 'hideX'
       'blur .chat-name' : 'updateName'
+      'keypress .chat-name' : 'ignoreKeys'
       'keyup .new-message-input' : 'resizeInput'
       'paste .new-message-input' : 'resizeInput'
       'cut .new-message-input' : 'resizeInput'
@@ -103,6 +104,11 @@ jQuery ->
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
+    ignoreKeys: (e) ->
+      if e.keyCode is 13 or e.keyCode is 32
+        return false
+      else
+        return true
     toggleMenu: (e) ->
       $menuButton = $('.channel-menu-button')
       menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}
