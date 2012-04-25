@@ -4,6 +4,14 @@
 
 ## Changelog
 
+### 1.0.0-rc3 2012/04/25
+
+- Save chat names to session
+- Ignore space and return key when cursor is in .chat-name
+- Improve console logging of IRC events, add colors.
+- Add IRC listener for QUIT.
+- Save logged in status to session to prevent rerendering of chat.
+
 ### 1.0.0-rc2 2012/04/22
 
 - New logo, hosted on S3.
