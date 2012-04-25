@@ -58,10 +58,7 @@ nowShep = (app, logging, sessionStore) ->
 
   # SETUP NOW.JS
   #-----------------------------------------------------
-  everyone = nowjs.initialize(app, {socketio:{
-    transports:['xhr-polling','jsonp-polling']
-    "polling duration": 10
-    }})
+  everyone = nowjs.initialize(app, {socketio:{ transports:['xhr-polling','jsonp-polling'] }})
 
   nowjs.on 'connect', ->
     # Get the id of the user's cookie.
