@@ -192,9 +192,7 @@ jQuery ->
     updateName: (e) ->
       raw = $(e.target).val()
       if raw != now.name
-        oldname = now.name
-        now.name = raw
-        now.changeNick oldname, now.name
+        now.changeName(now.name = raw)
         true
       else
         false
