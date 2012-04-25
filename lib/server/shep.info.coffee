@@ -58,18 +58,12 @@ require('./authentication/routes')(app)
 logging = require('./logging')(app)
 require('./helpers')(app)
 
-RedisStore::saveSession = (chatters, sid)->
-    @set sid, chatters[sid], =>
-      # console.log "Saving", chatters[sid].name
-      return
-
 require('./now-shep')(app, logging, new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]}))
 
 # ROUTES
 #-----------------------------------------------------
 app.get '/', (req, res) ->
-  req.session.hi ?= []
-  req.session.hi.push(Date.now())
+  req.session.httpOnly=false
   res.render 'index.ejs',
     title: "Shep"
 
