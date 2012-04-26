@@ -127,15 +127,14 @@
         MessageView.__super__.constructor.apply(this, arguments);
       }
 
-      MessageView.prototype.className = 'message';
-
       MessageView.prototype.tagName = 'li';
 
       MessageView.prototype.template = $('#message-template').html();
 
       MessageView.prototype.render = function() {
-        this.template = $("#" + (this.model.get(type)) + "-message-template").html();
-        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
+        console.log("Render MessageView");
+        this.template = $("#" + (this.model.get('type')) + "-message-template").html();
+        $(this.el).addClass(this.model.get('type')).html(Mustache.render(this.template, this.model.toJSON()));
         return this;
       };
 
@@ -168,24 +167,49 @@
       };
 
       MessagesView.prototype.initialize = function(options) {
-        var view;
-        view = this;
-        $(window).bind('resize', function() {
-          return view.fitHeight($(this).height());
-        });
-        return this.attachMenu();
+        this.collection.bind('add', this.render, this);
+        this.attachMenu();
+        this.bindToWindowResize();
+        return this.setupNow();
       };
 
       MessagesView.prototype.render = function() {
+        var message, messageView, _i, _len, _ref;
         $(this.el).empty().html(Mustache.render(this.template), {
           name: now.name
         });
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          message = _ref[_i];
+          messageView = new MessageView({
+            model: message
+          });
+          this.$('.chat-log').append(messageView.render().el);
+        }
         this.fitHeight($(window).height());
         return this;
       };
 
       MessagesView.prototype.attachMenu = function() {
         return this.menu = ui.menu().add('Add Channel...');
+      };
+
+      MessagesView.prototype.bindToWindowResize = function() {
+        var view;
+        view = this;
+        return $(window).bind('resize', function() {
+          return view.fitHeight($(this).height());
+        });
+      };
+
+      MessagesView.prototype.fitHeight = function(windowHeight) {
+        var chatInterior, chatWindowHeight, toolbarHeight;
+        toolbarHeight = $('#chat-toolbar').height();
+        $('#chat-window').css('height', windowHeight + 'px');
+        chatWindowHeight = windowHeight - toolbarHeight;
+        chatInterior = chatWindowHeight - this.$('#new-message').height() + 14;
+        this.$('.chat-log-container').height(chatInterior);
+        return this.$('.chat-log').css('min-height', chatInterior);
       };
 
       MessagesView.prototype.ignoreKeys = function(e) {
@@ -196,6 +220,28 @@
         } else {
           return true;
         }
+      };
+
+      MessagesView.prototype.setupNow = function() {
+        var _this = this;
+        now.serverChangedName = function(name) {
+          now.name = name;
+          return $('.chat-name').val(name);
+        };
+        now.triggerIRCLogin = function() {
+          return _this.promptUserName();
+        };
+        return now.receiveChatMessage = function(timestamp, sender, message, destination) {
+          if (destination == null) destination = 'itp';
+          if (window.windowBlurred) app.Helpers.triggerBlink();
+          return _this.collection.add(new app.Message({
+            name: sender,
+            message: app.Helpers.parseMessage(message),
+            time: app.Helpers.formatTime(timestamp),
+            classes: '',
+            type: 'chat'
+          }));
+        };
       };
 
       MessagesView.prototype.toggleMenu = function(e) {
@@ -213,16 +259,6 @@
         }
         this.menu.show();
         return false;
-      };
-
-      MessagesView.prototype.fitHeight = function(windowHeight) {
-        var chatInterior, chatWindowHeight, toolbarHeight;
-        toolbarHeight = $('#chat-toolbar').height();
-        $('#chat-window').css('height', windowHeight + 'px');
-        chatWindowHeight = windowHeight - toolbarHeight;
-        chatInterior = chatWindowHeight - this.$('#new-message').height() + 14;
-        this.$('#chat-log-container').height(chatInterior);
-        return this.$('#chat-log').css('min-height', chatInterior);
       };
 
       MessagesView.prototype.promptUserName = function() {
@@ -327,7 +363,7 @@
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};
     this.app.AppView = AppView;
-    return this.app.MessagesView = new MessagesView;
+    return this.app.MessagesView = MessagesView;
   });
 
 }).call(this);

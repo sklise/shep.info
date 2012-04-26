@@ -57,8 +57,8 @@
     </ul>
   </div>
 
-  <div id="chat-log-container">
-    <ul id="chat-log">
+  <div class="chat-log-container">
+    <ul class="chat-log">
     </ul>
   </div>
 
@@ -75,8 +75,8 @@
 </script>
 
 <script type="text/template" id="messages-template">
-  <div id="chat-log-container">
-    <ul id="chat-log">
+  <div class="chat-log-container">
+    <ul class="chat-log">
     </ul>
   </div>
   <form id="new-message">
@@ -92,28 +92,20 @@
 </li>
 </script>
 
+<script type="text/template" id="chat-message-template">
+
+  <div class="chatter">{{ name }}</div>
+  <div class="message-time">{{ time }}</div>
+  <div class="message">{{{ message }}}</div>
+
+</script>
+
 <script type="text/template" id="message-template">
 <li class="{{ classes }}">
   <div class="chatter">{{ name }}</div>
   <div class="message-time">{{ time }}</div>
   <div class="message">{{{ message }}}</div>
 </li>
-</script>
-
-<script type="text/template" id="events-template">
-  <ul>
-  </ul>
-</script>
-
-<script type="text/template" id="event-template">
-  <div>
-    <span class="time">{{ startTime }}-{{ endTime }}</span> {{ title }} 
-    <a class="calendar-link pictos" title="Open in Google Calendar" target="_blank" href="{{ url }}">\</a>
-    <div class="details">
-      <p class="location">{{ location }}</p>
-      <div>{{ description }}</p>
-    </div>
-  </div>
 </script>
 
 <script type="text/template" id="feedback-template">

@@ -126,7 +126,7 @@
 
 // CHAT LOG CONTAINER
 //----------------------------------------------------
-#chat-log-container {
+.chat-log-container {
   @include grid-column(24);
   height: 500px;
   overflow-y: scroll;
@@ -151,7 +151,7 @@
 
 // CHAT LOG
 //----------------------------------------------------
-#chat-log {
+.chat-log {
   @include box-sizing;
   background-color: $chat-background;
   min-height: 400px;
@@ -162,7 +162,7 @@
 
 // MESSAGES
 //----------------------------------------------------
-#chat-log li {
+.chat-log li {
   @include grid-row;
   overflow-y: auto;
   padding: 1em 0 0.3em;
@@ -210,7 +210,7 @@
   }
 }
 
-// Timestamps are aligned along the right side of #chat-log and are transparent
+// Timestamps are aligned along the right side of .chat-log and are transparent
 // until fading in and out
 .message-time {
   background-color: transparentize($black,0.5);

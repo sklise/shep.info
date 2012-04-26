@@ -67,12 +67,12 @@ jQuery ->
   #---------------------------------------------------
   # Individual message view. Sets the template based on the value of model.type
   class MessageView extends Backbone.View
-    className: 'message'
     tagName: 'li'
     template: $('#message-template').html()
     render: ->
-      @template = ($("##{@model.get(type)}-message-template").html())
-      $(@el).html Mustache.render(@template, @model.toJSON())
+      console.log "Render MessageView"
+      @template = ($("##{@model.get('type')}-message-template").html())
+      $(@el).addClass(@model.get('type')).html Mustache.render(@template, @model.toJSON())
       @
 
   # Chat Log
@@ -93,17 +93,38 @@ jQuery ->
       'keypress .new-message-input' : 'sendMessage'
       'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
-      # Bind the window reaize event to call fitHeight.
-      view = @
-      $(window).bind 'resize', -> view.fitHeight($(this).height())
-      @attachMenu();
+
+      @collection.bind 'add', @render, @
+      @attachMenu()
+      @bindToWindowResize()
+      @setupNow()
+
     render: ->
       $(@el).empty().html(Mustache.render(@template), {name: now.name})
+      for message in @collection.models
+        messageView = new MessageView model: message
+        @$('.chat-log').append messageView.render().el
       @fitHeight $(window).height()
       @
+
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
+
+    # Bind window resize event 
+    bindToWindowResize: ->
+      view = @
+      $(window).bind 'resize', -> view.fitHeight($(this).height())
+
+    # Stretch the chat window to fill the height of the window.
+    fitHeight: (windowHeight) ->
+      toolbarHeight = $('#chat-toolbar').height()
+      $('#chat-window').css('height', (windowHeight) + 'px')
+      chatWindowHeight = windowHeight - toolbarHeight
+      chatInterior = chatWindowHeight - @$('#new-message').height() + 14
+      @$('.chat-log-container').height(chatInterior)
+      @$('.chat-log').css('min-height', chatInterior)
+
     ignoreKeys: (e) ->
       if e.keyCode is 13 or e.keyCode is 32
         return false
@@ -111,6 +132,32 @@ jQuery ->
         return false
       else
         return true
+
+    setupNow: ->
+
+      # Called from the server in the context of the userwhen IRC forces a nickname
+      # change. Updates now.name and renders the new name in the chat.
+      now.serverChangedName = (name) ->
+        now.name = name
+        $('.chat-name').val(name)
+
+      # Server: Called from the server in the context of the user when login to
+      # IRC is complete. Renders prompt to set @now.name
+      now.triggerIRCLogin = =>
+        @promptUserName()
+
+      # Server: Called from server and defined on client. Receivees a message
+      # from IRC and adds a new Message to this view's collection.
+      now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
+        app.Helpers.triggerBlink() if window.windowBlurred
+        @collection.add(new app.Message({
+          name: sender
+          message: app.Helpers.parseMessage(message)
+          time: app.Helpers.formatTime(timestamp)
+          classes:''
+          type:'chat'
+          }))
+
     toggleMenu: (e) ->
       $menuButton = $('.channel-menu-button')
       menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}
@@ -121,14 +168,6 @@ jQuery ->
         @menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height)
       @menu.show()
       return false
-    # Stretch the chat window to fill the height of the window.
-    fitHeight: (windowHeight) ->
-      toolbarHeight = $('#chat-toolbar').height()
-      $('#chat-window').css('height', (windowHeight) + 'px')
-      chatWindowHeight = windowHeight - toolbarHeight
-      chatInterior = chatWindowHeight - @$('#new-message').height() + 14
-      @$('#chat-log-container').height(chatInterior)
-      @$('#chat-log').css('min-height', chatInterior)
 
     # Displays a modal dialog asking for a chat name. Requires minimum length
     # of four characters and maximum of 20. Sets submitted value to now.name.
@@ -169,10 +208,7 @@ jQuery ->
           namePrompt.el.find('.ok').removeAttr('disabled')
         else
           namePrompt.el.find('.ok').attr('disabled','disabled')
-      #     $('#chat-name').val(now.name)
-
-    # NEW MESSAGE
-    #-------------------------------------------------
+          # $('#chat-name').val(now.name)
 
     resizeInput: (e) ->
       message = $(e.target).val()
@@ -221,4 +257,4 @@ jQuery ->
 
   @app = window.app ? {}
   @app.AppView = AppView
-  @app.MessagesView = new MessagesView
+  @app.MessagesView = MessagesView

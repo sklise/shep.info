@@ -1,4 +1,36 @@
+jQuery ->
+  window.windowBlurred = false
+  window.pageIsBlinking = false
+  window.pageTitle = $(document).attr('title')
+  window.titleFlash = ''
+
+  $(window).blur ->
+    window.windowBlurred = true
+
+  $(window).focus -> Helpers.unBlinkTitle()
+
 Helpers =
+
+  unBlinkTitle: ->
+    window.pageIsBlinking = false
+    window.windowBlurred = false
+    clearInterval(window.titleFlash)
+    $(document).attr('title', window.pageTitle)
+
+  blinkTitle: ->
+    $doc = $(document)
+    docTitle = $doc.attr('title')
+    if docTitle == pageTitle
+      $doc.attr('title', "New Message #{pageTitle}")
+    else
+      $doc.attr('title', window.pageTitle)
+    return
+
+  triggerBlink: ->
+    if not pageIsBlinking
+      window.pageIsBlinking = true
+      window.titleFlash = setInterval (=> @blinkTitle()), 1500
+
   # Convert a timestamp into a readable time.
   formatTime: (timestamp) ->
     time = new Date(timestamp)
@@ -8,6 +40,21 @@ Helpers =
     minutes = if minutes > 9 then minutes else '0' + minutes
     hours = if hours > 12 then hours - 12 else hours
     "#{hours}:#{minutes}#{marker}"
+
+  # Clean message content to make it safe and wrap links in anchor tags.
+  parseMessage: (message) ->
+    message
+      # Escape html tags
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      # Bold text wrapped in double asterisks
+      .replace /\*{2}([^\*]+)\*{2}/g, (match) ->
+        "<strong>#{match[2..(match.length-3)]}</strong>"
+      # Italicize text wrapped in asterisks
+      .replace /\*{1}([^\*]+)\*{1}/g, (match) ->
+        "<em>#{match[1..(match.length-2)]}</em>"
+      # Find any http(s) strings and wrap them with <a> tags.
+      .replace /(http[s]*:\/\/\S+)/g, (match) ->
+        "<a href='#{match}' target='_blank'>#{match}</a>"
 
 @app = window.app ? {}
 @app.Helpers = Helpers
