@@ -48,7 +48,7 @@ class ircBridge
     @client.addListener 'join', (channel, nick) =>
       if nick is @client.nick
         callback(@client.nick)
-    @client.addListener 'PRIVMSG', (from, message) =>
+    @client.addListener 'pm', (from, message) =>
       logMessage "CLIENT", "[#{@client.nick}] PM from #{from} => #{message}"
 
 nowShep = (app, logging, sessionStore) ->
