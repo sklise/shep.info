@@ -53,7 +53,6 @@ app.configure ->
 
 # LOAD OTHER FILES
 #-----------------------------------------------------
-require('./authentication/routes')(app)
 logging = require('./logging')(app)
 require('./helpers')(app)
 
