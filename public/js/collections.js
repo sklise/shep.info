@@ -13,6 +13,16 @@
 
     Messages.prototype.model = app.Message;
 
+    Messages.prototype.channel = function(channelName) {
+      var messages;
+      messages = this.filter(function(message) {
+        return message.get('channel') === channelName;
+      });
+      return _.sortBy(messages, function(message) {
+        return message.get('time');
+      });
+    };
+
     return Messages;
 
   })(Backbone.Collection);
