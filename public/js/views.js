@@ -24,6 +24,20 @@
         return this;
       };
 
+      AppView.prototype.linkToNow = function() {
+        var _this = this;
+        now.updateUserList = function(channel, nicks) {};
+        now.receivePreviousMessage = function(timestamp, sender, message, destination) {
+          if (destination == null) destination = 'itp';
+        };
+        now.receiveSystemMessage = function(timestamp, type, message, destination) {
+          if (destination == null) destination = 'itp';
+        };
+        return now.receiveChatMessage = function(timestamp, sender, message, destination) {
+          if (destination == null) destination = 'itp';
+        };
+      };
+
       return AppView;
 
     })(Backbone.View);
@@ -240,9 +254,12 @@
       MessageView.prototype.template = $('#message-template').html();
 
       MessageView.prototype.render = function() {
+        var message;
         this.template = $("#" + (this.model.get('type')) + "-message-template").html();
+        message = this.model.toJSON();
+        message.time = app.Helpers.formatTime(this.model.get('time'));
         if (this.model.get('consecutive')) $(this.el).addClass('consecutive');
-        $(this.el).addClass(this.model.get('classes')).html(Mustache.render(this.template, this.model.toJSON()));
+        $(this.el).addClass(this.model.get('classes')).html(Mustache.render(this.template, message));
         return this;
       };
 
@@ -277,24 +294,14 @@
         var _this = this;
         now.receivePreviousMessage = function(timestamp, sender, message, destination) {
           if (destination == null) destination = 'itp';
-          if (sender === 'Join' || sender === 'Leave') {
-            renderMessage($('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message');
-          } else {
-            renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " previous-message");
-          }
-          return this.collection.add(new app.Message({
-            message: message,
-            name: sender,
-            time: app.Helpers.formatTime(timestamp),
-            classes: classes,
-            type: 'previous'
-          }));
+          return console.log("crap");
         };
         now.receiveSystemMessage = function(timestamp, type, message, destination) {
           if (destination == null) destination = 'itp';
           return _this.collection.add(new app.Message({
+            channel: destination,
             message: message,
-            time: app.Helpers.formatTime(timestamp),
+            time: timestamp,
             classes: 'system-notice',
             type: 'system'
           }));
@@ -303,9 +310,10 @@
           if (destination == null) destination = 'itp';
           if (window.windowBlurred) app.Helpers.triggerBlink();
           return _this.collection.add(new app.Message({
+            channel: destination,
             name: sender,
             message: app.Helpers.parseMessage(message),
-            time: app.Helpers.formatTime(timestamp),
+            time: timestamp,
             classes: "" + (_this.classifyName(sender, now.name)),
             type: 'chat',
             consecutive: _this.isConsecutive(sender)

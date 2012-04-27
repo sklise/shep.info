@@ -168,8 +168,10 @@ jQuery ->
     template: $('#message-template').html()
     render: ->
       @template = ($("##{@model.get('type')}-message-template").html())
+      message = @model.toJSON()
+      message.time = app.Helpers.formatTime(@model.get('time'))
       $(@el).addClass('consecutive') if @model.get('consecutive')
-      $(@el).addClass(@model.get('classes')).html Mustache.render(@template, @model.toJSON())
+      $(@el).addClass(@model.get('classes')).html Mustache.render(@template, message)
       @
 
   # CHAT LOG VIEW
@@ -189,22 +191,26 @@ jQuery ->
     linkToNow: ->
       # TODO: IS THIS WORKING? I DON'T BELIEVE SO
       now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
-        if sender in ['Join', 'Leave']
-          renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
-        else
-          renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
-        @collection.add new app.Message
-          message: message
-          name: sender
-          time: app.Helpers.formatTime(timestamp)
-          classes: classes
-          type: 'previous'
+        console.log "crap"
+        # if sender in ['Join', 'Leave']
+          # console.log "crap"
+          # renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
+        # else
+          # console.log "ohcrap"
+          # renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
+        # @collection.add new app.Message
+          # message: message
+          # name: sender
+          # time: app.Helpers.formatTime(timestamp)
+          # classes: classes
+          # type: 'previous'
       # Server: Called from server and defined on client. Receives a system
       # message most likely from IRC and adds to the collection.
       now.receiveSystemMessage = (timestamp, type, message, destination='itp') =>
         @collection.add new app.Message
+          channel: destination
           message: message
-          time: app.Helpers.formatTime(timestamp)
+          time: timestamp
           classes:'system-notice'
           type:'system'
       # Server: Called from server and defined on client. Receivees a message
@@ -213,9 +219,10 @@ jQuery ->
         # TODO $('#chat-log-container').animate {'scrollTop' : $('.chat-log').height()}, 200
         app.Helpers.triggerBlink() if window.windowBlurred
         @collection.add new app.Message
+          channel: destination
           name: sender
           message: app.Helpers.parseMessage(message)
-          time: app.Helpers.formatTime(timestamp)
+          time: timestamp
           classes: "#{@classifyName(sender, now.name)}"
           type:'chat'
           consecutive: @isConsecutive(sender)
