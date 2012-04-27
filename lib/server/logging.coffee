@@ -14,6 +14,6 @@ logging = (app) ->
   logAndForward: (sender, message, destination={'room':'itp'}, callback) ->
     timestamp = Date.now()
     @logMessage sender, message, destination
-    callback(timestamp, sender, message)
+    callback(timestamp, sender, message, destination.room)
 
 module.exports = logging
