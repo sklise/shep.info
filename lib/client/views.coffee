@@ -8,7 +8,15 @@ jQuery ->
     render: ->
       @feedbackview.render().el
       @
-
+    linkToNow: ->
+      now.updateUserList = (channel, nicks) ->
+        return
+      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
+        return
+      now.receiveSystemMessage = (timestamp, type, message, destination='itp') =>
+        return
+      now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
+        return
   # Feedback Form
   #---------------------------------------------------
   class FeedbackView extends Backbone.View
