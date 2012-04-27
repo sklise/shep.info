@@ -15,6 +15,16 @@
   });
 
   Helpers = {
+    fitHeight: function(windowHeight) {
+      var chatInterior, chatWindowHeight, toolbarHeight;
+      if (windowHeight == null) windowHeight = $(window).height();
+      toolbarHeight = $('#chat-toolbar').height();
+      $('#chat-window').css('height', windowHeight + 'px');
+      chatWindowHeight = windowHeight - toolbarHeight;
+      chatInterior = chatWindowHeight - $('#new-message').height() + 14;
+      $('#chat-log-container').height(chatInterior);
+      return $('.chat-log').css('min-height', chatInterior);
+    },
     unBlinkTitle: function() {
       window.pageIsBlinking = false;
       window.windowBlurred = false;

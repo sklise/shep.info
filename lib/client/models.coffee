@@ -4,5 +4,8 @@ class Message extends Backbone.Model
     type: 'Chat'
   initialize: (attributes, options) ->
 
+class User extends Backbone.Model
+
 @app = window.app ? {}
 @app.Message = Message
+@app.User = User

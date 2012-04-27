@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   jQuery(function() {
-    var AppView, ChannelView, ChannelsView, ChatWindowView, FeedbackView, MessageView, MessagesView, _ref;
+    var AppView, ChannelView, ChannelsView, ChatWindowView, FeedbackView, MessageView, MessagesView, NewMessageView, UserListView, _ref;
     AppView = (function(_super) {
 
       __extends(AppView, _super);
@@ -16,9 +16,7 @@
 
       AppView.prototype.initialize = function(options) {
         this.feedbackview = new FeedbackView;
-        return this.messagesview = new MessagesView({
-          collection: app.Messages
-        });
+        return this.chatwindowview = new ChatWindowView;
       };
 
       AppView.prototype.render = function() {
@@ -84,7 +82,384 @@
         ChatWindowView.__super__.constructor.apply(this, arguments);
       }
 
+      ChatWindowView.prototype.el = '#chat-window';
+
+      ChatWindowView.prototype.template = $('#chat-window-template').html();
+
+      ChatWindowView.prototype.events = {
+        'click .channel-menu-button': 'toggleMenu'
+      };
+
+      ChatWindowView.prototype.initialize = function(options) {
+        this.setupNow();
+        this.attachMenu();
+        return this.bindToWindowResize();
+      };
+
+      ChatWindowView.prototype.render = function() {
+        $(this.el).html(Mustache.render(this.template));
+        app.Helpers.fitHeight();
+        return this;
+      };
+
+      ChatWindowView.prototype.attachMenu = function() {
+        return this.menu = ui.menu().add('Add Channel...');
+      };
+
+      ChatWindowView.prototype.toggleMenu = function(e) {
+        var $menuButton, menuButtonDim, padding;
+        $menuButton = $('.channel-menu-button');
+        menuButtonDim = {
+          width: $menuButton.width(),
+          height: $menuButton.outerHeight()
+        };
+        if (e.target.className === "room-menu-icon pictos") {
+          padding = ($menuButton.outerWidth() - $menuButton.width()) / 2;
+          this.menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height);
+        } else {
+          this.menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height);
+        }
+        this.menu.show();
+        return false;
+      };
+
+      ChatWindowView.prototype.bindToWindowResize = function() {
+        return $(window).bind('resize', function() {
+          return app.Helpers.fitHeight($(this).height());
+        });
+      };
+
+      ChatWindowView.prototype.promptUserName = function() {
+        var $input, namePrompt,
+          _this = this;
+        namePrompt = new ui.Confirmation({
+          title: "Please enter a name.",
+          message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">')
+        }).modal().show(function(ok) {
+          var name;
+          if (ok) {
+            _this.render().el;
+            _this.userListView = new UserListView({
+              collection: app.Users
+            });
+            _this.messagesview = new MessagesView({
+              collection: app.Messages
+            });
+            _this.newmessageview = new NewMessageView;
+            now.name = name = $('#dialog').find('input').val().trim();
+            $('.chat-name').val(name);
+            return now.changeName(name);
+          }
+        });
+        namePrompt.el.find('.ok').attr('disabled', 'true').end().find('.cancel').remove();
+        $input = $(namePrompt.el).find('input');
+        $input.focus();
+        $input.keydown(function(event) {
+          if (event.keyCode === 32) return false;
+        });
+        return $input.keypress(function(event) {
+          var origVal;
+          origVal = $input.val().trim();
+          if (origVal.length >= 20) return false;
+          if (origVal.length > 3) {
+            if (event.keyCode === 13) {
+              namePrompt.emit('ok');
+              namePrompt.callback(true);
+              namePrompt.hide();
+            }
+            return namePrompt.el.find('.ok').removeAttr('disabled');
+          } else {
+            return namePrompt.el.find('.ok').attr('disabled', 'disabled');
+          }
+        });
+      };
+
+      ChatWindowView.prototype.setupNow = function() {
+        var _this = this;
+        return now.triggerIRCLogin = function() {
+          return _this.promptUserName();
+        };
+      };
+
       return ChatWindowView;
+
+    })(Backbone.View);
+    UserListView = (function(_super) {
+
+      __extends(UserListView, _super);
+
+      function UserListView() {
+        UserListView.__super__.constructor.apply(this, arguments);
+      }
+
+      UserListView.prototype.el = '#user-list';
+
+      UserListView.prototype.initialize = function(options) {
+        this.linkToNow();
+        return this.collection.bind('add', this.render, this);
+      };
+
+      UserListView.prototype.render = function() {
+        var user, _i, _len, _ref;
+        $(this.el).empty();
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          user = _ref[_i];
+          $(this.el).append("<li>" + (user.get('name')) + "</li>");
+        }
+        return this;
+      };
+
+      UserListView.prototype.linkToNow = function() {
+        var _this = this;
+        return now.updateUserList = function(channel, nicks) {
+          var nick, value;
+          _this.collection.reset();
+          for (nick in nicks) {
+            value = nicks[nick];
+            _this.collection.add({
+              name: nick
+            });
+          }
+        };
+      };
+
+      return UserListView;
+
+    })(Backbone.View);
+    MessageView = (function(_super) {
+
+      __extends(MessageView, _super);
+
+      function MessageView() {
+        MessageView.__super__.constructor.apply(this, arguments);
+      }
+
+      MessageView.prototype.tagName = 'li';
+
+      MessageView.prototype.template = $('#message-template').html();
+
+      MessageView.prototype.render = function() {
+        this.template = $("#" + (this.model.get('type')) + "-message-template").html();
+        if (this.model.get('consecutive')) $(this.el).addClass('consecutive');
+        $(this.el).addClass(this.model.get('classes')).html(Mustache.render(this.template, this.model.toJSON()));
+        return this;
+      };
+
+      return MessageView;
+
+    })(Backbone.View);
+    MessagesView = (function(_super) {
+
+      __extends(MessagesView, _super);
+
+      function MessagesView() {
+        MessagesView.__super__.constructor.apply(this, arguments);
+      }
+
+      MessagesView.prototype.el = '#chat-log-container';
+
+      MessagesView.prototype.template = $('#messages-template').html();
+
+      MessagesView.prototype.events = {
+        'click .exitable-room': 'leaveChannel',
+        'mouseenter .exitable-room': 'showX',
+        'mouseleave .exitable-room': 'hideX'
+      };
+
+      MessagesView.prototype.initialize = function(options) {
+        this.render().el;
+        this.collection.bind('add', this.render, this);
+        return this.linkToNow();
+      };
+
+      MessagesView.prototype.linkToNow = function() {
+        var _this = this;
+        now.receivePreviousMessage = function(timestamp, sender, message, destination) {
+          if (destination == null) destination = 'itp';
+          if (sender === 'Join' || sender === 'Leave') {
+            renderMessage($('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message');
+          } else {
+            renderMessage($('#message-template').html(), timestamp, sender, message, "" + (classifyName(sender, this.now.name)) + " previous-message");
+          }
+          return this.collection.add(new app.Message({
+            message: message,
+            name: sender,
+            time: app.Helpers.formatTime(timestamp),
+            classes: classes,
+            type: 'previous'
+          }));
+        };
+        now.receiveSystemMessage = function(timestamp, type, message, destination) {
+          if (destination == null) destination = 'itp';
+          return _this.collection.add(new app.Message({
+            message: message,
+            time: app.Helpers.formatTime(timestamp),
+            classes: 'system-notice',
+            type: 'system'
+          }));
+        };
+        return now.receiveChatMessage = function(timestamp, sender, message, destination) {
+          if (destination == null) destination = 'itp';
+          if (window.windowBlurred) app.Helpers.triggerBlink();
+          return _this.collection.add(new app.Message({
+            name: sender,
+            message: app.Helpers.parseMessage(message),
+            time: app.Helpers.formatTime(timestamp),
+            classes: "" + (_this.classifyName(sender, now.name)),
+            type: 'chat',
+            consecutive: _this.isConsecutive(sender)
+          }));
+        };
+      };
+
+      MessagesView.prototype.classifyName = function(senderName, nowName) {
+        var classes;
+        classes = [];
+        if (senderName === nowName) {
+          classes.push('self');
+        } else if (senderName === 'shep' || senderName === 'shepbot') {
+          classes.push('shep');
+        }
+        return classes.join(' ');
+      };
+
+      MessagesView.prototype.isConsecutive = function(sender) {
+        if ($('.chat-log li').last().find('.chatter').text() === sender) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      MessagesView.prototype.render = function() {
+        var message, messageView, _i, _len, _ref;
+        $(this.el).html(Mustache.render(this.template));
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          message = _ref[_i];
+          messageView = new MessageView({
+            model: message
+          });
+          this.$('.chat-log').append(messageView.render().el);
+        }
+        app.Helpers.fitHeight();
+        return this;
+      };
+
+      MessagesView.prototype.showX = function(e) {
+        return $(e.target).text('*');
+      };
+
+      MessagesView.prototype.hideX = function(e) {
+        return $(e.target).text('q');
+      };
+
+      MessagesView.prototype.leaveChannel = function() {
+        var channelName,
+          _this = this;
+        channelName = $(this).closest('li').data('channel-name');
+        return new ui.Confirmation({
+          title: "Leave " + channelName + " channel",
+          message: 'are you sure?'
+        }).show(function(ok) {
+          if (ok) {
+            $(_this).closest('li').remove();
+            return ui.dialog('Seeya!').show().hide(1500);
+          }
+        });
+      };
+
+      return MessagesView;
+
+    })(Backbone.View);
+    NewMessageView = (function(_super) {
+
+      __extends(NewMessageView, _super);
+
+      function NewMessageView() {
+        NewMessageView.__super__.constructor.apply(this, arguments);
+      }
+
+      NewMessageView.prototype.el = '#new-message';
+
+      NewMessageView.prototype.template = $('#new-message-template').html();
+
+      NewMessageView.prototype.events = {
+        'blur .chat-name': 'updateName',
+        'keypress .chat-name': 'ignoreKeys',
+        'keyup .new-message-input': 'resizeInput',
+        'paste .new-message-input': 'resizeInput',
+        'cut .new-message-input': 'resizeInput',
+        'keypress .new-message-input': 'sendMessage'
+      };
+
+      NewMessageView.prototype.initialize = function(options) {
+        this.linkToNow();
+        return this.render().el;
+      };
+
+      NewMessageView.prototype.linkToNow = function() {
+        return now.serverChangedName = function(name) {
+          now.name = name;
+          return $('.chat-name').val(name);
+        };
+      };
+
+      NewMessageView.prototype.render = function() {
+        $(this.el).html(Mustache.render(this.template, {
+          name: now.name
+        }));
+        return this;
+      };
+
+      NewMessageView.prototype.ignoreKeys = function(e) {
+        if (e.keyCode === 13 || e.keyCode === 32) {
+          return false;
+        } else if ($(e.target).val().length >= 20) {
+          return false;
+        } else {
+          return true;
+        }
+      };
+
+      NewMessageView.prototype.resizeInput = function(e) {
+        var message, messageDec, rows;
+        message = $(e.target).val();
+        messageDec = function(ml) {
+          if (ml <= 78) {
+            return 1;
+          } else {
+            return ml / 78;
+          }
+        };
+        rows = Math.min(5, Math.ceil(messageDec(message.length)));
+        return $(e.target).attr('rows', rows);
+      };
+
+      NewMessageView.prototype.sendMessage = function(e) {
+        var message;
+        message = $(e.target).val().trim();
+        if (e.which === 13) {
+          if (message.length === 0) return false;
+          now.distributeChatMessage(now.name, message);
+          $(e.target).val('').attr('rows', 1);
+          return false;
+        }
+      };
+
+      NewMessageView.prototype.updateName = function(e) {
+        var raw;
+        raw = $(e.target).val();
+        if (raw !== now.name) {
+          now.changeName(now.name = raw);
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      return NewMessageView;
 
     })(Backbone.View);
     ChannelsView = (function(_super) {
@@ -117,248 +492,6 @@
       ChannelView.prototype.template = $('#channel-template').html();
 
       return ChannelView;
-
-    })(Backbone.View);
-    MessageView = (function(_super) {
-
-      __extends(MessageView, _super);
-
-      function MessageView() {
-        MessageView.__super__.constructor.apply(this, arguments);
-      }
-
-      MessageView.prototype.tagName = 'li';
-
-      MessageView.prototype.template = $('#message-template').html();
-
-      MessageView.prototype.render = function() {
-        console.log("Render MessageView");
-        this.template = $("#" + (this.model.get('type')) + "-message-template").html();
-        $(this.el).addClass(this.model.get('type')).html(Mustache.render(this.template, this.model.toJSON()));
-        return this;
-      };
-
-      return MessageView;
-
-    })(Backbone.View);
-    MessagesView = (function(_super) {
-
-      __extends(MessagesView, _super);
-
-      function MessagesView() {
-        MessagesView.__super__.constructor.apply(this, arguments);
-      }
-
-      MessagesView.prototype.el = '#chat-window';
-
-      MessagesView.prototype.template = $('#chat-window-template').html();
-
-      MessagesView.prototype.events = {
-        'click .exitable-room': 'leaveChannel',
-        'mouseenter .exitable-room': 'showX',
-        'mouseleave .exitable-room': 'hideX',
-        'blur .chat-name': 'updateName',
-        'keypress .chat-name': 'ignoreKeys',
-        'keyup .new-message-input': 'resizeInput',
-        'paste .new-message-input': 'resizeInput',
-        'cut .new-message-input': 'resizeInput',
-        'keypress .new-message-input': 'sendMessage',
-        'click .channel-menu-button': 'toggleMenu'
-      };
-
-      MessagesView.prototype.initialize = function(options) {
-        this.collection.bind('add', this.render, this);
-        this.attachMenu();
-        this.bindToWindowResize();
-        return this.setupNow();
-      };
-
-      MessagesView.prototype.render = function() {
-        var message, messageView, _i, _len, _ref;
-        $(this.el).empty().html(Mustache.render(this.template), {
-          name: now.name
-        });
-        _ref = this.collection.models;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          message = _ref[_i];
-          messageView = new MessageView({
-            model: message
-          });
-          this.$('.chat-log').append(messageView.render().el);
-        }
-        this.fitHeight($(window).height());
-        return this;
-      };
-
-      MessagesView.prototype.attachMenu = function() {
-        return this.menu = ui.menu().add('Add Channel...');
-      };
-
-      MessagesView.prototype.bindToWindowResize = function() {
-        var view;
-        view = this;
-        return $(window).bind('resize', function() {
-          return view.fitHeight($(this).height());
-        });
-      };
-
-      MessagesView.prototype.fitHeight = function(windowHeight) {
-        var chatInterior, chatWindowHeight, toolbarHeight;
-        toolbarHeight = $('#chat-toolbar').height();
-        $('#chat-window').css('height', windowHeight + 'px');
-        chatWindowHeight = windowHeight - toolbarHeight;
-        chatInterior = chatWindowHeight - this.$('#new-message').height() + 14;
-        this.$('.chat-log-container').height(chatInterior);
-        return this.$('.chat-log').css('min-height', chatInterior);
-      };
-
-      MessagesView.prototype.ignoreKeys = function(e) {
-        if (e.keyCode === 13 || e.keyCode === 32) {
-          return false;
-        } else if ($(e.target).val().length >= 20) {
-          return false;
-        } else {
-          return true;
-        }
-      };
-
-      MessagesView.prototype.setupNow = function() {
-        var _this = this;
-        now.serverChangedName = function(name) {
-          now.name = name;
-          return $('.chat-name').val(name);
-        };
-        now.triggerIRCLogin = function() {
-          return _this.promptUserName();
-        };
-        return now.receiveChatMessage = function(timestamp, sender, message, destination) {
-          if (destination == null) destination = 'itp';
-          if (window.windowBlurred) app.Helpers.triggerBlink();
-          return _this.collection.add(new app.Message({
-            name: sender,
-            message: app.Helpers.parseMessage(message),
-            time: app.Helpers.formatTime(timestamp),
-            classes: '',
-            type: 'chat'
-          }));
-        };
-      };
-
-      MessagesView.prototype.toggleMenu = function(e) {
-        var $menuButton, menuButtonDim, padding;
-        $menuButton = $('.channel-menu-button');
-        menuButtonDim = {
-          width: $menuButton.width(),
-          height: $menuButton.outerHeight()
-        };
-        if (e.target.className === "room-menu-icon pictos") {
-          padding = ($menuButton.outerWidth() - $menuButton.width()) / 2;
-          this.menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height);
-        } else {
-          this.menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height);
-        }
-        this.menu.show();
-        return false;
-      };
-
-      MessagesView.prototype.promptUserName = function() {
-        var $input, namePrompt,
-          _this = this;
-        namePrompt = new ui.Confirmation({
-          title: "Please enter a name.",
-          message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">')
-        }).modal().show(function(ok) {
-          var name;
-          if (ok) {
-            _this.render().el;
-            name = $('#dialog').find('input').val().trim();
-            $('.chat-name').val(name);
-            return now.changeName(name);
-          }
-        });
-        namePrompt.el.find('.ok').attr('disabled', 'true').end().find('.cancel').remove();
-        $input = $(namePrompt.el).find('input');
-        $input.focus();
-        $input.keydown(function(event) {
-          if (event.keyCode === 32) return false;
-        });
-        return $input.keypress(function(event) {
-          var origVal;
-          origVal = $input.val().trim();
-          if (origVal.length >= 20) return false;
-          if (origVal.length > 3) {
-            if (event.keyCode === 13) {
-              namePrompt.emit('ok');
-              namePrompt.callback(true);
-              namePrompt.hide();
-            }
-            return namePrompt.el.find('.ok').removeAttr('disabled');
-          } else {
-            return namePrompt.el.find('.ok').attr('disabled', 'disabled');
-          }
-        });
-      };
-
-      MessagesView.prototype.resizeInput = function(e) {
-        var message, messageDec, rows;
-        message = $(e.target).val();
-        messageDec = function(ml) {
-          if (ml <= 78) {
-            return 1;
-          } else {
-            return ml / 78;
-          }
-        };
-        rows = Math.min(5, Math.ceil(messageDec(message.length)));
-        return $(e.target).attr('rows', rows);
-      };
-
-      MessagesView.prototype.sendMessage = function(e) {
-        var message;
-        message = $(e.target).val().trim();
-        if (e.which === 13) {
-          if (message.length === 0) return false;
-          now.distributeChatMessage(now.name, message);
-          $(e.target).val('').attr('rows', 1);
-          return false;
-        }
-      };
-
-      MessagesView.prototype.updateName = function(e) {
-        var raw;
-        raw = $(e.target).val();
-        if (raw !== now.name) {
-          now.changeName(now.name = raw);
-          return true;
-        } else {
-          return false;
-        }
-      };
-
-      MessagesView.prototype.showX = function(e) {
-        return $(e.target).text('*');
-      };
-
-      MessagesView.prototype.hideX = function(e) {
-        return $(e.target).text('q');
-      };
-
-      MessagesView.prototype.leaveChannel = function() {
-        var channelName,
-          _this = this;
-        channelName = $(this).closest('li').data('channel-name');
-        return new ui.Confirmation({
-          title: "Leave " + channelName + " channel",
-          message: 'are you sure?'
-        }).show(function(ok) {
-          if (ok) {
-            $(_this).closest('li').remove();
-            return ui.dialog('Seeya!').show().hide(1500);
-          }
-        });
-      };
-
-      return MessagesView;
 
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};

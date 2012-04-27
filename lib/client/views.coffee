@@ -4,7 +4,7 @@ jQuery ->
     initialize: (options) ->
       # @collection.bind 'reset', @render, @
       @feedbackview = new FeedbackView
-      @messagesview = new MessagesView collection: app.Messages
+      @chatwindowview = new ChatWindowView
     render: ->
       @feedbackview.render().el
       @
@@ -48,115 +48,22 @@ jQuery ->
   # views. Call routing functions on this view and have the events 
   # propagate through.
   class ChatWindowView extends Backbone.View
-    
-
-  # Channels View
-  #---------------------------------------------------
-  # Toolbar of current channels as well as menu to create and join more.
-  class ChannelsView extends Backbone.View
-    template: $('#channels-template').html()
-    events:
-      'click .channel-tab' : 'goToChannel'
-    goToChannel: ->
-      return
-
-  class ChannelView extends Backbone.View
-    template: $('#channel-template').html()
-
-  # Message
-  #---------------------------------------------------
-  # Individual message view. Sets the template based on the value of model.type
-  class MessageView extends Backbone.View
-    tagName: 'li'
-    template: $('#message-template').html()
-    render: ->
-      console.log "Render MessageView"
-      @template = ($("##{@model.get('type')}-message-template").html())
-      $(@el).addClass(@model.get('type')).html Mustache.render(@template, @model.toJSON())
-      @
-
-  # Chat Log
-  #---------------------------------------------------
-  class MessagesView extends Backbone.View
     el: '#chat-window'
     template: $('#chat-window-template').html()
     events:
-      # Only works with classes it seems.
-      'click .exitable-room' : 'leaveChannel'
-      'mouseenter .exitable-room' : 'showX'
-      'mouseleave .exitable-room' : 'hideX'
-      'blur .chat-name' : 'updateName'
-      'keypress .chat-name' : 'ignoreKeys'
-      'keyup .new-message-input' : 'resizeInput'
-      'paste .new-message-input' : 'resizeInput'
-      'cut .new-message-input' : 'resizeInput'
-      'keypress .new-message-input' : 'sendMessage'
       'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
-
-      @collection.bind 'add', @render, @
+      @setupNow()
       @attachMenu()
       @bindToWindowResize()
-      @setupNow()
-
     render: ->
-      $(@el).empty().html(Mustache.render(@template), {name: now.name})
-      for message in @collection.models
-        messageView = new MessageView model: message
-        @$('.chat-log').append messageView.render().el
-      @fitHeight $(window).height()
+      $(@el).html(Mustache.render(@template))
+      app.Helpers.fitHeight()
       @
 
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
-
-    # Bind window resize event 
-    bindToWindowResize: ->
-      view = @
-      $(window).bind 'resize', -> view.fitHeight($(this).height())
-
-    # Stretch the chat window to fill the height of the window.
-    fitHeight: (windowHeight) ->
-      toolbarHeight = $('#chat-toolbar').height()
-      $('#chat-window').css('height', (windowHeight) + 'px')
-      chatWindowHeight = windowHeight - toolbarHeight
-      chatInterior = chatWindowHeight - @$('#new-message').height() + 14
-      @$('.chat-log-container').height(chatInterior)
-      @$('.chat-log').css('min-height', chatInterior)
-
-    ignoreKeys: (e) ->
-      if e.keyCode is 13 or e.keyCode is 32
-        return false
-      else if $(e.target).val().length >= 20
-        return false
-      else
-        return true
-
-    setupNow: ->
-
-      # Called from the server in the context of the userwhen IRC forces a nickname
-      # change. Updates now.name and renders the new name in the chat.
-      now.serverChangedName = (name) ->
-        now.name = name
-        $('.chat-name').val(name)
-
-      # Server: Called from the server in the context of the user when login to
-      # IRC is complete. Renders prompt to set @now.name
-      now.triggerIRCLogin = =>
-        @promptUserName()
-
-      # Server: Called from server and defined on client. Receivees a message
-      # from IRC and adds a new Message to this view's collection.
-      now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
-        app.Helpers.triggerBlink() if window.windowBlurred
-        @collection.add(new app.Message({
-          name: sender
-          message: app.Helpers.parseMessage(message)
-          time: app.Helpers.formatTime(timestamp)
-          classes:''
-          type:'chat'
-          }))
 
     toggleMenu: (e) ->
       $menuButton = $('.channel-menu-button')
@@ -169,6 +76,10 @@ jQuery ->
       @menu.show()
       return false
 
+    # Bind window resize event 
+    bindToWindowResize: ->
+      $(window).bind 'resize', -> app.Helpers.fitHeight($(this).height())
+
     # Displays a modal dialog asking for a chat name. Requires minimum length
     # of four characters and maximum of 20. Sets submitted value to now.name.
     promptUserName: ->
@@ -180,7 +91,10 @@ jQuery ->
         .show (ok) =>
           if ok
             @render().el
-            name = $('#dialog').find('input').val().trim()
+            @userListView = new UserListView collection: app.Users
+            @messagesview = new MessagesView collection: app.Messages
+            @newmessageview = new NewMessageView
+            now.name =name = $('#dialog').find('input').val().trim()
             $('.chat-name').val(name)
             now.changeName name
       # Disable OK button and remove the cancel button
@@ -210,6 +124,164 @@ jQuery ->
           namePrompt.el.find('.ok').attr('disabled','disabled')
           # $('#chat-name').val(now.name)
 
+    setupNow: ->
+      # Server: Called from the server in the context of the user when login to
+      # IRC is complete. Renders prompt to set @now.name
+      now.triggerIRCLogin = =>
+        @promptUserName()
+
+  # USER LIST VIEW
+  #---------------------------------------------------
+  class UserListView extends Backbone.View
+    el: '#user-list'
+    initialize: (options) ->
+      @linkToNow()
+
+      @collection.bind 'add', @render, @
+    render: ->
+      $(@el).empty()
+      for user in @collection.models
+        $(@el).append("<li>#{user.get('name')}</li>")
+      @
+    linkToNow: ->
+      # This is called from the server on nick changes and part/leave events.
+      # The user list is cleared and re-rendered with an updated list.
+      now.updateUserList = (channel, nicks) =>
+        @collection.reset()
+        for nick, value of nicks
+          @collection.add({name:nick})
+        return
+
+  # MESSAGE VIEW
+  #---------------------------------------------------
+  # Individual message view. Sets the template based on the value of model.type
+  class MessageView extends Backbone.View
+    tagName: 'li'
+    template: $('#message-template').html()
+    render: ->
+      @template = ($("##{@model.get('type')}-message-template").html())
+      $(@el).addClass('consecutive') if @model.get('consecutive')
+      $(@el).addClass(@model.get('classes')).html Mustache.render(@template, @model.toJSON())
+      @
+
+  # CHAT LOG VIEW
+  #---------------------------------------------------
+  class MessagesView extends Backbone.View
+    el: '#chat-log-container'
+    template: $('#messages-template').html()
+    events:
+      # Only works with classes it seems.
+      'click .exitable-room' : 'leaveChannel'
+      'mouseenter .exitable-room' : 'showX'
+      'mouseleave .exitable-room' : 'hideX'
+    initialize: (options) ->
+      @render().el
+      @collection.bind 'add', @render, @
+      @linkToNow()
+    linkToNow: ->
+      # TODO: IS THIS WORKING? I DON'T BELIEVE SO
+      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
+        if sender in ['Join', 'Leave']
+          renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
+        else
+          renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
+        @collection.add new app.Message
+          message: message
+          name: sender
+          time: app.Helpers.formatTime(timestamp)
+          classes: classes
+          type: 'previous'
+      # Server: Called from server and defined on client. Receives a system
+      # message most likely from IRC and adds to the collection.
+      now.receiveSystemMessage = (timestamp, type, message, destination='itp') =>
+        @collection.add new app.Message
+          message: message
+          time: app.Helpers.formatTime(timestamp)
+          classes:'system-notice'
+          type:'system'
+      # Server: Called from server and defined on client. Receivees a message
+      # from IRC and adds a new Message to this view's collection.
+      now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
+        # TODO $('#chat-log-container').animate {'scrollTop' : $('.chat-log').height()}, 200
+        app.Helpers.triggerBlink() if window.windowBlurred
+        @collection.add new app.Message
+          name: sender
+          message: app.Helpers.parseMessage(message)
+          time: app.Helpers.formatTime(timestamp)
+          classes: "#{@classifyName(sender, now.name)}"
+          type:'chat'
+          consecutive: @isConsecutive(sender)
+    # Input name of the sender of a message and the value of now.name
+    # Returns a string of classes to change styling of the message.
+    classifyName: (senderName, nowName) ->
+      classes = []
+      if senderName == nowName
+        classes.push 'self'
+      else if senderName == 'shep' || senderName == 'shepbot'
+        classes.push 'shep'
+      classes.join(' ')
+    isConsecutive: (sender) ->
+      if $('.chat-log li').last().find('.chatter').text() == sender
+        return true
+      else
+        return false
+    render: ->
+      $(@el).html(Mustache.render(@template))
+      for message in @collection.models
+        messageView = new MessageView model: message
+        @$('.chat-log').append messageView.render().el
+      app.Helpers.fitHeight()
+      @
+
+    # MOVE THE FOLLOWING TO THE TOOLBAR VIEW WHEN I MAKE IT
+    #-------------------------------------------------
+
+    # Change the icon when rolling over exitable channels
+    showX: (e) -> $(e.target).text('*')
+    hideX: (e) -> $(e.target).text('q')
+
+    # When a room-status-icon is clicked call a function on the server to leave
+    # the channel on IRC.
+    leaveChannel: ->
+      channelName = $(this).closest('li').data('channel-name')
+      new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
+        .show (ok) =>
+          if ok
+            $(@).closest('li').remove()
+            ui.dialog('Seeya!').show().hide(1500)
+
+  # NEW MESSAGE VIEW
+  #---------------------------------------------------
+  class NewMessageView extends Backbone.View
+    el: '#new-message'
+    template: $('#new-message-template').html()
+    events:
+      'blur .chat-name' : 'updateName'
+      'keypress .chat-name' : 'ignoreKeys'
+      'keyup .new-message-input' : 'resizeInput'
+      'paste .new-message-input' : 'resizeInput'
+      'cut .new-message-input' : 'resizeInput'
+      'keypress .new-message-input' : 'sendMessage'
+    initialize: (options) ->
+      @linkToNow()
+      @render().el
+    linkToNow: ->
+      # Called from the server in the context of the userwhen IRC forces a nickname
+      # change. Updates now.name and renders the new name in the chat.
+      now.serverChangedName = (name) ->
+        now.name = name
+        $('.chat-name').val(name)
+    render: ->
+      $(@el).html Mustache.render(@template, {name:now.name})
+      @
+    ignoreKeys: (e) ->
+      if e.keyCode is 13 or e.keyCode is 32
+        return false
+      else if $(e.target).val().length >= 20
+        return false
+      else
+        return true
+
     resizeInput: (e) ->
       message = $(e.target).val()
       messageDec = (ml) ->
@@ -238,22 +310,18 @@ jQuery ->
       else
         false
 
-    # MOVE THE FOLLOWING TO THE TOOLBAR VIEW WHEN I MAKE IT
-    #-------------------------------------------------
+  # CHANNELS VIEW
+  #---------------------------------------------------
+  # Toolbar of current channels as well as menu to create and join more.
+  class ChannelsView extends Backbone.View
+    template: $('#channels-template').html()
+    events:
+      'click .channel-tab' : 'goToChannel'
+    goToChannel: ->
+      return
 
-    # Change the icon when rolling over exitable channels
-    showX: (e) -> $(e.target).text('*')
-    hideX: (e) -> $(e.target).text('q')
-
-    # When a room-status-icon is clicked call a function on the server to leave
-    # the channel on IRC.
-    leaveChannel: ->
-      channelName = $(this).closest('li').data('channel-name')
-      new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
-        .show (ok) =>
-          if ok
-            $(@).closest('li').remove()
-            ui.dialog('Seeya!').show().hide(1500)
+  class ChannelView extends Backbone.View
+    template: $('#channel-template').html()
 
   @app = window.app ? {}
   @app.AppView = AppView

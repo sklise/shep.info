@@ -31,7 +31,6 @@ assetManagerGroups =
       'models.js'
       'collections.js'
       'views.js'
-      'chat.js'
       'routers.js'
       'itpirl.js'
       ]

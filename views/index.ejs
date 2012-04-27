@@ -57,47 +57,35 @@
     </ul>
   </div>
 
-  <div class="chat-log-container">
-    <ul class="chat-log">
-    </ul>
-  </div>
+  <div id="chat-log-container"></div>
 
   <ul id="user-list"></ul>
 
-  <form id="new-message">
-    <input class="chat-name" val="{{ name }}"/>
-    <textarea id="new-message-input" class="new-message-input" autofocus rows=1></textarea>
-  </form>
+  <form id="new-message"></form>
+</script>
+
+<script type="text/template" id="messages-template">
+  <ul class="chat-log"></ul>
 </script>
 
 <script type="text/template" id="rooms-menu">
   <li>Add A Room</li>
 </script>
 
-<script type="text/template" id="messages-template">
-  <div class="chat-log-container">
-    <ul class="chat-log">
-    </ul>
-  </div>
-  <form id="new-message">
-    <div id="ask-shep" class="pictos">p</div>
-    <textarea id="new-message-input" rows=1></textarea>
-  </form>
+<script type="text/template" id="new-message-template">
+  <input class="chat-name" val="{{ name }}"/>
+  <textarea class="new-message-input" class="new-message-input" autofocus rows=1></textarea>
 </script>
 
 <script type="text/template" id="system-message-template">
-<li class="{{ classes }}">
   <div class="message-time">{{ time }}</div>
   <div class="system-message">{{{ message }}}</div>
-</li>
 </script>
 
 <script type="text/template" id="chat-message-template">
-
   <div class="chatter">{{ name }}</div>
   <div class="message-time">{{ time }}</div>
   <div class="message">{{{ message }}}</div>
-
 </script>
 
 <script type="text/template" id="message-template">

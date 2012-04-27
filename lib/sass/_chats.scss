@@ -126,7 +126,7 @@
 
 // CHAT LOG CONTAINER
 //----------------------------------------------------
-.chat-log-container {
+#chat-log-container {
   @include grid-column(24);
   height: 500px;
   overflow-y: scroll;
@@ -270,7 +270,7 @@
   right: 0;
 }
 
-#new-message-input {
+.new-message-input {
   @include grid-column(18);
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -299,7 +299,7 @@
   text-align: right;
 }
 
-#new-message-input,
+.new-message-input,
 .chat-name {
   @include box-sizing;
   float: left;
