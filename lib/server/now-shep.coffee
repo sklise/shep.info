@@ -165,8 +165,8 @@ nowShep = (app, logging, sessionStore) ->
       logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
 
   everyone.ircClient.addListener "message#{channelName}", (from, message) ->
-    # if objectLength(nowjs.users) isnt 0
-    logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
+    if objectLength(nowjs.users) isnt 0
+      logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
 
   everyone.ircClient.addListener "join", (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
