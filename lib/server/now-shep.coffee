@@ -159,19 +159,20 @@ nowShep = (app, logging, sessionStore) ->
 
   everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
     logMessage "NICK", "#{oldnick} => #{newnick}"
-    for channel in channels
-      everyone.ircClient.send "NAMES #{channel}"
     if objectLength(nowjs.users) isnt 0
-      logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'itp'}, everyone.now.receiveSystemMessage
+      for channel in channels
+        everyone.ircClient.send "NAMES #{channel}"
+        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'channel'}, everyone.now.receiveSystemMessage
 
-  everyone.ircClient.addListener "message#{channelName}", (from, message) ->
+  everyone.ircClient.addListener "message", (from, channel, message) ->
     if objectLength(nowjs.users) isnt 0
-      logging.logAndForward from, message, {'room':"#{channelName[1..channelName.length]}"}, everyone.now.receiveChatMessage
+      logging.logAndForward from, message, {'room':"#{channel[1..channel.length]}"}, everyone.now.receiveChatMessage
 
   everyone.ircClient.addListener "join", (channel, nick) =>
+    console.log everyone.ircClient
     if objectLength(nowjs.users) isnt 0
       logMessage "JOIN","#{nick} => #{channel}"
-      logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'channel'}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
 
   everyone.ircClient.addListener 'quit', (message, nick, channels) =>

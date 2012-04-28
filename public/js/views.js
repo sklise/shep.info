@@ -278,12 +278,6 @@
 
       MessagesView.prototype.template = $('#messages-template').html();
 
-      MessagesView.prototype.events = {
-        'click .exitable-room': 'leaveChannel',
-        'mouseenter .exitable-room': 'showX',
-        'mouseleave .exitable-room': 'hideX'
-      };
-
       MessagesView.prototype.initialize = function(options) {
         this.render().el;
         this.collection.bind('add', this.render, this);
@@ -343,7 +337,7 @@
       MessagesView.prototype.render = function() {
         var message, messageView, _i, _len, _ref;
         $(this.el).html(Mustache.render(this.template));
-        _ref = this.collection.models;
+        _ref = this.collection.thisChannel();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           message = _ref[_i];
           messageView = new MessageView({
@@ -353,29 +347,6 @@
         }
         app.Helpers.fitHeight();
         return this;
-      };
-
-      MessagesView.prototype.showX = function(e) {
-        return $(e.target).text('*');
-      };
-
-      MessagesView.prototype.hideX = function(e) {
-        return $(e.target).text('q');
-      };
-
-      MessagesView.prototype.leaveChannel = function() {
-        var channelName,
-          _this = this;
-        channelName = $(this).closest('li').data('channel-name');
-        return new ui.Confirmation({
-          title: "Leave " + channelName + " channel",
-          message: 'are you sure?'
-        }).show(function(ok) {
-          if (ok) {
-            $(_this).closest('li').remove();
-            return ui.dialog('Seeya!').show().hide(1500);
-          }
-        });
       };
 
       return MessagesView;
@@ -478,13 +449,27 @@
         ChannelsView.__super__.constructor.apply(this, arguments);
       }
 
+      ChannelsView.prototype.el = '#chat-toolbar';
+
       ChannelsView.prototype.template = $('#channels-template').html();
 
-      ChannelsView.prototype.events = {
-        'click .channel-tab': 'goToChannel'
+      ChannelsView.prototype.initialize = function(options) {
+        return this.render().el;
       };
 
-      ChannelsView.prototype.goToChannel = function() {};
+      ChannelsView.prototype.render = function() {
+        var channel, channelView, _i, _len, _ref;
+        $(this.el).html(Mustache.render(this.template));
+        _ref = this.collection.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          channel = _ref[_i];
+          channelView = new ChannelView({
+            model: channel
+          });
+          this.$('.chat-room-list').append(channelView.render().el);
+        }
+        return this;
+      };
 
       return ChannelsView;
 
@@ -497,14 +482,45 @@
         ChannelView.__super__.constructor.apply(this, arguments);
       }
 
+      ChannelView.prototype.tagName = 'li';
+
       ChannelView.prototype.template = $('#channel-template').html();
+
+      ChannelView.prototype.events = {
+        'click': 'goToChannel',
+        'mouseenter .exitable-room': 'showX',
+        'mouseleave .exitable-room': 'hideX'
+      };
+
+      ChannelView.prototype.initialize = function(options) {
+        return this.render().el;
+      };
+
+      ChannelView.prototype.render = function() {
+        $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
+        return this;
+      };
+
+      ChannelView.prototype.goToChannel = function() {
+        return app.Messages.setChannel(this.model.get('name'));
+      };
+
+      ChannelView.prototype.showX = function(e) {
+        return $(e.target).text('*');
+      };
+
+      ChannelView.prototype.hideX = function(e) {
+        return $(e.target).text('q');
+      };
 
       return ChannelView;
 
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};
     this.app.AppView = AppView;
-    return this.app.MessagesView = MessagesView;
+    this.app.ChatWindowView = ChatWindowView;
+    this.app.ChannelView = ChannelView;
+    return this.app.ChannelsView = ChannelsView;
   });
 
 }).call(this);

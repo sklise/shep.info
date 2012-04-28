@@ -9,6 +9,7 @@ jQuery ->
       @feedbackview.render().el
       @
     linkToNow: ->
+      # Empty now functions to be overwritten when other views are initiated.
       now.updateUserList = (channel, nicks) ->
         return
       now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
@@ -17,6 +18,7 @@ jQuery ->
         return
       now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
         return
+
   # Feedback Form
   #---------------------------------------------------
   class FeedbackView extends Backbone.View
@@ -131,7 +133,6 @@ jQuery ->
         else
           namePrompt.el.find('.ok').attr('disabled','disabled')
           # $('#chat-name').val(now.name)
-
     setupNow: ->
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
@@ -167,7 +168,7 @@ jQuery ->
     tagName: 'li'
     template: $('#message-template').html()
     render: ->
-      @template = ($("##{@model.get('type')}-message-template").html())
+      @template = $("##{@model.get('type')}-message-template").html()
       message = @model.toJSON()
       message.time = app.Helpers.formatTime(@model.get('time'))
       $(@el).addClass('consecutive') if @model.get('consecutive')
@@ -179,11 +180,6 @@ jQuery ->
   class MessagesView extends Backbone.View
     el: '#chat-log-container'
     template: $('#messages-template').html()
-    events:
-      # Only works with classes it seems.
-      'click .exitable-room' : 'leaveChannel'
-      'mouseenter .exitable-room' : 'showX'
-      'mouseleave .exitable-room' : 'hideX'
     initialize: (options) ->
       @render().el
       @collection.bind 'add', @render, @
@@ -242,28 +238,11 @@ jQuery ->
         return false
     render: ->
       $(@el).html(Mustache.render(@template))
-      for message in @collection.models
+      for message in @collection.thisChannel()
         messageView = new MessageView model: message
         @$('.chat-log').append messageView.render().el
       app.Helpers.fitHeight()
       @
-
-    # MOVE THE FOLLOWING TO THE TOOLBAR VIEW WHEN I MAKE IT
-    #-------------------------------------------------
-
-    # Change the icon when rolling over exitable channels
-    showX: (e) -> $(e.target).text('*')
-    hideX: (e) -> $(e.target).text('q')
-
-    # When a room-status-icon is clicked call a function on the server to leave
-    # the channel on IRC.
-    leaveChannel: ->
-      channelName = $(this).closest('li').data('channel-name')
-      new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
-        .show (ok) =>
-          if ok
-            $(@).closest('li').remove()
-            ui.dialog('Seeya!').show().hide(1500)
 
   # NEW MESSAGE VIEW
   #---------------------------------------------------
@@ -329,15 +308,48 @@ jQuery ->
   #---------------------------------------------------
   # Toolbar of current channels as well as menu to create and join more.
   class ChannelsView extends Backbone.View
+    el: '#chat-toolbar'
     template: $('#channels-template').html()
-    events:
-      'click .channel-tab' : 'goToChannel'
-    goToChannel: ->
-      return
+    initialize: (options) ->
+      @render().el
+    render: ->
+      $(@el).html Mustache.render(@template)
+      for channel in @collection.models
+        channelView = new ChannelView model: channel
+        @$('.chat-room-list').append channelView.render().el
+      @
 
   class ChannelView extends Backbone.View
+    tagName: 'li'
     template: $('#channel-template').html()
+    events:
+      'click' : 'goToChannel'
+      'mouseenter .exitable-room' : 'showX'
+      'mouseleave .exitable-room' : 'hideX'
+      # 'click .exitable-room' : 'leaveChannel'
+    initialize: (options) ->
+      @render().el
+    render: ->
+      $(@el).html Mustache.render(@template, @model.toJSON())
+      @
+    goToChannel: ->
+      app.Messages.setChannel @model.get('name')
+    showX: (e) -> $(e.target).text('*')
+    hideX: (e) -> $(e.target).text('q')
+    # When a room-status-icon is clicked call a function on the server to leave
+    # the channel on IRC.
+    # leaveChannel: ->
+    #   channelName = $(this).closest('li').data('channel-name')
+    #   new ui.Confirmation({ title: "Leave #{channelName} channel", message: 'are you sure?' })
+    #     .show (ok) =>
+    #       if ok
+    #         $(@).closest('li').remove()
+    #         ui.dialog('Seeya!').show().hide(1500)
+    #   return
+    # Change the icon when rolling over exitable channels
 
   @app = window.app ? {}
   @app.AppView = AppView
-  @app.MessagesView = MessagesView
+  @app.ChatWindowView = ChatWindowView
+  @app.ChannelView = ChannelView
+  @app.ChannelsView = ChannelsView

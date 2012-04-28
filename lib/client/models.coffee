@@ -6,6 +6,9 @@ class Message extends Backbone.Model
 
 class User extends Backbone.Model
 
+class Channel extends Backbone.Model
+
 @app = window.app ? {}
 @app.Message = Message
 @app.User = User
+@app.Channel = Channel
