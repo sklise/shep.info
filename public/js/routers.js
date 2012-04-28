@@ -19,16 +19,22 @@
       };
 
       ChannelRouter.prototype.initialize = function() {
-        return this.view = new app.AppView({
-          collection: app.Chats
-        });
+        (this.view = new app.AppView).render().el;
+        return app.Messages.bind('change:channel', this.changeChannel, this);
       };
 
-      ChannelRouter.prototype.mainChannel = function() {};
+      ChannelRouter.prototype.changeChannel = function() {
+        return Backbone.history.navigate("channels/" + app.Messages.channel);
+      };
 
-      ChannelRouter.prototype.show = function() {};
+      ChannelRouter.prototype.mainChannel = function() {
+        app.Messages.setChannel('itp');
+        return Backbone.history.navigate("channels/itp", true);
+      };
 
-      ChannelRouter.prototype.talkToShep = function() {};
+      ChannelRouter.prototype.show = function(channel) {
+        return app.Messages.setChannel(channel);
+      };
 
       return ChannelRouter;
 

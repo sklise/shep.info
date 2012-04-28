@@ -28,6 +28,10 @@
     padding: 1em 1em 0.8em;
     position: relative;
 
+    .room-name {
+      text-transform: uppercase;
+    }
+
     &:hover {
       background-color: $divider-dark-gray;
       cursor: pointer;
@@ -37,7 +41,7 @@
       float: left;
     }
 
-    &.current-room {
+    &.current-channel {
       background-color: $bright-blue;
       color: $white;
 
@@ -50,11 +54,11 @@
       background-image: url('/images/room-indicator-gray.png');
     }
 
-    &.current-room::after {
+    &.current-channel::after {
       background-image: url('/images/room-indicator.png');
     }
 
-    &.current-room::after,
+    &.current-channel::after,
     &:hover::after {
       background-repeat: no-repeat;
       background-position-x: 50%;

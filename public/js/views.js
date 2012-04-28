@@ -100,13 +100,8 @@
 
       ChatWindowView.prototype.template = $('#chat-window-template').html();
 
-      ChatWindowView.prototype.events = {
-        'click .channel-menu-button': 'toggleMenu'
-      };
-
       ChatWindowView.prototype.initialize = function(options) {
-        this.setupNow();
-        this.attachMenu();
+        this.linkToNow();
         return this.bindToWindowResize();
       };
 
@@ -116,25 +111,17 @@
         return this;
       };
 
-      ChatWindowView.prototype.attachMenu = function() {
-        return this.menu = ui.menu().add('Add Channel...');
-      };
-
-      ChatWindowView.prototype.toggleMenu = function(e) {
-        var $menuButton, menuButtonDim, padding;
-        $menuButton = $('.channel-menu-button');
-        menuButtonDim = {
-          width: $menuButton.width(),
-          height: $menuButton.outerHeight()
-        };
-        if (e.target.className === "room-menu-icon pictos") {
-          padding = ($menuButton.outerWidth() - $menuButton.width()) / 2;
-          this.menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height);
-        } else {
-          this.menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height);
-        }
-        this.menu.show();
-        return false;
+      ChatWindowView.prototype.initializeSubViews = function() {
+        this.channelsview = new ChannelsView({
+          collection: app.Channels
+        });
+        this.userListView = new UserListView({
+          collection: app.Users
+        });
+        this.messagesview = new MessagesView({
+          collection: app.Messages
+        });
+        return this.newmessageview = new NewMessageView;
       };
 
       ChatWindowView.prototype.bindToWindowResize = function() {
@@ -150,45 +137,37 @@
           title: "Please enter a name.",
           message: $('<p>No spaces, names must be between<br>4 and 20 characters. </p><input tabindex="1" type="text">')
         }).modal().show(function(ok) {
-          var name;
           if (ok) {
             _this.render().el;
-            _this.userListView = new UserListView({
-              collection: app.Users
-            });
-            _this.messagesview = new MessagesView({
-              collection: app.Messages
-            });
-            _this.newmessageview = new NewMessageView;
-            now.name = name = $('#dialog').find('input').val().trim();
-            $('.chat-name').val(name);
-            return now.changeName(name);
+            _this.initializeSubViews();
+            return _this.saveNameFromPrompt();
           }
         });
-        namePrompt.el.find('.ok').attr('disabled', 'true').end().find('.cancel').remove();
+        namePrompt.el.find('.ok').attr('disabled', 'disabled').end().find('.cancel').remove();
         $input = $(namePrompt.el).find('input');
         $input.focus();
-        $input.keydown(function(event) {
-          if (event.keyCode === 32) return false;
-        });
-        return $input.keypress(function(event) {
-          var origVal;
-          origVal = $input.val().trim();
-          if (origVal.length >= 20) return false;
-          if (origVal.length > 3) {
+        return $input.keydown(function(event) {
+          _this.origVal = $input.val().trim();
+          if (event.keyCode === 32 || _this.origVal.length >= 20) return false;
+          if (_this.origVal.length > 3) {
+            namePrompt.el.find('.ok').removeAttr('disabled');
             if (event.keyCode === 13) {
               namePrompt.emit('ok');
-              namePrompt.callback(true);
               namePrompt.hide();
+              return namePrompt.callback(true);
             }
-            return namePrompt.el.find('.ok').removeAttr('disabled');
           } else {
             return namePrompt.el.find('.ok').attr('disabled', 'disabled');
           }
         });
       };
 
-      ChatWindowView.prototype.setupNow = function() {
+      ChatWindowView.prototype.saveNameFromPrompt = function() {
+        $('.chat-name').val(this.origVal);
+        return now.changeName(this.origVal);
+      };
+
+      ChatWindowView.prototype.linkToNow = function() {
         var _this = this;
         return now.triggerIRCLogin = function() {
           return _this.promptUserName();
@@ -228,12 +207,14 @@
         var _this = this;
         return now.updateUserList = function(channel, nicks) {
           var nick, value;
-          _this.collection.reset();
-          for (nick in nicks) {
-            value = nicks[nick];
-            _this.collection.add({
-              name: nick
-            });
+          if (channel === app.Messages.channel) {
+            _this.collection.reset();
+            for (nick in nicks) {
+              value = nicks[nick];
+              _this.collection.add({
+                name: nick
+              });
+            }
           }
         };
       };
@@ -281,6 +262,7 @@
       MessagesView.prototype.initialize = function(options) {
         this.render().el;
         this.collection.bind('add', this.render, this);
+        this.collection.bind('change:channel', this.render, this);
         return this.linkToNow();
       };
 
@@ -421,7 +403,7 @@
         message = $(e.target).val().trim();
         if (e.which === 13) {
           if (message.length === 0) return false;
-          now.distributeChatMessage(now.name, message);
+          now.distributeChatMessage(now.name, channel, message);
           $(e.target).val('').attr('rows', 1);
           return false;
         }
@@ -453,8 +435,17 @@
 
       ChannelsView.prototype.template = $('#channels-template').html();
 
+      ChannelsView.prototype.events = {
+        'click .channel-menu-button': 'toggleMenu'
+      };
+
       ChannelsView.prototype.initialize = function(options) {
-        return this.render().el;
+        this.render().el;
+        this.attachMenu();
+        app.Channels.bind('change:channel', this.render, this);
+        app.Channels.bind('add', this.render, this);
+        app.Channels.bind('remove', this.render, this);
+        return this.populateChannels();
       };
 
       ChannelsView.prototype.render = function() {
@@ -466,9 +457,40 @@
           channelView = new ChannelView({
             model: channel
           });
-          this.$('.chat-room-list').append(channelView.render().el);
+          this.$('.chat-room-list').prepend(channelView.render().el);
         }
         return this;
+      };
+
+      ChannelsView.prototype.attachMenu = function() {
+        return this.menu = ui.menu().add('Add Channel...');
+      };
+
+      ChannelsView.prototype.populateChannels = function() {
+        this.collection.add({
+          name: 'itp'
+        });
+        return this.collection.add({
+          name: 'itp-test',
+          exitable: true
+        });
+      };
+
+      ChannelsView.prototype.toggleMenu = function(e) {
+        var $menuButton, menuButtonDim, padding;
+        $menuButton = $('.channel-menu-button');
+        menuButtonDim = {
+          width: $menuButton.width(),
+          height: $menuButton.outerHeight()
+        };
+        if (e.target.className === "room-menu-icon pictos") {
+          padding = ($menuButton.outerWidth() - $menuButton.width()) / 2;
+          this.menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height);
+        } else {
+          this.menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height);
+        }
+        this.menu.show();
+        return false;
       };
 
       return ChannelsView;
@@ -488,29 +510,43 @@
 
       ChannelView.prototype.events = {
         'click': 'goToChannel',
-        'mouseenter .exitable-room': 'showX',
-        'mouseleave .exitable-room': 'hideX'
+        'mouseenter': 'showX',
+        'mouseleave': 'hideX'
       };
 
       ChannelView.prototype.initialize = function(options) {
+        this.model.bind('change', this.render, this);
         return this.render().el;
       };
 
       ChannelView.prototype.render = function() {
+        if (this.model.get('currentChannel')) {
+          $(this.el).addClass('current-channel');
+        } else {
+          $(this.el).removeClass('current-channel');
+        }
         $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
         return this;
       };
 
       ChannelView.prototype.goToChannel = function() {
+        var channel, _i, _len, _ref;
+        _ref = app.Channels.models;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          channel = _ref[_i];
+          channel.set('currentChannel', (this.model.get('name') === channel.get('name') ? true : false));
+        }
         return app.Messages.setChannel(this.model.get('name'));
       };
 
-      ChannelView.prototype.showX = function(e) {
-        return $(e.target).text('*');
+      ChannelView.prototype.showX = function() {
+        if (this.model.get('exitable')) {
+          return this.$('.room-status-icon').text('*');
+        }
       };
 
-      ChannelView.prototype.hideX = function(e) {
-        return $(e.target).text('q');
+      ChannelView.prototype.hideX = function() {
+        return this.$('.room-status-icon').text('q');
       };
 
       return ChannelView;

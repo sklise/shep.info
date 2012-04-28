@@ -13,8 +13,13 @@
 
     Messages.prototype.model = app.Message;
 
+    Messages.prototype.initialize = function(options) {
+      return this.channel = 'itp';
+    };
+
     Messages.prototype.setChannel = function(channelName) {
-      return this.channel = channelName;
+      this.channel = channelName;
+      return this.trigger('change:channel');
     };
 
     Messages.prototype.thisChannel = function() {

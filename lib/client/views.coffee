@@ -60,32 +60,18 @@ jQuery ->
   class ChatWindowView extends Backbone.View
     el: '#chat-window'
     template: $('#chat-window-template').html()
-    events:
-      'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
-      @setupNow()
-      @attachMenu()
+      @linkToNow()
       @bindToWindowResize()
     render: ->
       $(@el).html(Mustache.render(@template))
       app.Helpers.fitHeight()
       @
-
-    attachMenu: ->
-      @menu = ui.menu()
-        .add('Add Channel...')
-
-    toggleMenu: (e) ->
-      $menuButton = $('.channel-menu-button')
-      menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}
-      if e.target.className is "room-menu-icon pictos"
-        padding = ($menuButton.outerWidth() - $menuButton.width()) / 2
-        @menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height)
-      else
-        @menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height)
-      @menu.show()
-      return false
-
+    initializeSubViews: ->
+      @channelsview = new ChannelsView collection: app.Channels
+      @userListView = new UserListView collection: app.Users
+      @messagesview = new MessagesView collection: app.Messages
+      @newmessageview = new NewMessageView
     # Bind window resize event 
     bindToWindowResize: ->
       $(window).bind 'resize', -> app.Helpers.fitHeight($(this).height())
@@ -101,39 +87,35 @@ jQuery ->
         .show (ok) =>
           if ok
             @render().el
-            @userListView = new UserListView collection: app.Users
-            @messagesview = new MessagesView collection: app.Messages
-            @newmessageview = new NewMessageView
-            now.name =name = $('#dialog').find('input').val().trim()
-            $('.chat-name').val(name)
-            now.changeName name
+            @initializeSubViews()
+            @saveNameFromPrompt()
       # Disable OK button and remove the cancel button
-      namePrompt.el.find('.ok').attr('disabled','true').end().find('.cancel').remove()
+      namePrompt.el.find('.ok')
+        .attr('disabled','disabled').end()
+        .find('.cancel').remove()
 
       $input = $(namePrompt.el).find('input')
       # Focus the cursor on the text input.
       $input.focus()
-      # No spaces in the name.
-      $input.keydown (event) ->
-        if event.keyCode is 32
+      $input.keydown (event) =>
+        # Prevent names longer than 20 characters and prohibit spaces
+        @origVal = $input.val().trim()
+        if event.keyCode is 32 || @origVal.length >= 20
           return false
-      # Handle keyboard events for the chat name input.
-      $input.keypress (event) =>
-        origVal = $input.val().trim()
-        # Prevent names longer than 20 characters
-        if origVal.length >= 20
-          return false
-        # Require names to be at least 3 characters
-        if origVal.length > 3
+        # Handle keyboard events for the chat name input.
+        # Require names to be at least 4 characters
+        if @origVal.length > 3
+          namePrompt.el.find('.ok').removeAttr('disabled')
           if event.keyCode is 13
             namePrompt.emit('ok')
-            namePrompt.callback(true)
             namePrompt.hide()
-          namePrompt.el.find('.ok').removeAttr('disabled')
+            namePrompt.callback(true)
         else
           namePrompt.el.find('.ok').attr('disabled','disabled')
-          # $('#chat-name').val(now.name)
-    setupNow: ->
+    saveNameFromPrompt: ->
+      $('.chat-name').val(@origVal)
+      now.changeName @origVal
+    linkToNow: ->
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
       now.triggerIRCLogin = =>
@@ -145,7 +127,6 @@ jQuery ->
     el: '#user-list'
     initialize: (options) ->
       @linkToNow()
-
       @collection.bind 'add', @render, @
     render: ->
       $(@el).empty()
@@ -156,10 +137,11 @@ jQuery ->
       # This is called from the server on nick changes and part/leave events.
       # The user list is cleared and re-rendered with an updated list.
       now.updateUserList = (channel, nicks) =>
-        @collection.reset()
-        for nick, value of nicks
-          @collection.add({name:nick})
-        return
+        if channel is app.Messages.channel
+          @collection.reset()
+          for nick, value of nicks
+            @collection.add({name:nick})
+          return
 
   # MESSAGE VIEW
   #---------------------------------------------------
@@ -183,6 +165,7 @@ jQuery ->
     initialize: (options) ->
       @render().el
       @collection.bind 'add', @render, @
+      @collection.bind 'change:channel', @render, @
       @linkToNow()
     linkToNow: ->
       # TODO: IS THIS WORKING? I DON'T BELIEVE SO
@@ -290,7 +273,7 @@ jQuery ->
       message = $(e.target).val().trim()
       if e.which is 13
         return false if message.length is 0
-        now.distributeChatMessage(now.name, message)
+        now.distributeChatMessage(now.name, channel, message)
         $(e.target).val('').attr('rows', 1)
         return false
 
@@ -310,32 +293,62 @@ jQuery ->
   class ChannelsView extends Backbone.View
     el: '#chat-toolbar'
     template: $('#channels-template').html()
+    events:
+      'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
       @render().el
+      @attachMenu()
+      app.Channels.bind 'change:channel', @render, @
+      app.Channels.bind 'add', @render, @
+      app.Channels.bind 'remove', @render, @
+      @populateChannels()
     render: ->
       $(@el).html Mustache.render(@template)
       for channel in @collection.models
         channelView = new ChannelView model: channel
-        @$('.chat-room-list').append channelView.render().el
+        @$('.chat-room-list').prepend channelView.render().el
       @
+    attachMenu: ->
+      @menu = ui.menu()
+        .add('Add Channel...')
+    populateChannels: ->
+      @collection.add({name:'itp'})
+      @collection.add({name:'itp-test',exitable:true})
+    toggleMenu: (e) ->
+      $menuButton = $('.channel-menu-button')
+      menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}
+      if e.target.className is "room-menu-icon pictos"
+        padding = ($menuButton.outerWidth() - $menuButton.width()) / 2
+        @menu.moveTo(e.pageX - e.offsetX - padding, menuButtonDim.height)
+      else
+        @menu.moveTo(e.pageX - e.offsetX, menuButtonDim.height)
+      @menu.show()
+      return false
 
   class ChannelView extends Backbone.View
     tagName: 'li'
     template: $('#channel-template').html()
     events:
       'click' : 'goToChannel'
-      'mouseenter .exitable-room' : 'showX'
-      'mouseleave .exitable-room' : 'hideX'
+      'mouseenter' : 'showX'
+      'mouseleave' : 'hideX'
       # 'click .exitable-room' : 'leaveChannel'
     initialize: (options) ->
+      @model.bind 'change', @render, @
       @render().el
     render: ->
+      if @model.get('currentChannel')
+        $(@el).addClass('current-channel')
+      else
+        $(@el).removeClass('current-channel')
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
     goToChannel: ->
+      for channel in app.Channels.models
+        channel.set 'currentChannel', (if @model.get('name') is channel.get('name') then true else false)
       app.Messages.setChannel @model.get('name')
-    showX: (e) -> $(e.target).text('*')
-    hideX: (e) -> $(e.target).text('q')
+    showX: -> @$('.room-status-icon').text('*') if @model.get('exitable')
+    hideX: -> @$('.room-status-icon').text('q')
     # When a room-status-icon is clicked call a function on the server to leave
     # the channel on IRC.
     # leaveChannel: ->

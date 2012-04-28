@@ -1,6 +1,10 @@
 class Messages extends Backbone.Collection
   model: app.Message
-  setChannel: (channelName) -> @channel = channelName
+  initialize: (options) ->
+    @channel = 'itp'
+  setChannel: (channelName) ->
+    @channel = channelName
+    @trigger 'change:channel'
   thisChannel: ->
     messages = @filter (message) =>
       message.get('channel') is @channel

@@ -91,8 +91,12 @@ nowShep = (app, logging, sessionStore) ->
   # CHAT
   #-----------------------------------------------------
 
+  everyone.now.sendMessage = (to, message) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    ircs[sid].client.say(to, message)
+
   # Client: Send a message from a client to IRC.
-  everyone.now.distributeChatMessage = (sender, message, destination={'room':channelName}) ->
+  everyone.now.distributeChatMessage = (sender, message, destination={room:channelName}) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.say("#{destination.room}", message)
 
@@ -141,7 +145,7 @@ nowShep = (app, logging, sessionStore) ->
   # events. The clients speak to IRC but only the server (this) listens.
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
   everyone.ircClient = new irc.Client ircHost, ircNick,
-    channels: ["#{channelName}"]
+    channels: ["#{channelName}", "#itp"]
     port: process.env.ITPIRL_IRC_PORT || 6667
     autoConnect: true
     userName: process.env.ITPIRL_IRC_USERNAME || ''
@@ -162,32 +166,32 @@ nowShep = (app, logging, sessionStore) ->
     if objectLength(nowjs.users) isnt 0
       for channel in channels
         everyone.ircClient.send "NAMES #{channel}"
-        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {'room':'channel'}, everyone.now.receiveSystemMessage
+        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {room:channel}, everyone.now.receiveSystemMessage
 
   everyone.ircClient.addListener "message", (from, channel, message) ->
     if objectLength(nowjs.users) isnt 0
-      logging.logAndForward from, message, {'room':"#{channel[1..channel.length]}"}, everyone.now.receiveChatMessage
+      logging.logAndForward from, message, {room:"#{channel[1..channel.length]}"}, everyone.now.receiveChatMessage
 
   everyone.ircClient.addListener "join", (channel, nick) =>
-    console.log everyone.ircClient
     if objectLength(nowjs.users) isnt 0
       logMessage "JOIN","#{nick} => #{channel}"
-      logging.logAndForward 'Join', "#{nick} has joined the chat.", {'room':'channel'}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Join', "#{nick} has joined the chat.", {room:channel}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
 
-  everyone.ircClient.addListener 'quit', (message, nick, channels) =>
-    logMessage "QUIT", "#{message} #{nick} => #{channels}"
+  everyone.ircClient.addListener 'quit', (message, nick) =>
+    logMessage "QUIT", "#{message} #{nick}"
 
   everyone.ircClient.addListener 'part', (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
       logMessage "PART", "#{nick} => #{channel}"
-      logging.logAndForward 'Leave', "#{nick} has left the chat.", {'room':'itp'}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Leave', "#{nick} has left the chat.", {room:channel}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
     else
       console.log "no one here"
 
   everyone.ircClient.addListener "names", (channel, nicks) =>
     if objectLength(nowjs.users) isnt 0
+      console.log 'names:', channel
       everyone.now.updateUserList(channel, nicks)
 
 module.exports = nowShep

@@ -3,5 +3,8 @@ jQuery ->
   # @app.router = new app.ChannelRouter
   # Backbone.history.start({pushState:true})
 
-  (new app.AppView).render().el
+  @app.router = new app.ChannelRouter
+  Backbone.history.start({pushState:true})
+
+  # (new app.AppView).render().el
   

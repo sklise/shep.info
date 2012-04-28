@@ -5,13 +5,15 @@ jQuery ->
       'shep' : 'talkToShep'
       'channels/:channel' : 'show'
     initialize: ->
-      @view = new app.AppView collection: app.Chats
+      (@view = new app.AppView).render().el
+      app.Messages.bind 'change:channel', @changeChannel, @
+    changeChannel: ->
+      Backbone.history.navigate "channels/#{app.Messages.channel}"
     mainChannel: ->
-      return
-    show: ->
-      return
-    talkToShep: ->
-      return
-      
+      app.Messages.setChannel('itp')
+      Backbone.history.navigate "channels/itp", true
+    show: (channel)->
+      app.Messages.setChannel(channel)
+
   @app = window.app ? {}
   @app.ChannelRouter = ChannelRouter

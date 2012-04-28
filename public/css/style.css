@@ -183,21 +183,23 @@ a {
   margin-bottom: 14px;
   padding: 1em 1em 0.8em;
   position: relative; }
+  .chat-room-list li .room-name {
+    text-transform: uppercase; }
   .chat-room-list li:hover {
     background-color: #dbd7d4;
     cursor: pointer; }
   .chat-room-list li div {
     float: left; }
-  .chat-room-list li.current-room {
+  .chat-room-list li.current-channel {
     background-color: #006ed6;
     color: white; }
-    .chat-room-list li.current-room .underline {
+    .chat-room-list li.current-channel .underline {
       visibility: hidden; }
   .chat-room-list li:hover::after {
     background-image: url("/images/room-indicator-gray.png"); }
-  .chat-room-list li.current-room::after {
+  .chat-room-list li.current-channel::after {
     background-image: url("/images/room-indicator.png"); }
-  .chat-room-list li.current-room::after, .chat-room-list li:hover::after {
+  .chat-room-list li.current-channel::after, .chat-room-list li:hover::after {
     background-repeat: no-repeat;
     background-position-x: 50%;
     content: " ";
