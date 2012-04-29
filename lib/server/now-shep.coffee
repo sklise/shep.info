@@ -3,7 +3,7 @@ nowjs = require 'now'
 irc = require 'irc'
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-channelName = '#itp'
+channelName = '#itp-test'
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 
 objectLength = (object) ->
@@ -27,9 +27,10 @@ logMessage = (type, message) ->
     color(message, typeColors[type]))
 
 class ircBridge
-  constructor: (@name, callback) ->
+  constructor: (@name, @channels, callback) ->
+    console.log @channels
     @client = new irc.Client ircHost, @name,
-      channels: ["#{channelName}"]
+      channels: @channels
       port: process.env.ITPIRL_IRC_PORT || 6667
       autoConnect: true
 
@@ -67,20 +68,25 @@ nowShep = (app, logging, sessionStore) ->
     sessionStore.get sid, (err, sess) =>
       chatters[sid] = sess
       chatters[sid].loggedIn ?= false
+      chatters[sid].returningUser ?= false
+      chatters[sid].channels ?= ['#itp-test', '#itp']
       # Fallback value for name
+
       @now.name = chatters[sid].name ?= "itp#{Date.now()}"
 
-      ircs[sid] = new ircBridge (@now.name), (nick) =>
+      ircs[sid] = new ircBridge @now.name, chatters[sid].channels, (nick) =>
         if not chatters[sid].loggedIn
           chatters[sid].loggedIn = true
-          @now.triggerIRCLogin()
+          chatters[sid].returningUser = true
+          @now.triggerIRCLogin(chatters[sid].returningUser)
           # Get recent messages from Redis and send them only to this user.
-          @now.recentMessages 'itp'
+          # @now.recentMessages 'itp'
 
   nowjs.on 'disconnect', ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.disconnect('seeya')
     chatters[sid].loggedIn = false
+    chatters[sid].channels = chan for chan, details of ircs[sid].client.chans
     # Save session to Redis and then destroy the cache.
     sessionStore.set sid, chatters[sid], ->
       console.log "Saving on disconnect"
@@ -91,14 +97,10 @@ nowShep = (app, logging, sessionStore) ->
   # CHAT
   #-----------------------------------------------------
 
-  everyone.now.sendMessage = (to, message) ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.say(to, message)
-
   # Client: Send a message from a client to IRC.
-  everyone.now.distributeChatMessage = (sender, message, destination={room:channelName}) ->
+  everyone.now.distributeChatMessage = (sender, channel, message) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.say("#{destination.room}", message)
+    ircs[sid].client.say("##{channel}", message)
 
   # Server: Pull the last 10 messages from the specified channel from Redis.
   # Send these messages only to the nowjs client who called this method.
@@ -116,26 +118,48 @@ nowShep = (app, logging, sessionStore) ->
           # Send these previous messages to the client
           @now.receivePreviousMessage(m.timestamp, m.sender, m.message)
 
-  # Propogate name change to IRC and send out a message.
-  everyone.now.changeNick = (oldNick, newNick) ->
+  # Server -> Server: Propogate name change to IRC and send out a message.
+  everyone.now.changeNick = (newNick) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.nick = newNick
     ircs[sid].client.send "NICK #{newNick}"
 
-  # Sets @now.name to the value of newName and changes the user's irc nickname.
-  # Saves the names to the session.
+  # Client -> Server: Provides public access to request /NAMES for the
+  # channel. The response from this IRC message will trigger the NAMES
+  # listener.
+  #
+  # channel - The name of a channel without the # sign in front.
+  everyone.now.getNames = (channel) ->
+    everyone.ircClient.send "NAMES ##{channel}"
+
+  # Client -> Server: Ensures that the client is on the channel and sends a
+  # /JOIN message if not.
+  #
+  # channel - The name of a channel without the # sign in front.
+  everyone.now.getChannel = (channel) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    inChannel = true for chan, details of ircs[sid].client.chans when chan is "##{channel}"
+
+    if inChannel.length is 1 and inChannel[0] is true
+      return true
+    else
+      ircs[sid].client.send "JOIN ##{channel}"
+
+  # Client -> Server: Sets @now.name to the value of newName and changes the
+  # user's irc nickname. Saves the names to the session.
   everyone.now.changeName = (newName) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     chatters[sid].name = newName
     @now.name = newName
-    @now.changeNick('something', newName)
+    @now.changeNick(newName)
     sessionStore.set sid, chatters[sid], (err, res) ->
-      console.log err, res
+      if err? then false else true
 
-  everyone.now.joinChannel = (channelName) ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.send "JOIN ##{channelName}"
-
+  # Client -> Server: Accepts a feedback message and sender name and saves to
+  # Redis.
+  #
+  # sender - A users's name.
+  # message - A string message.
   everyone.now.logFeedback = (sender, message) ->
     logging.logMessage sender, message, {room:'itpirl-feedback'}
 
@@ -154,7 +178,6 @@ nowShep = (app, logging, sessionStore) ->
   # IRC EVENT LISTENERS
   #---------------------------------------------------
   # Trigger events for everyone.now when nowjs.users is not empty.
-
   everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
     logMessage "NOTICE", "#{nick}: #{to} : #{text} : #{message}"
 
@@ -166,7 +189,7 @@ nowShep = (app, logging, sessionStore) ->
     if objectLength(nowjs.users) isnt 0
       for channel in channels
         everyone.ircClient.send "NAMES #{channel}"
-        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {room:channel}, everyone.now.receiveSystemMessage
+        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
 
   everyone.ircClient.addListener "message", (from, channel, message) ->
     if objectLength(nowjs.users) isnt 0
@@ -175,7 +198,7 @@ nowShep = (app, logging, sessionStore) ->
   everyone.ircClient.addListener "join", (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
       logMessage "JOIN","#{nick} => #{channel}"
-      logging.logAndForward 'Join', "#{nick} has joined the chat.", {room:channel}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Join', "#{nick} has joined the chat.", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
 
   everyone.ircClient.addListener 'quit', (message, nick) =>
@@ -184,14 +207,11 @@ nowShep = (app, logging, sessionStore) ->
   everyone.ircClient.addListener 'part', (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
       logMessage "PART", "#{nick} => #{channel}"
-      logging.logAndForward 'Leave', "#{nick} has left the chat.", {room:channel}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Leave', "#{nick} has left the chat.", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
-    else
-      console.log "no one here"
 
   everyone.ircClient.addListener "names", (channel, nicks) =>
     if objectLength(nowjs.users) isnt 0
-      console.log 'names:', channel
-      everyone.now.updateUserList(channel, nicks)
+      everyone.now.updateUserList("#{channel[1..channel.length]}", nicks)
 
 module.exports = nowShep

@@ -118,8 +118,12 @@ jQuery ->
     linkToNow: ->
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
-      now.triggerIRCLogin = =>
-        @promptUserName()
+      now.triggerIRCLogin = (returningUser) =>
+        if returningUser
+          @render().el
+          @initializeSubViews()
+        else
+          @promptUserName()
 
   # USER LIST VIEW
   #---------------------------------------------------
@@ -128,19 +132,28 @@ jQuery ->
     initialize: (options) ->
       @linkToNow()
       @collection.bind 'add', @render, @
+      app.Messages.bind 'change:channel', @render, @
+      now.getNames(app.Messages.channel)
     render: ->
       $(@el).empty()
-      for user in @collection.models
+      for user in @collection.thisChannel()
         $(@el).append("<li>#{user.get('name')}</li>")
       @
+    resetChannel: (channel, callback) ->
+      for user in @collection.thatChannel(channel)
+        if user? and user.get('channel') is channel
+          console.log "removing #{user.get('name')} from #{user.get('channel')}"
+          @collection.remove(user)
+        else
+          console.log "skipping #{user.get('name')} from #{user.get('channel')}"
+      callback()
     linkToNow: ->
       # This is called from the server on nick changes and part/leave events.
       # The user list is cleared and re-rendered with an updated list.
       now.updateUserList = (channel, nicks) =>
-        if channel is app.Messages.channel
-          @collection.reset()
+        @resetChannel channel, =>
           for nick, value of nicks
-            @collection.add({name:nick})
+            @collection.add(new app.User({name:nick, channel:channel}))
           return
 
   # MESSAGE VIEW
@@ -249,7 +262,7 @@ jQuery ->
         now.name = name
         $('.chat-name').val(name)
     render: ->
-      $(@el).html Mustache.render(@template, {name:now.name})
+      $(@el).html Mustache.render(@template, {name : now.name})
       @
     ignoreKeys: (e) ->
       if e.keyCode is 13 or e.keyCode is 32
@@ -273,7 +286,7 @@ jQuery ->
       message = $(e.target).val().trim()
       if e.which is 13
         return false if message.length is 0
-        now.distributeChatMessage(now.name, channel, message)
+        now.distributeChatMessage(now.name, app.Messages.channel, message)
         $(e.target).val('').attr('rows', 1)
         return false
 
@@ -312,6 +325,7 @@ jQuery ->
       @menu = ui.menu()
         .add('Add Channel...')
     populateChannels: ->
+      @collection.reset()
       @collection.add({name:'itp'})
       @collection.add({name:'itp-test',exitable:true})
     toggleMenu: (e) ->
@@ -344,6 +358,8 @@ jQuery ->
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
     goToChannel: ->
+      now.getNames(@model.get('name'))
+      now.getChannel(@model.get('name'))
       for channel in app.Channels.models
         channel.set 'currentChannel', (if @model.get('name') is channel.get('name') then true else false)
       app.Messages.setChannel @model.get('name')

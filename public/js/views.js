@@ -169,8 +169,13 @@
 
       ChatWindowView.prototype.linkToNow = function() {
         var _this = this;
-        return now.triggerIRCLogin = function() {
-          return _this.promptUserName();
+        return now.triggerIRCLogin = function(returningUser) {
+          if (returningUser) {
+            _this.render().el;
+            return _this.initializeSubViews();
+          } else {
+            return _this.promptUserName();
+          }
         };
       };
 
@@ -189,13 +194,15 @@
 
       UserListView.prototype.initialize = function(options) {
         this.linkToNow();
-        return this.collection.bind('add', this.render, this);
+        this.collection.bind('add', this.render, this);
+        app.Messages.bind('change:channel', this.render, this);
+        return now.getNames(app.Messages.channel);
       };
 
       UserListView.prototype.render = function() {
         var user, _i, _len, _ref;
         $(this.el).empty();
-        _ref = this.collection.models;
+        _ref = this.collection.thisChannel();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           user = _ref[_i];
           $(this.el).append("<li>" + (user.get('name')) + "</li>");
@@ -203,19 +210,34 @@
         return this;
       };
 
+      UserListView.prototype.resetChannel = function(channel, callback) {
+        var user, _i, _len, _ref;
+        _ref = this.collection.thatChannel(channel);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          user = _ref[_i];
+          if ((user != null) && user.get('channel') === channel) {
+            console.log("removing " + (user.get('name')) + " from " + (user.get('channel')));
+            this.collection.remove(user);
+          } else {
+            console.log("skipping " + (user.get('name')) + " from " + (user.get('channel')));
+          }
+        }
+        return callback();
+      };
+
       UserListView.prototype.linkToNow = function() {
         var _this = this;
         return now.updateUserList = function(channel, nicks) {
-          var nick, value;
-          if (channel === app.Messages.channel) {
-            _this.collection.reset();
+          return _this.resetChannel(channel, function() {
+            var nick, value;
             for (nick in nicks) {
               value = nicks[nick];
-              _this.collection.add({
-                name: nick
-              });
+              _this.collection.add(new app.User({
+                name: nick,
+                channel: channel
+              }));
             }
-          }
+          });
         };
       };
 
@@ -403,7 +425,7 @@
         message = $(e.target).val().trim();
         if (e.which === 13) {
           if (message.length === 0) return false;
-          now.distributeChatMessage(now.name, channel, message);
+          now.distributeChatMessage(now.name, app.Messages.channel, message);
           $(e.target).val('').attr('rows', 1);
           return false;
         }
@@ -467,6 +489,7 @@
       };
 
       ChannelsView.prototype.populateChannels = function() {
+        this.collection.reset();
         this.collection.add({
           name: 'itp'
         });
@@ -531,6 +554,8 @@
 
       ChannelView.prototype.goToChannel = function() {
         var channel, _i, _len, _ref;
+        now.getNames(this.model.get('name'));
+        now.getChannel(this.model.get('name'));
         _ref = app.Channels.models;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           channel = _ref[_i];

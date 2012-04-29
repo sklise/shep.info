@@ -47,6 +47,24 @@
 
     Users.prototype.model = app.User;
 
+    Users.prototype.thatChannel = function(channel) {
+      var users;
+      return users = this.filter(function(user) {
+        return user.get('channel') === channel;
+      });
+    };
+
+    Users.prototype.thisChannel = function() {
+      var users,
+        _this = this;
+      users = this.filter(function(user) {
+        return user.get('channel') === app.Messages.channel;
+      });
+      return _.sortBy(users, function(user) {
+        return user.get('name');
+      });
+    };
+
     return Users;
 
   })(Backbone.Collection);

@@ -13,6 +13,14 @@ class Messages extends Backbone.Collection
 
 class Users extends Backbone.Collection
   model: app.User
+  thatChannel: (channel) ->
+    users = @filter (user) ->
+      user.get('channel') is channel
+  thisChannel: ->
+    users = @filter (user) =>
+      user.get('channel') is app.Messages.channel
+    _.sortBy users, (user) =>
+      user.get('name')
 
 class Channels extends Backbone.Collection
   models: app.Channel
