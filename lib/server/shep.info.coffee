@@ -5,7 +5,6 @@ querystring = require('querystring')
 express = require('express')
 connect = require('connect')
 ejs = require('ejs')
-assetManager = require('connect-assetmanager')
 
 RedisStore = require('connect-redis')(express)
 redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
@@ -16,27 +15,6 @@ app = express.createServer(express.logger())
 
 root = __dirname + "/../../"
 
-assetManagerGroups =
-  'js' :
-    route: /\/assets\/js\/application\.js/
-    path: root + 'public/js/'
-    dataType: 'javascript'
-    files: [
-      'jquery.min.js'
-      'underscore-min.js'
-      'backbone-min.js'
-      'ui.js'
-      'mustache.js'
-      'helpers.js'
-      'models.js'
-      'collections.js'
-      'views.js'
-      'routers.js'
-      'itpirl.js'
-      ]
-
-assetsManagerMiddleware = assetManager(assetManagerGroups)
-
 app.configure ->
   # Setup static file server
   app.use express.static(root + 'public')
@@ -46,7 +24,7 @@ app.configure ->
     secret: "lkashjgfekfleljfkjwjekfwekf",
     store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]})
   })
-  app.use assetsManagerMiddleware
+  app.use require('connect-assets')()
 
   app.set('views', root + 'views')
   app.set('view engine', 'ejs')
