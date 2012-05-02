@@ -533,6 +533,7 @@
 
       ChannelView.prototype.events = {
         'click': 'goToChannel',
+        'click .exitable-room': 'leaveChannel',
         'mouseenter': 'showX',
         'mouseleave': 'hideX'
       };
@@ -550,6 +551,14 @@
         }
         $(this.el).html(Mustache.render(this.template, this.model.toJSON()));
         return this;
+      };
+
+      ChannelView.prototype.leaveChannel = function() {
+        now.leaveChannel(this.model.get('name'));
+        if (app.Messages.channel === this.model.get('name')) {
+          app.Messages.setChannel('itp');
+        }
+        return this.remove();
       };
 
       ChannelView.prototype.goToChannel = function() {

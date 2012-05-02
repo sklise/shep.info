@@ -344,6 +344,7 @@ jQuery ->
     template: $('#channel-template').html()
     events:
       'click' : 'goToChannel'
+      'click .exitable-room' : 'leaveChannel'
       'mouseenter' : 'showX'
       'mouseleave' : 'hideX'
       # 'click .exitable-room' : 'leaveChannel'
@@ -357,6 +358,14 @@ jQuery ->
         $(@el).removeClass('current-channel')
       $(@el).html Mustache.render(@template, @model.toJSON())
       @
+    leaveChannel: ->
+      # Send a request to leave the channel
+      now.leaveChannel(@model.get('name'))
+      console.log "remove"
+      # Navigate to another channel if this is the active channel
+      if app.Messages.channel is @model.get('name')
+        app.Messages.setChannel('itp')
+      @remove()
     goToChannel: ->
       now.getNames(@model.get('name'))
       now.getChannel(@model.get('name'))
@@ -365,6 +374,7 @@ jQuery ->
       app.Messages.setChannel @model.get('name')
     showX: -> @$('.room-status-icon').text('*') if @model.get('exitable')
     hideX: -> @$('.room-status-icon').text('q')
+
     # When a room-status-icon is clicked call a function on the server to leave
     # the channel on IRC.
     # leaveChannel: ->

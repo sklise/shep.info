@@ -67,6 +67,9 @@ nowShep = (app, logging, sessionStore) ->
 
     sessionStore.get sid, (err, sess) =>
       chatters[sid] = sess
+
+      console.log chatters[sid]
+
       chatters[sid].loggedIn ?= false
       chatters[sid].returningUser ?= false
       chatters[sid].channels ?= ['#itp-test', '#itp']
@@ -84,11 +87,13 @@ nowShep = (app, logging, sessionStore) ->
 
   nowjs.on 'disconnect', ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.disconnect('seeya')
     chatters[sid].loggedIn = false
-    chatters[sid].channels = chan for chan, details of ircs[sid].client.chans
+    chatters[sid].channels = for channel in ircs[sid].channels
+      "#{channel}"
+    console.log "channels", chatters[sid].channels
     # Save session to Redis and then destroy the cache.
     sessionStore.set sid, chatters[sid], ->
+      ircs[sid].client.disconnect('seeya')
       console.log "Saving on disconnect"
       delete chatters[sid]
     # Ask IRC for the list of names.
@@ -144,6 +149,10 @@ nowShep = (app, logging, sessionStore) ->
       return true
     else
       ircs[sid].client.send "JOIN ##{channel}"
+
+  everyone.now.leaveChannel = (channel) ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    ircs[sid].client.send "LEAVE ##{channel}"
 
   # Client -> Server: Sets @now.name to the value of newName and changes the
   # user's irc nickname. Saves the names to the session.
