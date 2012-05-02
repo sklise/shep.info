@@ -53,8 +53,7 @@ class ircBridge
       logMessage "CLIENT", "[#{@client.nick}] PM from #{from} => #{message}"
 
 nowShep = (app, logging, sessionStore) ->
-
-  chatters ?= {}
+  chatters = {}
   ircs = {}
 
   # SETUP NOW.JS

@@ -5,7 +5,6 @@ querystring = require('querystring')
 express = require('express')
 connect = require('connect')
 ejs = require('ejs')
-
 RedisStore = require('connect-redis')(express)
 redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
@@ -13,7 +12,7 @@ redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:
 #-----------------------------------------------------
 app = express.createServer(express.logger())
 
-root = __dirname + "/../../"
+root = __dirname + "/../"
 
 app.configure ->
   # Setup static file server
@@ -31,26 +30,10 @@ app.configure ->
 
 # LOAD OTHER FILES
 #-----------------------------------------------------
-require('./authentication/routes')(app)
 logging = require('./logging')(app)
 require('./helpers')(app)
-
+require('./routes')(app)
 require('./now-shep')(app, logging, new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass:(redisUrl.auth)?.split(":")[1]}))
-
-# ROUTES
-#-----------------------------------------------------
-app.get '/', (req, res) ->
-  req.session.httpOnly=false
-  res.render 'index.ejs',
-    title: "Shep"
-
-app.get '/help', (req, res) ->
-  res.render 'index.ejs',
-    title: "Shep ☞ Help"
-
-app.get '/channels/:name', (req, res) ->
-  res.render 'index.ejs',
-    title: "Shep ☞ #{req.params.name}"
 
 # LISTEN ON A PORT
 #-----------------------------------------------------

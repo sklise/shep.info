@@ -1,2 +1,2 @@
 require('coffee-script');
-require('./lib/server/shep.info');
+require('./app/shep.info');
