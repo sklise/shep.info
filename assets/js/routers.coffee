@@ -6,6 +6,7 @@ jQuery ->
       'channels/:channel' : 'show'
     initialize: ->
       (@view = new app.AppView).render().el
+      app.Helpers.fitHeight()
       app.Messages.bind 'change:channel', @changeChannel, @
     changeChannel: ->
       Backbone.history.navigate "channels/#{app.Messages.channel}"

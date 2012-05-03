@@ -4,6 +4,13 @@
 
 ## Changelog
 
+### 1.0.0
+
+- Upgrade to Node 0.6.15
+- Implement connect-assets for javascript delivery.
+- Remove docco docs.
+- Rearrange folder structure.
+
 ### 1.0.0-rc3 2012/04/25
 
 - Save chat names to session

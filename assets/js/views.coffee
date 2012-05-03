@@ -22,15 +22,15 @@ jQuery ->
   # Feedback Form
   #---------------------------------------------------
   class FeedbackView extends Backbone.View
+    el: '#feedback-box'
     events:
       'click .feedback-button' : 'toggleForm'
       'click .feedback-send' : 'sendFeedback'
-
     initialize: (options) ->
       return
     template: $('#feedback-template').html()
     render: ->
-      $('.introduction').append Mustache.render(@template, {})
+      $(@el).append Mustache.render(@template, {})
       @
 
     # Renders feedback form to the page prepopulated with current chat name or if
@@ -142,10 +142,7 @@ jQuery ->
     resetChannel: (channel, callback) ->
       for user in @collection.thatChannel(channel)
         if user? and user.get('channel') is channel
-          console.log "removing #{user.get('name')} from #{user.get('channel')}"
           @collection.remove(user)
-        else
-          console.log "skipping #{user.get('name')} from #{user.get('channel')}"
       callback()
     linkToNow: ->
       # This is called from the server on nick changes and part/leave events.
@@ -344,15 +341,15 @@ jQuery ->
     template: $('#channel-template').html()
     events:
       'click' : 'goToChannel'
-      'click .exitable-room' : 'leaveChannel'
       'mouseenter' : 'showX'
       'mouseleave' : 'hideX'
-      # 'click .exitable-room' : 'leaveChannel'
+      'click .exitable-room' : 'leaveChannel'
     initialize: (options) ->
       @model.bind 'change', @render, @
+      app.Messages.bind 'change:channel', @render, @
       @render().el
     render: ->
-      if @model.get('currentChannel')
+      if @model.get('name') is app.Messages.channel
         $(@el).addClass('current-channel')
       else
         $(@el).removeClass('current-channel')

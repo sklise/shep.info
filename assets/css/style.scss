@@ -80,6 +80,11 @@ h2 {
   margin: 0.5em 0;
 }
 
+h3 {
+  font-size: ms(4, $base-size, $golden);
+  line-height: ms(5, $base-size, $golden);
+}
+
 h4 {
   font-size: ms(3, $base-size, $golden);
   font-weight: 600;
@@ -104,10 +109,11 @@ a {
 // MENU WINDOW aka the Left Side of the site.
 //----------------------------------------------------
 #menu-window {
+  @include box-sizing;
   @include grid-column(10);
-  margin-top: 16px;
   max-height: 100%;
   overflow-y: scroll;
+  padding-top: 16px;
   position: relative;
 }
 
@@ -119,23 +125,10 @@ a {
   -webkit-background-size: grid-width(10) grid-width(5);
   -moz-background-size: grid-width(10) grid-width(5);
   background-size: grid-width(10) grid-width(5);
-  height: grid-width(6);
+  height: grid-width(5);
   padding-left: grid-width(5, $gutter-width);
   padding-top: grid-width(3);
   position: relative;
-
-  h1, h3 {
-    position: absolute;
-    bottom: grid-width(1);
-  }
-
-  h3 a {
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 #feedback {
@@ -160,21 +153,36 @@ a {
 // INTRODUCTION BOX
 //____________________________________________________
 .introduction {
-  background-color: $highlight-yellow;
-  margin: 0;
-  padding: 0.75em 1.5em;
+  margin: 1em 0;
   @include box-sizing;
   
   p {
-    font-size: ms(1, $base-size, $golden);
-    line-height: ms(2, $base-size, $golden);
-    margin: 0.5em 0;
+    font-size: ms(2, $alt-size, $golden);
+    line-height: ms(3, $alt-size, $golden);
+    margin: 0.5em 0 0.6em;
   }
 }
 
+#tips {
+  @include box-sizing;
+  background-color: $highlight-yellow;
+  font-size: ms(1, $base-size, $golden);
+  line-height: ms(1, $base-size, $golden);
+  padding: 0.75em 1.5em;
+}
+
 #footer {
+  @include box-sizing;
+  bottom: 0;
   color: $divider-dark-gray;
   font-size: ms(1, $alt-size, $golden);
+  line-height: ms(1, $alt-size, $golden);
+  padding: 1em 0;
+  position: absolute;
+
+  a {
+    color: $divider-dark-gray;
+  }
 }
 
 @import 'chats';

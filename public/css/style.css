@@ -73,6 +73,10 @@ h2 {
   line-height: 42px;
   margin: 0.5em 0; }
 
+h3 {
+  font-size: 26px;
+  line-height: 32px; }
+
 h4 {
   font-size: 20px;
   font-weight: 600;
@@ -95,12 +99,15 @@ a {
   overflow: auto; }
 
 #menu-window {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   margin: 0 8px;
   float: left;
   width: 354px;
-  margin-top: 16px;
   max-height: 100%;
   overflow-y: scroll;
+  padding-top: 16px;
   position: relative; }
 
 #heading {
@@ -113,17 +120,10 @@ a {
   -webkit-background-size: 354px 169px;
   -moz-background-size: 354px 169px;
   background-size: 354px 169px;
-  height: 206px;
+  height: 169px;
   padding-left: 185px;
   padding-top: 95px;
   position: relative; }
-  #heading h1, #heading h3 {
-    position: absolute;
-    bottom: 21px; }
-  #heading h3 a {
-    text-decoration: none; }
-    #heading h3 a:hover {
-      text-decoration: underline; }
 
 #feedback {
   position: relative; }
@@ -139,20 +139,36 @@ a {
     font-size: 12px; }
 
 .introduction {
-  background-color: #ffeec3;
-  margin: 0;
-  padding: 0.75em 1.5em;
+  margin: 1em 0;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
   .introduction p {
-    font-size: 12px;
-    line-height: 16px;
-    margin: 0.5em 0; }
+    font-size: 13px;
+    line-height: 18px;
+    margin: 0.5em 0 0.6em; }
+
+#tips {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #ffeec3;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0.75em 1.5em; }
 
 #footer {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  bottom: 0;
   color: #dbd7d4;
-  font-size: 11px; }
+  font-size: 11px;
+  line-height: 11px;
+  padding: 1em 0;
+  position: absolute; }
+  #footer a {
+    color: #dbd7d4; }
 
 #chat-window {
   float: left;

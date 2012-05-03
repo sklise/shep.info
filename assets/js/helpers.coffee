@@ -14,7 +14,8 @@ Helpers =
   # Stretch the chat window to fill the height of the window.
   fitHeight: (windowHeight=$(window).height()) ->
     toolbarHeight = $('#chat-toolbar').height()
-    $('#chat-window').css('height', (windowHeight) + 'px')
+    $('#chat-window').css('height', windowHeight + 'px')
+    $('#menu-window').css('height', windowHeight + 'px')
     chatWindowHeight = windowHeight - toolbarHeight
     chatInterior = chatWindowHeight - $('#new-message').height() + 14
     $('#chat-log-container').height(chatInterior)
