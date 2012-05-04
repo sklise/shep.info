@@ -174,7 +174,8 @@ jQuery ->
     template: $('#messages-template').html()
     initialize: (options) ->
       @render().el
-      @collection.bind 'add', @render, @
+      @collection.bind 'add', @renderLast, @
+      @collection.bind 'add', @scrollToBottom, @
       @collection.bind 'change:channel', @render, @
       @linkToNow()
     linkToNow: ->
@@ -225,16 +226,31 @@ jQuery ->
         classes.push 'shep'
       classes.join(' ')
     isConsecutive: (sender) ->
-      if $('.chat-log li').last().find('.chatter').text() == sender
-        return true
+      messages = ""
+      if @collection.thisChannel().length > 0
+        messages = @collection.thisChannel()
+        console.log messages[messages.length-1]
+        if messages[messages.length-1].get('name') == sender
+          return true
+        else
+          return false
       else
         return false
+    scrollToBottom: (messageView) ->
+      console.log ($('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height())
+      lastMessageHeight = $('.chat-log li').last().height() || 10
+      if $('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height() > -lastMessageHeight
+        $('#chat-log-container').animate {'scrollTop' : $('.chat-log').height()}, 200
+    renderLast: (message) ->
+      if message.get('channel') is app.Messages.channel
+        messageView = new MessageView model: message
+        @$('.chat-log').append messageView.render().el
     render: ->
       $(@el).html(Mustache.render(@template))
       for message in @collection.thisChannel()
-        messageView = new MessageView model: message
-        @$('.chat-log').append messageView.render().el
+        @renderLast message
       app.Helpers.fitHeight()
+      @scrollToBottom()
       @
 
   # NEW MESSAGE VIEW
