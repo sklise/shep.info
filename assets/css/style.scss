@@ -131,18 +131,24 @@ a {
   position: relative;
 }
 
+.feedback-button {
+  height: 24px;
+  margin: 4px 0;
+}
+
+.feedback-button:hover {
+  color: $bright-blue;
+  cursor: pointer;
+}
+
+.feedback-send {
+  clear: both;
+  display: block;
+}
+
 #feedback {
   position: relative;
 
-  .feedback-button:hover {
-    color: $bright-blue;
-    cursor: pointer;
-  }
-
-  .feedback-send {
-    clear: both;
-    display: block;
-  }
   label {
     clear: both;
     display: block;
@@ -183,6 +189,10 @@ a {
   a {
     color: $divider-dark-gray;
   }
+}
+
+.icon {
+  display: inline;
 }
 
 @import 'chats';

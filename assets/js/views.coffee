@@ -323,7 +323,7 @@ jQuery ->
       'click .channel-menu-button' : 'toggleMenu'
     initialize: (options) ->
       @render().el
-      @attachMenu()
+      # @attachMenu()
       app.Channels.bind 'change:channel', @render, @
       app.Channels.bind 'add', @render, @
       app.Channels.bind 'remove', @render, @
@@ -357,9 +357,9 @@ jQuery ->
     template: $('#channel-template').html()
     events:
       'click' : 'goToChannel'
-      'mouseenter' : 'showX'
-      'mouseleave' : 'hideX'
-      'click .exitable-room' : 'leaveChannel'
+      # 'mouseenter' : 'showX'
+      # 'mouseleave' : 'hideX'
+      # 'click .exitable-room' : 'leaveChannel'
     initialize: (options) ->
       @model.bind 'change', @render, @
       app.Messages.bind 'change:channel', @render, @
@@ -385,8 +385,8 @@ jQuery ->
       for channel in app.Channels.models
         channel.set 'currentChannel', (if @model.get('name') is channel.get('name') then true else false)
       app.Messages.setChannel @model.get('name')
-    showX: -> @$('.room-status-icon').text('*') if @model.get('exitable')
-    hideX: -> @$('.room-status-icon').text('q')
+    # showX: -> @$('.room-status-icon').text('*') if @model.get('exitable')
+    # hideX: -> @$('.room-status-icon').html('<img src="http://shep.info.s3.amazonaws.com/232.png">')
 
     # When a room-status-icon is clicked call a function on the server to leave
     # the channel on IRC.
