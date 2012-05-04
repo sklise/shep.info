@@ -4,12 +4,14 @@
 
 ## Changelog
 
-### 1.0.0
+### 1.0.0-rc4 2012/05/03
 
 - Upgrade to Node 0.6.15
 - Implement connect-assets for javascript delivery.
 - Remove docco docs.
 - Rearrange folder structure.
+- Channel routing works for predefined channels.
+- No Channel Add/Remove yet.
 
 ### 1.0.0-rc3 2012/04/25
 
