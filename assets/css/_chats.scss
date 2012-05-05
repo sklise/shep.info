@@ -156,14 +156,17 @@
   @include box-sizing;
   background-color: $highlight-yellow;
   color: rgb(119,119,119);
-  padding: 0.45em;
+  padding: 0.55em;
   position: absolute;
   right: 0;
   top: 0;
   // Margin: (16/2) / 860
   margin: 37px 0.9009009% 0;
-  /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=3 */
-  width: 10.6981982%;
+  max-height: 450px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  /* Width: (21n + 16(n-1)) / 888 = 95 / 888, n=4 */
+  width: 14.8648649%;
 }
 
 // CHAT LOG
@@ -239,7 +242,7 @@
   opacity: 0;
   padding: 0.2em 0.3em 0.15em;
   position: absolute;
-  right: 12.5%;
+  right: 16%;
   -moz-transition: opacity 200ms ease-in-out;
   -webkit-transition: opacity 200ms ease-in-out;
   transition: opacity 200ms ease-in-out;
@@ -268,7 +271,8 @@
   float: left;
   margin: 0 0.9009009%;
   padding-right: 10.6981982%;
-  width: 77.3648649%;
+  /* n=18 (21*n+16*(n-1)) / 888 */
+  width: 73.1982%;
 }
 
 .system-message {
