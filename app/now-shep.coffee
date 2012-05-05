@@ -36,9 +36,9 @@ logMessage = (type, message) ->
     color(message, typeColors[type]))
 
 class ircBridge
-  constructor: (@name, @channels, callback) ->
+  constructor: (@name, channels, callback) ->
     @client = new irc.Client ircHost, @name,
-      channels: @channels
+      channels: channels
       port: process.env.ITPIRL_IRC_PORT || 6667
       autoConnect: true
 
@@ -142,7 +142,8 @@ nowShep = (app, logging, sessionStore) ->
 
       sessionStore.get sid, (err, sess) ->
         sess.loggedIn = false
-        sess.channels = ircs[sid].channels
+        sess.channels = for own chan, val of ircs[sid].client.chans
+          "#{chan}"
         sess.returningUser = true
         sessionStore.set sid, sess
 
