@@ -229,18 +229,16 @@ jQuery ->
       messages = ""
       if @collection.thisChannel().length > 0
         messages = @collection.thisChannel()
-        console.log messages[messages.length-1]
         if messages[messages.length-1].get('name') == sender
           return true
         else
           return false
       else
         return false
-    scrollToBottom: (messageView) ->
-      console.log ($('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height())
-      lastMessageHeight = $('.chat-log li').last().height() || 10
-      if $('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height() > -lastMessageHeight
-        $('#chat-log-container').animate {'scrollTop' : $('.chat-log').height()}, 200
+    scrollToBottom: (isOverride) ->
+      lastMessage = ($('.chat-log li').last().height() || 30) + 4
+      if $('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height() > -lastMessage || isOverride is true
+        $('#chat-log-container').scrollTop $('.chat-log').height()
     renderLast: (message) ->
       if message.get('channel') is app.Messages.channel
         messageView = new MessageView model: message
