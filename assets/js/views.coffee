@@ -68,10 +68,10 @@ jQuery ->
       app.Helpers.fitHeight()
       @
     initializeSubViews: ->
+      @newmessageview = new NewMessageView
       @channelsview = new ChannelsView collection: app.Channels
       @userListView = new UserListView collection: app.Users
       @messagesview = new MessagesView collection: app.Messages
-      @newmessageview = new NewMessageView
     # Bind window resize event 
     bindToWindowResize: ->
       $(window).bind 'resize', -> app.Helpers.fitHeight($(this).height())
