@@ -11,6 +11,7 @@ jQuery ->
       # @collection.bind 'reset', @render, @
       @feedbackview = new FeedbackView
       @chatwindowview = new ChatWindowView
+      @linkToNow()
     render: ->
       @feedbackview.render().el
       @
