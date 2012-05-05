@@ -115,6 +115,7 @@ jQuery ->
     saveNameFromPrompt: ->
       $('.chat-name').val(@origVal)
       now.changeName @origVal
+      now.name = @origVal
     linkToNow: ->
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
@@ -133,7 +134,6 @@ jQuery ->
       @linkToNow()
       @collection.bind 'add', @render, @
       app.Messages.bind 'change:channel', @render, @
-      now.getNames(app.Messages.channel)
     render: ->
       $(@el).empty()
       for user in @collection.thisChannel()
@@ -380,13 +380,12 @@ jQuery ->
         app.Messages.setChannel('itp')
       @remove()
     goToChannel: ->
-      now.getNames(@model.get('name'))
       now.getChannel(@model.get('name'))
       for channel in app.Channels.models
         channel.set 'currentChannel', (if @model.get('name') is channel.get('name') then true else false)
       app.Messages.setChannel @model.get('name')
     # showX: -> @$('.room-status-icon').text('*') if @model.get('exitable')
-    # hideX: -> @$('.room-status-icon').html('<img src="http://shep.info.s3.amazonaws.com/232.png">')
+    # hideX: -> @$('.room-status-icon').html('<img src="http://shep.info.s3.amazonaws.com/236.png">')
 
     # When a room-status-icon is clicked call a function on the server to leave
     # the channel on IRC.

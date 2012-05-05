@@ -91,10 +91,15 @@
 }
 
 .room-status-icon {
+  background: transparent url('http://shep.info.s3.amazonaws.com/236.png') no-repeat center;
   display: inline;
   position: relative;
   width: ms(2, $base-size, $golden);
   height: ms(2, $base-size, $golden);
+}
+
+.current-channel .room-status-icon {
+  background-image:url('http://shep.info.s3.amazonaws.com/236white.png');
 }
 
 .shep-icon {
@@ -124,8 +129,16 @@
 }
 
 .room-menu-icon {
-  @extend .pictos;
   font-size: ms(3, $base-size, $golden);
+}
+
+.chat-room-list li.channel-menu-button {
+  margin-top: -2px;
+  margin-bottom: -2px;
+}
+
+.channel-menu-button img {
+  width: 20px;
 }
 
 // CHAT LOG CONTAINER
@@ -294,15 +307,11 @@
 }
 
 .chat-name {
-  background-color: transparent;
+  background: transparent url('http://shep.info.s3.amazonaws.com/140.png') left center;
+  background-repeat: no-repeat;
   overflow: hidden;
   resize: none;
   text-align: right;
-  
-  &:hover {
-    border: 1px solid blue;
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
-  }
 }
 
 .new-message-input,

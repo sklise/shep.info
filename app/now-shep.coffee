@@ -1,34 +1,42 @@
 color = require('ansi-color').set
-nowjs = require 'now'
-irc = require 'irc'
+nowjs = require('now')
+irc = require('irc')
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-channelName = '#itp-test'
+defaultChannels = ['#itp', '##itp-thesis-2012']
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+
+defaultValues = (session) ->
+  session.loggedIn ?= false
+  session.returningUser ?= false
+  session.channels ?= defaultChannels
+  session.name ?= "itp#{Date.now()}"
+  session
 
 objectLength = (object) ->
   keys = for key, value of object
     "#{key}"
   keys.length
 
+# Server: helper method to add color to terminal logging.
 logMessage = (type, message) ->
-  typeColors = 
-    "NOTICE" : "yellow"
-    "CLIENT NOTICE" : "magenta"
-    "ERROR" : "red"
-    "CLIENT ERROR" : "red"
-    "NICK" : "blue"
-    "JOIN" : "blue"
-    "PART" : "blue"
-    "QUIT" : "blue"
+  typeColors = {
+    "NOTICE" : "yellow",
+    "CLIENT NOTICE" : "magenta",
+    "ERROR" : "red",
+    "CLIENT ERROR" : "red",
+    "NICK" : "blue",
+    "JOIN" : "blue",
+    "PART" : "blue",
+    "QUIT" : "blue",
     "CLIENT" : "green"
+    }
   console.log(
     color("[#{type}]", "#{typeColors[type]}+bold"),
     color(message, typeColors[type]))
 
 class ircBridge
   constructor: (@name, @channels, callback) ->
-    console.log @channels
     @client = new irc.Client ircHost, @name,
       channels: @channels
       port: process.env.ITPIRL_IRC_PORT || 6667
@@ -62,48 +70,28 @@ nowShep = (app, logging, sessionStore) ->
 
   nowjs.on 'connect', ->
     # Get the id of the user's cookie.
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    sid = decodeURIComponent(this.user.cookie['connect.sid'])
 
     sessionStore.get sid, (err, sess) =>
-      chatters[sid] = sess
+      chatters[sid] = defaultValues(sess)
 
-      console.log chatters[sid]
-
-      chatters[sid].loggedIn ?= false
-      chatters[sid].returningUser ?= false
-      chatters[sid].channels ?= ['#itp-test', '#itp']
-      # Fallback value for name
-
-      @now.name = chatters[sid].name ?= "itp#{Date.now()}"
-
-      ircs[sid] = new ircBridge @now.name, chatters[sid].channels, (nick) =>
+      ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, (nick) =>
         if not chatters[sid].loggedIn
           chatters[sid].loggedIn = true
-          chatters[sid].returningUser = true
+
           @now.triggerIRCLogin(chatters[sid].returningUser)
           # Get recent messages from Redis and send them only to this user.
           # @now.recentMessages 'itp'
 
   nowjs.on 'disconnect', ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    chatters[sid].loggedIn = false
-    chatters[sid].channels = for channel in ircs[sid].channels
-      "#{channel}"
-    console.log "channels", chatters[sid].channels
-    # Save session to Redis and then destroy the cache.
-    sessionStore.set sid, chatters[sid], ->
-      ircs[sid].client.disconnect('seeya')
-      console.log "Saving on disconnect"
-      delete chatters[sid]
-    # Ask IRC for the list of names.
-    everyone.ircClient.send "NAMES #{channelName}"
+    console.log "now disconnect"
 
   # CHAT
   #-----------------------------------------------------
 
   # Client: Send a message from a client to IRC.
   everyone.now.distributeChatMessage = (sender, channel, message) ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    sid = decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.say("##{channel}", message)
 
   # Server: Pull the last 10 messages from the specified channel from Redis.
@@ -124,24 +112,16 @@ nowShep = (app, logging, sessionStore) ->
 
   # Server -> Server: Propogate name change to IRC and send out a message.
   everyone.now.changeNick = (newNick) ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    sid = decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.nick = newNick
     ircs[sid].client.send "NICK #{newNick}"
-
-  # Client -> Server: Provides public access to request /NAMES for the
-  # channel. The response from this IRC message will trigger the NAMES
-  # listener.
-  #
-  # channel - The name of a channel without the # sign in front.
-  everyone.now.getNames = (channel) ->
-    everyone.ircClient.send "NAMES ##{channel}"
 
   # Client -> Server: Ensures that the client is on the channel and sends a
   # /JOIN message if not.
   #
   # channel - The name of a channel without the # sign in front.
   everyone.now.getChannel = (channel) ->
-    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    sid = decodeURIComponent(this.user.cookie['connect.sid'])
     inChannel = true for chan, details of ircs[sid].client.chans when chan is "##{channel}"
 
     if inChannel.length is 1 and inChannel[0] is true
@@ -149,6 +129,24 @@ nowShep = (app, logging, sessionStore) ->
     else
       ircs[sid].client.send "JOIN ##{channel}"
 
+  # Client -> Server: Log client out of IRC and set & save session. Called at
+  # onbeforeunload client event.
+  everyone.now.signOut = ->
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    ircs[sid].client.disconnect('seeya')
+
+    # Save session to Redis and then destroy the cache.
+    sessionStore.set sid, chatters[sid], ->
+      console.log "Saving on disconnect"
+      delete chatters[sid]
+
+      sessionStore.get sid, (err, sess) ->
+        sess.loggedIn = false
+        sess.channels = ircs[sid].channels
+        sess.returningUser = true
+        sessionStore.set sid, sess
+
+  # Client -> Server
   everyone.now.leaveChannel = (channel) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.send "LEAVE ##{channel}"
@@ -171,26 +169,27 @@ nowShep = (app, logging, sessionStore) ->
   everyone.now.logFeedback = (sender, message) ->
     logging.logMessage sender, message, {room:'itpirl-feedback'}
 
+
   # SETUP IRC ON NODE.JS SERVER
   #-----------------------------------------------------
   # Create an IRC client for the server. This is the main listener for IRC
   # events. The clients speak to IRC but only the server (this) listens.
   ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
   everyone.ircClient = new irc.Client ircHost, ircNick,
-    channels: ["#{channelName}", "#itp"]
+    channels: defaultChannels
     port: process.env.ITPIRL_IRC_PORT || 6667
     autoConnect: true
     userName: process.env.ITPIRL_IRC_USERNAME || ''
     password: process.env.ITPIRL_IRC_PASSWORD || ''
 
   # IRC EVENT LISTENERS
-  #---------------------------------------------------
   # Trigger events for everyone.now when nowjs.users is not empty.
+
   everyone.ircClient.addListener 'notice', (nick, to, text, message) ->
     logMessage "NOTICE", "#{nick}: #{to} : #{text} : #{message}"
 
   everyone.ircClient.addListener 'error', (message) ->
-    logMessage "ERROR", message
+    console.log(color("[ERROR]","red"), message)
 
   everyone.ircClient.addListener 'nick', (oldnick, newnick, channels, message) ->
     logMessage "NICK", "#{oldnick} => #{newnick}"

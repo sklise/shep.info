@@ -48,7 +48,7 @@ em {
   font-style: italic; }
 
 /* Calendar colors */
-.pictos, .room-menu-icon {
+.pictos {
   font-family: "Pictos"; }
 
 body {
@@ -249,10 +249,14 @@ a {
   width: 20px; }
 
 .room-status-icon {
+  background: transparent url("http://shep.info.s3.amazonaws.com/236.png") no-repeat center;
   display: inline;
   position: relative;
   width: 16px;
   height: 16px; }
+
+.current-channel .room-status-icon {
+  background-image: url("http://shep.info.s3.amazonaws.com/236white.png"); }
 
 .shep-icon {
   background-image: url("/images/shep.jpg");
@@ -276,6 +280,13 @@ a {
 
 .room-menu-icon {
   font-size: 20px; }
+
+.chat-room-list li.channel-menu-button {
+  margin-top: -2px;
+  margin-bottom: -2px; }
+
+.channel-menu-button img {
+  width: 20px; }
 
 #chat-log-container {
   margin: 0 8px;
@@ -408,13 +419,11 @@ a {
     border: 1px solid blue; }
 
 .chat-name {
-  background-color: transparent;
+  background: transparent url("http://shep.info.s3.amazonaws.com/140.png") left center;
+  background-repeat: no-repeat;
   overflow: hidden;
   resize: none;
   text-align: right; }
-  .chat-name:hover {
-    border: 1px solid blue;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4); }
 
 .new-message-input,
 .chat-name {
