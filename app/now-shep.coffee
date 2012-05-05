@@ -36,7 +36,7 @@ logMessage = (type, message) ->
     color(message, typeColors[type]))
 
 class ircBridge
-  constructor: (@name, channels, callback) ->
+  constructor: (@name, channels, badNickname, callback) ->
     @client = new irc.Client ircHost, @name,
       channels: channels
       port: process.env.ITPIRL_IRC_PORT || 6667
@@ -45,6 +45,10 @@ class ircBridge
     # Listen for IRC events relating to this user.
     @client.addListener 'error', (message) =>
       console.log(color("[CLIENT ERROR] [#{@client.nick}]","red"), message)
+      if message.command is 'err_erroneusnickname'
+        badNickname(message.args)
+        @client.opt.nick = @client.nick = message.args[0]
+
       # TODO: Respond when nicknames are bad.
       # { prefix: 'zelazny.freenode.net',
       #   server: 'zelazny.freenode.net',
@@ -64,6 +68,23 @@ nowShep = (app, logging, sessionStore) ->
   chatters = {}
   ircs = {}
 
+  quitAndStuff = (sid) ->
+    ircs[sid].client.disconnect('seeya')
+
+    # Save session to Redis and then destroy the cache.
+    sessionStore.set sid, chatters[sid], ->
+      console.log "Saving on disconnect"
+      delete chatters[sid]
+
+      sessionStore.get sid, (err, sess) ->
+        sess.loggedIn = false
+        sess.channels = for own chan, val of ircs[sid].client.chans
+          "#{chan}"
+        sess.returningUser = true
+        sess.name = ircs[sid].client.opt.nick
+        sessionStore.set sid, sess
+    
+
   # SETUP NOW.JS
   #-----------------------------------------------------
   everyone = nowjs.initialize(app, {socketio:{ transports:['xhr-polling','jsonp-polling'] }})
@@ -75,7 +96,7 @@ nowShep = (app, logging, sessionStore) ->
     sessionStore.get sid, (err, sess) =>
       chatters[sid] = defaultValues(sess)
 
-      ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, (nick) =>
+      ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, @now.badNickname, (nick) =>
         if not chatters[sid].loggedIn
           chatters[sid].loggedIn = true
 
@@ -85,6 +106,8 @@ nowShep = (app, logging, sessionStore) ->
 
   nowjs.on 'disconnect', ->
     console.log "now disconnect"
+    sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    quitAndStuff(sid)
 
   # CHAT
   #-----------------------------------------------------
@@ -133,19 +156,8 @@ nowShep = (app, logging, sessionStore) ->
   # onbeforeunload client event.
   everyone.now.signOut = ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.disconnect('seeya')
+    quitAndStuff(sid)
 
-    # Save session to Redis and then destroy the cache.
-    sessionStore.set sid, chatters[sid], ->
-      console.log "Saving on disconnect"
-      delete chatters[sid]
-
-      sessionStore.get sid, (err, sess) ->
-        sess.loggedIn = false
-        sess.channels = for own chan, val of ircs[sid].client.chans
-          "#{chan}"
-        sess.returningUser = true
-        sessionStore.set sid, sess
 
   # Client -> Server
   everyone.now.leaveChannel = (channel) ->
@@ -156,7 +168,6 @@ nowShep = (app, logging, sessionStore) ->
   # user's irc nickname. Saves the names to the session.
   everyone.now.changeName = (newName) ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
-    chatters[sid].name = newName
     @now.name = newName
     @now.changeNick(newName)
     sessionStore.set sid, chatters[sid], (err, res) ->

@@ -1,4 +1,10 @@
 jQuery ->
+  now.badNickname = (args) ->
+    $('.chat-name').val(args[0])
+    now.name = args[0]
+    new ui.Dialog({ title: 'Bad Nickname', message: "The chat server doesn't like your new nickname." })
+            .show()
+            .hide(2000);
   class AppView extends Backbone.View
     el: '#content'
     initialize: (options) ->
@@ -248,7 +254,7 @@ jQuery ->
       for message in @collection.thisChannel()
         @renderLast message
       app.Helpers.fitHeight()
-      @scrollToBottom()
+      @scrollToBottom(true)
       @
 
   # NEW MESSAGE VIEW

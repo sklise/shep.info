@@ -6,6 +6,8 @@
 
 ### 1.0.0-rc5
 
+- Revert to old nickname when requested nickname throws an error.
+- Fix fitHeight bug by changing order in which chat elements render.
 - Fix autoscroll on new message.
 - Remove Pictos font in favor of PNGs. Firefox is the worst.
 - Sign out of IRC and save session on window.onbeforeunload event.
