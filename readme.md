@@ -6,6 +6,8 @@
 
 ### 1.0.0-rc5
 
+- Bug fixes syncing now.js events.
+- Bug fixes with IRC nicknames.
 - Revert to old nickname when requested nickname throws an error.
 - Fix fitHeight bug by changing order in which chat elements render.
 - Fix autoscroll on new message.
