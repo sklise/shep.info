@@ -47,15 +47,9 @@ class ircBridge
       console.log(color("[CLIENT ERROR] [#{@client.nick}]","red"), message)
       if message.command is 'err_erroneusnickname'
         badNickname(message.args)
-        @client.opt.nick = @client.nick = message.args[0]
-
-      # TODO: Respond when nicknames are bad.
-      # { prefix: 'zelazny.freenode.net',
-      #   server: 'zelazny.freenode.net',
-      #   command: 'err_erroneusnickname',
-      #   rawCommand: '432',
-      #   commandType: 'error',
-      #   args: [ 'jkhgkjl', 'jkhgkjl....', 'Erroneous Nickname' ] }
+        @client.nick = message.args[0]
+    @client.addListener 'message', (from, to, message) ->
+      console.log from, to, message
     @client.addListener 'notice', (nick, to, text, message) =>
       logMessage "CLIENT NOTICE", "[#{@client.nick}] #{nick}: #{to} : #{text} : #{message}"
     @client.addListener 'join', (channel, nick) =>
@@ -81,7 +75,8 @@ nowShep = (app, logging, sessionStore) ->
         sess.channels = for own chan, val of ircs[sid].client.chans
           "#{chan}"
         sess.returningUser = true
-        sess.name = ircs[sid].client.opt.nick
+        console.log ircs[sid].client.nick
+        sess.name = ircs[sid].client.nick
         sessionStore.set sid, sess
     
 
