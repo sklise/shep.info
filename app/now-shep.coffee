@@ -10,7 +10,7 @@ defaultValues = (session) ->
   session.loggedIn ?= false
   session.returningUser ?= false
   session.channels ?= defaultChannels
-  session.name ?= "itp#{Date.now()}"
+  session.name ?= "itp" + "#{Date.now()}"[3..] + "#{("abcdefghijklmnopqrstuvwkyz".split(''))[Math.floor(Math.random() * 26)]}"
   session
 
 objectLength = (object) ->
