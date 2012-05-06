@@ -1,3 +1,11 @@
+# Empty now functions to be overwritten when other views are initiated.
+now.badNickname = () -> return
+now.updateUserList = () -> return
+now.receiveChannels = () -> console.log("receiveChannels")
+now.receivePreviousMessage = () -> return
+now.receiveSystemMessage = () -> return
+now.receiveChatMessage = () -> return
+
 jQuery ->
   class AppView extends Backbone.View
     el: '#content'
@@ -5,18 +13,9 @@ jQuery ->
       # @collection.bind 'reset', @render, @
       @feedbackview = new FeedbackView
       @chatwindowview = new ChatWindowView
-      @linkToNow()
     render: ->
       @feedbackview.render().el
       @
-    linkToNow: ->
-      # Empty now functions to be overwritten when other views are initiated.
-      now.badNickname = () -> return
-      now.updateUserList = (channel, nicks) -> return
-      now.receiveChannels = () -> return
-      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') -> return
-      now.receiveSystemMessage = (timestamp, type, message, destination='itp') -> return
-      now.receiveChatMessage = (timestamp, sender, message, destination='itp') -> return
 
   # Feedback Form
   #---------------------------------------------------
@@ -60,6 +59,7 @@ jQuery ->
     el: '#chat-window'
     template: $('#chat-window-template').html()
     initialize: (options) ->
+      @initializeSubViews()
       @linkToNow()
       @bindToWindowResize()
     render: ->
@@ -116,6 +116,7 @@ jQuery ->
       now.changeName @origVal
       now.name = @origVal
     linkToNow: ->
+
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
       now.triggerIRCLogin = (returningUser) =>
@@ -172,20 +173,19 @@ jQuery ->
     el: '#chat-log-container'
     template: $('#messages-template').html()
     initialize: (options) ->
+      @linkToNow()
       @render().el
       @collection.bind 'add', @renderLast, @
       @collection.bind 'add', @scrollToBottom, @
       @collection.bind 'change:channel', @render, @
-      @linkToNow()
+
     linkToNow: ->
       # TODO: IS THIS WORKING? I DON'T BELIEVE SO
       now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
         console.log "crap"
         # if sender in ['Join', 'Leave']
-          # console.log "crap"
           # renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
         # else
-          # console.log "ohcrap"
           # renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
         # @collection.add new app.Message
           # message: message
@@ -215,6 +215,7 @@ jQuery ->
           classes: "#{@classifyName(sender, now.name)}"
           type:'chat'
           consecutive: @isConsecutive(sender)
+
     # Input name of the sender of a message and the value of now.name
     # Returns a string of classes to change styling of the message.
     classifyName: (senderName, nowName) ->
@@ -224,6 +225,7 @@ jQuery ->
       else if senderName == 'shep' || senderName == 'shepbot'
         classes.push 'shep'
       classes.join(' ')
+
     isConsecutive: (sender) ->
       messages = ""
       if @collection.thisChannel().length > 0
@@ -234,14 +236,17 @@ jQuery ->
           return false
       else
         return false
+
     scrollToBottom: (isOverride) ->
       lastMessage = ($('.chat-log li').last().height() || 30) + 4
       if $('#chat-log-container').scrollTop() + $('#chat-log-container').height() - $('.chat-log').height() > -lastMessage || isOverride is true
         $('#chat-log-container').scrollTop $('.chat-log').height()
+
     renderLast: (message) ->
       if message.get('channel') is app.Messages.channel
         messageView = new MessageView model: message
         @$('.chat-log').append messageView.render().el
+
     render: ->
       $(@el).html(Mustache.render(@template))
       for message in @collection.thisChannel()
@@ -327,10 +332,19 @@ jQuery ->
     initialize: (options) ->
       @render().el
       # @attachMenu()
+
+      now.receiveChannels = (channels) =>
+        @collection.reset()
+        @collection.add(new app.Channel({name:'Shep', isShep:true}))
+        for name, channel of channels
+          console.log name
+          channel.name = name[1..]
+          @collection.add(new app.Channel(channel))
+
       app.Channels.bind 'change:channel', @render, @
       app.Channels.bind 'add', @render, @
       app.Channels.bind 'remove', @render, @
-      @populateChannels()
+
     render: ->
       $(@el).html Mustache.render(@template)
       for channel in @collection.models
@@ -340,10 +354,6 @@ jQuery ->
     attachMenu: ->
       @menu = ui.menu()
         .add('Add Channel...')
-    populateChannels: ->
-      @collection.reset()
-      @collection.add({name:'itp'})
-      @collection.add({name:'itp-test',exitable:true})
     toggleMenu: (e) ->
       $menuButton = $('.channel-menu-button')
       menuButtonDim = {width: $menuButton.width(), height: $menuButton.outerHeight()}

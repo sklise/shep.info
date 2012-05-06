@@ -254,6 +254,8 @@ a {
   position: relative;
   width: 16px;
   height: 16px; }
+  .room-status-icon.shep-icon {
+    background-image: url("http://shep.info.s3.amazonaws.com/shep16.png"); }
 
 .current-channel .room-status-icon {
   background-image: url("http://shep.info.s3.amazonaws.com/236white.png"); }

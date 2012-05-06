@@ -96,6 +96,10 @@
   position: relative;
   width: ms(2, $base-size, $golden);
   height: ms(2, $base-size, $golden);
+  
+  &.shep-icon {
+    background-image:url('http://shep.info.s3.amazonaws.com/shep16.png');
+  }
 }
 
 .current-channel .room-status-icon {

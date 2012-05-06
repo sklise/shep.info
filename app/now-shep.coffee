@@ -92,9 +92,10 @@ nowShep = (app, logging, sessionStore) ->
       chatters[sid] = defaultValues(sess)
 
       ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, @now.badNickname, (nick) =>
+        # Get the client's channel list on every join.
+        @now.receiveChannels(ircs[sid].client.chans)
         if not chatters[sid].loggedIn
           chatters[sid].loggedIn = true
-
           @now.triggerIRCLogin(chatters[sid].returningUser)
           # Get recent messages from Redis and send them only to this user.
           # @now.recentMessages 'itp'
@@ -133,6 +134,10 @@ nowShep = (app, logging, sessionStore) ->
     sid = decodeURIComponent(this.user.cookie['connect.sid'])
     ircs[sid].client.nick = newNick
     ircs[sid].client.send "NICK #{newNick}"
+
+  everyone.now.getChannels = ->
+    sid = decodeURIComponent(this.user.cookie['connect.sid'])
+    @now.receiveChannels ircs[sid].client.chans
 
   # Client -> Server: Ensures that the client is on the channel and sends a
   # /JOIN message if not.

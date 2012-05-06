@@ -10,7 +10,6 @@
   }
 </script>
 
-
 <div id="menu-window">
   <div id="heading">
     &nbsp;
@@ -70,13 +69,12 @@
 
 <script type="text/template" id="channels-template">
 <ul class="chat-room-list">
-  <li><div class="shep-icon"><img src="http://shep.info.s3.amazonaws.com/shep16.png"></div> <div class="room-name">SHEP<div class="underline"></div></div></li>
   <li class="channel-menu-button"><img src="http://shep.info.s3.amazonaws.com/276.png" style></li>
 </ul>
 </script>
 
 <script type="text/template" id="channel-template">
-  <div class="room-status-icon">&nbsp;</div> <div class="room-name">{{ name }}<div class="underline"></div></div>
+  <div class="room-status-icon {{#isShep}}shep-icon{{/isShep}}">&nbsp;</div> <div class="room-name">{{ name }}<div class="underline"></div></div>
 </script>
 
 <script type="text/template" id="messages-template">

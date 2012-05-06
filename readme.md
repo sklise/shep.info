@@ -6,6 +6,8 @@
 
 ### 1.0.0-rc5
 
+- Set and render channel tabs dynamically.
+- Set a maximum height for the user-list and increase its width.
 - Bug fixes syncing now.js events.
 - Bug fixes with IRC nicknames.
 - Revert to old nickname when requested nickname throws an error.
