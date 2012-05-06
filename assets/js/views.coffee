@@ -1,3 +1,12 @@
+# └─┬ AppView
+#   ├── FeedbackView
+#   └─┬ ChatWindowView
+#     ├─┬ ChannelsView
+#     │ └── ChannelView
+#     └── UserListView
+#     └── NewMessageView
+#     └── MessagesView
+
 # Empty now functions to be overwritten when other views are initiated.
 now.badNickname = () -> return
 now.updateUserList = () -> return
@@ -335,7 +344,7 @@ jQuery ->
 
       now.receiveChannels = (channels) =>
         @collection.reset()
-        @collection.add(new app.Channel({name:'Shep', isShep:true}))
+        @collection.add(new app.Channel({name:'shep', isShep:true}))
         for name, channel of channels
           console.log name
           channel.name = name[1..]
@@ -393,7 +402,7 @@ jQuery ->
         app.Messages.setChannel('itp')
       @remove()
     goToChannel: ->
-      now.getChannel(@model.get('name'))
+      now.goToChannel(@model.get('name'))
       for channel in app.Channels.models
         channel.set 'currentChannel', (if @model.get('name') is channel.get('name') then true else false)
       app.Messages.setChannel @model.get('name')

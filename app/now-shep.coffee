@@ -3,7 +3,7 @@ nowjs = require('now')
 irc = require('irc')
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-defaultChannels = ['#itp', '##itp-thesis-2012']
+defaultChannels = ['#itp-thesis-2012', '#itp']
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 
 defaultValues = (session) ->
@@ -36,7 +36,8 @@ logMessage = (type, message) ->
     color(message, typeColors[type]))
 
 class ircBridge
-  constructor: (@name, channels, badNickname, callback) ->
+  constructor: (@name, channels, badNickname, fromShep, callback) ->
+    @talkingToShep = false
     @client = new irc.Client ircHost, @name,
       channels: channels
       port: process.env.ITPIRL_IRC_PORT || 6667
@@ -48,8 +49,6 @@ class ircBridge
       if message.command is 'err_erroneusnickname'
         badNickname(message.args)
         @client.nick = message.args[0]
-    @client.addListener 'message', (from, to, message) ->
-      console.log from, to, message
     @client.addListener 'notice', (nick, to, text, message) =>
       logMessage "CLIENT NOTICE", "[#{@client.nick}] #{nick}: #{to} : #{text} : #{message}"
     @client.addListener 'join', (channel, nick) =>
@@ -57,6 +56,8 @@ class ircBridge
         callback(@client.nick)
     @client.addListener 'pm', (from, message) =>
       logMessage "CLIENT", "[#{@client.nick}] PM from #{from} => #{message}"
+      if from is 'shepbot'
+        fromShep(Date.now(), 'shep', message, 'shep')
 
 nowShep = (app, logging, sessionStore) ->
   chatters = {}
@@ -75,7 +76,6 @@ nowShep = (app, logging, sessionStore) ->
         sess.channels = for own chan, val of ircs[sid].client.chans
           "#{chan}"
         sess.returningUser = true
-        console.log ircs[sid].client.nick
         sess.name = ircs[sid].client.nick
         sessionStore.set sid, sess
     
@@ -91,7 +91,7 @@ nowShep = (app, logging, sessionStore) ->
     sessionStore.get sid, (err, sess) =>
       chatters[sid] = defaultValues(sess)
 
-      ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, @now.badNickname, (nick) =>
+      ircs[sid] = new ircBridge (@now.name = chatters[sid].name), chatters[sid].channels, @now.badNickname, @now.receiveChatMessage, (nick) =>
         # Get the client's channel list on every join.
         @now.receiveChannels(ircs[sid].client.chans)
         if not chatters[sid].loggedIn
@@ -111,7 +111,12 @@ nowShep = (app, logging, sessionStore) ->
   # Client: Send a message from a client to IRC.
   everyone.now.distributeChatMessage = (sender, channel, message) ->
     sid = decodeURIComponent(this.user.cookie['connect.sid'])
-    ircs[sid].client.say("##{channel}", message)
+    if ircs[sid].talkingToShep || channel is 'shep'
+      ircs[sid].talkingToShep = true
+      @now.receiveChatMessage(Date.now(), sender, message, channel)
+      ircs[sid].client.say('shepbot', "shep "+message)
+    else
+      ircs[sid].client.say("##{channel}", message)
 
   # Server: Pull the last 10 messages from the specified channel from Redis.
   # Send these messages only to the nowjs client who called this method.
@@ -143,14 +148,19 @@ nowShep = (app, logging, sessionStore) ->
   # /JOIN message if not.
   #
   # channel - The name of a channel without the # sign in front.
-  everyone.now.getChannel = (channel) ->
+  everyone.now.goToChannel = (channel) ->
     sid = decodeURIComponent(this.user.cookie['connect.sid'])
-    inChannel = true for chan, details of ircs[sid].client.chans when chan is "##{channel}"
 
-    if inChannel.length is 1 and inChannel[0] is true
-      return true
+    if channel is 'shep'
+      ircs[sid].talkingToShep = true
     else
-      ircs[sid].client.send "JOIN ##{channel}"
+      ircs[sid].talkingToShep = false
+      inChannel = true for chan, details of ircs[sid].client.chans when chan is "##{channel}"
+
+      if inChannel.length is 1 and inChannel[0] is true
+        return true
+      else
+        ircs[sid].client.send "JOIN ##{channel}"
 
   # Client -> Server: Log client out of IRC and set & save session. Called at
   # onbeforeunload client event.

@@ -6,6 +6,7 @@
 
 ### 1.0.0-rc5
 
+- Implement Shep channel.
 - Set and render channel tabs dynamically.
 - Set a maximum height for the user-list and increase its width.
 - Bug fixes syncing now.js events.
