@@ -1,10 +1,4 @@
 jQuery ->
-  now.badNickname = (args) ->
-    $('.chat-name').val(args[0])
-    now.name = args[0]
-    new ui.Dialog({ title: 'Bad Nickname', message: "The chat server doesn't like your new nickname." })
-            .show()
-            .hide(2000);
   class AppView extends Backbone.View
     el: '#content'
     initialize: (options) ->
@@ -17,14 +11,12 @@ jQuery ->
       @
     linkToNow: ->
       # Empty now functions to be overwritten when other views are initiated.
-      now.updateUserList = (channel, nicks) ->
-        return
-      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
-        return
-      now.receiveSystemMessage = (timestamp, type, message, destination='itp') =>
-        return
-      now.receiveChatMessage = (timestamp, sender, message, destination='itp') =>
-        return
+      now.badNickname = () -> return
+      now.updateUserList = (channel, nicks) -> return
+      now.receiveChannels = () -> return
+      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') -> return
+      now.receiveSystemMessage = (timestamp, type, message, destination='itp') -> return
+      now.receiveChatMessage = (timestamp, sender, message, destination='itp') -> return
 
   # Feedback Form
   #---------------------------------------------------
@@ -279,6 +271,12 @@ jQuery ->
       now.serverChangedName = (name) ->
         now.name = name
         $('.chat-name').val(name)
+      now.badNickname = (args) ->
+        $('.chat-name').val(args[0])
+        now.name = args[0]
+        new ui.Dialog({ title: 'Bad Nickname', message: "The chat server doesn't like your new nickname." })
+                .show()
+                .hide(2000);
     render: ->
       $(@el).html Mustache.render(@template, {name : now.name})
       @
