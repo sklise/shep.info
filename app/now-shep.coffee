@@ -233,6 +233,7 @@ nowShep = (app, logging, sessionStore) ->
 
   everyone.ircClient.addListener 'quit', (message, nick) =>
     logMessage "QUIT", "#{message} #{nick}"
+    everyone.ircClient.send "NAMES #{channel}"
 
   everyone.ircClient.addListener 'part', (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
