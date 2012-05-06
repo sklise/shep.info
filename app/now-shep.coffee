@@ -203,16 +203,17 @@ nowShep = (app, logging, sessionStore) ->
     if objectLength(nowjs.users) isnt 0
       for channel in channels
         everyone.ircClient.send "NAMES #{channel}"
-        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
+        logging.logAndForward 'NICK', "#{oldnick} is now known as #{newnick}", {room:"#{channel[1..]}"}, everyone.now.receiveSystemMessage
 
   everyone.ircClient.addListener "message", (from, channel, message) ->
     if objectLength(nowjs.users) isnt 0
-      logging.logAndForward from, message, {room:"#{channel[1..channel.length]}"}, everyone.now.receiveChatMessage
+      console.log {room:"#{channel[1..]}"}
+      logging.logAndForward from, message, {room:"#{channel[1..]}"}, everyone.now.receiveChatMessage
 
   everyone.ircClient.addListener "join", (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
       logMessage "JOIN","#{nick} => #{channel}"
-      logging.logAndForward 'Join', "#{nick} has joined the chat.", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Join', "#{nick} has joined the chat.", {room:"#{channel[1..]}"}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
 
   everyone.ircClient.addListener 'quit', (message, nick) =>
@@ -221,11 +222,11 @@ nowShep = (app, logging, sessionStore) ->
   everyone.ircClient.addListener 'part', (channel, nick) =>
     if objectLength(nowjs.users) isnt 0
       logMessage "PART", "#{nick} => #{channel}"
-      logging.logAndForward 'Leave', "#{nick} has left the chat.", {room:"#{channel[1..channel.length]}"}, everyone.now.receiveSystemMessage
+      logging.logAndForward 'Leave', "#{nick} has left the chat.", {room:"#{channel[1..]}"}, everyone.now.receiveSystemMessage
       everyone.ircClient.send "NAMES #{channel}"
 
   everyone.ircClient.addListener "names", (channel, nicks) =>
     if objectLength(nowjs.users) isnt 0
-      everyone.now.updateUserList("#{channel[1..channel.length]}", nicks)
+      everyone.now.updateUserList("#{channel[1..]}", nicks)
 
 module.exports = nowShep
