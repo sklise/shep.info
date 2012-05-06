@@ -4,7 +4,7 @@
 
 ## Changelog
 
-### 1.0.0-rc5
+### 1.0.0-rc5 2012/05/06
 
 - Implement Shep channel.
 - Set and render channel tabs dynamically.
