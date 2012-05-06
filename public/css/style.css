@@ -321,7 +321,7 @@ a {
   min-height: 400px;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0 0 1em; }
+  padding: 1.4em 0 1em; }
 
 .chat-log li {
   width: auto;
@@ -414,7 +414,8 @@ a {
   -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   -moz-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
-  background-color: #efefef; }
+  background-color: #efefef;
+  padding: 0.5em 0.5em; }
   .new-message-input:focus {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -423,9 +424,10 @@ a {
     border: 1px solid blue; }
 
 .chat-name {
-  background: transparent url("http://shep.info.s3.amazonaws.com/140.png") left center;
+  background: transparent url("http://shep.info.s3.amazonaws.com/140.png") right center;
   background-repeat: no-repeat;
   overflow: hidden;
+  padding: 0.5em 1.3em 0.5em 0.5em;
   resize: none;
   text-align: right; }
 
@@ -441,7 +443,6 @@ a {
   border: 1px solid transparent;
   font-size: 16px;
   line-height: 20px;
-  padding: 0.5em 0.5em;
   margin-top: 0.5em;
   margin-bottom: 0.5em; }
   .new-message-input:focus,
