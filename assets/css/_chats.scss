@@ -50,10 +50,6 @@
       }
     }
 
-    &:hover::after {
-      background-image: url('/images/room-indicator-gray.png');
-    }
-
     &.current-channel::after {
       background-image: url('/images/room-indicator.png');
     }
