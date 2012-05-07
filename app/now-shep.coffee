@@ -3,7 +3,7 @@ nowjs = require('now')
 irc = require('irc')
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-defaultChannels = ['#itp-test']
+defaultChannels = ['#itp']
 ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
 
 defaultValues = (session) ->
