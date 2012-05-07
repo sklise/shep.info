@@ -11,6 +11,14 @@ jQuery ->
 
 Helpers =
 
+  ignoreKeys: (event, keys, max) ->
+    if event.keyCode in keys
+      return false
+    else if max? and  $(event.target).val().length >= max
+      return false
+    else
+      return true
+
   # Stretch the chat window to fill the height of the window.
   fitHeight: (windowHeight=$(window).height()) ->
     toolbarHeight = $('#chat-toolbar').height()

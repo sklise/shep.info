@@ -97,6 +97,7 @@ jQuery ->
             @render().el
             @initializeSubViews()
             @saveNameFromPrompt()
+
       # Disable OK button and remove the cancel button
       namePrompt.el.find('.ok')
         .attr('disabled','disabled').end()
@@ -105,13 +106,8 @@ jQuery ->
       $input = $(namePrompt.el).find('input')
       # Focus the cursor on the text input.
       $input.focus()
-      $input.keydown (event) =>
-        # Prevent names longer than 20 characters and prohibit spaces
-        @origVal = $input.val().trim()
-        if event.keyCode is 32 || @origVal.length >= 20
-          return false
-        # Handle keyboard events for the chat name input.
-        # Require names to be at least 4 characters
+      $input.keypress (event) =>
+        @origVal = $(event.target).val()
         if @origVal.length > 3
           namePrompt.el.find('.ok').removeAttr('disabled')
           if event.keyCode is 13
@@ -120,12 +116,12 @@ jQuery ->
             namePrompt.callback(true)
         else
           namePrompt.el.find('.ok').attr('disabled','disabled')
+        app.Helpers.ignoreKeys(event, [32], 20)
     saveNameFromPrompt: ->
       $('.chat-name').val(@origVal)
       now.changeName @origVal
       now.name = @origVal
     linkToNow: ->
-
       # Server: Called from the server in the context of the user when login to
       # IRC is complete. Renders prompt to set @now.name
       now.triggerIRCLogin = (returningUser) =>
@@ -189,19 +185,6 @@ jQuery ->
       @collection.bind 'change:channel', @render, @
 
     linkToNow: ->
-      # TODO: IS THIS WORKING? I DON'T BELIEVE SO
-      now.receivePreviousMessage = (timestamp, sender, message, destination='itp') ->
-        console.log "crap"
-        # if sender in ['Join', 'Leave']
-          # renderMessage $('#system-message-template').html(), timestamp, sender, message, 'system-notice previous-message'
-        # else
-          # renderMessage $('#message-template').html(), timestamp, sender, message, "#{classifyName(sender, @now.name)} previous-message"
-        # @collection.add new app.Message
-          # message: message
-          # name: sender
-          # time: app.Helpers.formatTime(timestamp)
-          # classes: classes
-          # type: 'previous'
       # Server: Called from server and defined on client. Receives a system
       # message most likely from IRC and adds to the collection.
       now.receiveSystemMessage = (timestamp, type, message, destination='itp') =>
@@ -295,12 +278,7 @@ jQuery ->
       $(@el).html Mustache.render(@template, {name : now.name})
       @
     ignoreKeys: (e) ->
-      if e.keyCode is 13 or e.keyCode is 32
-        return false
-      else if $(e.target).val().length >= 20
-        return false
-      else
-        return true
+      app.Helpers.ignoreKeys(e, [13,32], 20)
 
     resizeInput: (e) ->
       message = $(e.target).val()
