@@ -64,11 +64,11 @@ nowShep = (app, logging, sessionStore) ->
   ircs = {}
 
   quitAndStuff = (sid) ->
+    console.log('disconnect event')
     ircs[sid].client.disconnect('seeya')
 
     # Save session to Redis and then destroy the cache.
     sessionStore.set sid, chatters[sid], ->
-      console.log "Saving on disconnect"
       delete chatters[sid]
 
       sessionStore.get sid, (err, sess) ->
@@ -103,6 +103,7 @@ nowShep = (app, logging, sessionStore) ->
   nowjs.on 'disconnect', ->
     console.log "now disconnect"
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
+    ircs[sid].client.disconnect('seeya')
     quitAndStuff(sid)
 
   # CHAT
@@ -222,7 +223,6 @@ nowShep = (app, logging, sessionStore) ->
 
   everyone.ircClient.addListener "message", (from, channel, message) ->
     if objectLength(nowjs.users) isnt 0
-      console.log {room:"#{channel[1..]}"}
       logging.logAndForward from, message, {room:"#{channel[1..]}"}, everyone.now.receiveChatMessage
 
   everyone.ircClient.addListener "join", (channel, nick) =>
