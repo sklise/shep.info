@@ -66,7 +66,7 @@ Helpers =
       .replace(/</g, '&lt;').replace(/>/g, '&gt;')
       # Bold text wrapped in double asterisks
       .replace /~([^~]+)~/g, (match) ->
-        "<span style='font-family:\"Comic Sans\",\"Marker Felt\";'>#{match[1..match.length-2]}</span>"
+        "<span style='font-family:\"Comic Sans\",\"Comic Sans MS\",\"Marker Felt\";'>#{match[1..match.length-2]}</span>"
       .replace /\*{2}([^\*]+)\*{2}/g, (match) ->
         "<strong>#{match[2..(match.length-3)]}</strong>"
       # Italicize text wrapped in asterisks
