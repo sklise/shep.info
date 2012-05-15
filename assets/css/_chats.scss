@@ -270,6 +270,11 @@
   text-align: right;
 }
 
+span.chatter {
+  display: inline;
+  width: auto;
+}
+
 .message,
 .system-message {
   float: left;
@@ -279,8 +284,13 @@
   width: 73.1982%;
 }
 
-.system-message {
+.system-message,
+.action {
   @include grid-offset(5);
+}
+
+.action {
+  font-style: italic;
 }
 
 // NEW MESSAGE

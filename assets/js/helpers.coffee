@@ -62,6 +62,7 @@ Helpers =
   # Clean message content to make it safe and wrap links in anchor tags.
   parseMessage: (message) ->
     message
+      .replace(/^.ACTION./, '')
       # Escape html tags
       .replace(/</g, '&lt;').replace(/>/g, '&gt;')
       # Bold text wrapped in double asterisks

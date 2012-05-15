@@ -102,6 +102,12 @@
   <div class="message">{{{ message }}}</div>
 </script>
 
+<script type="text/template" id="action-message-template">
+  <div class="arrow"></div>
+  <div class="message-time">{{ time }}</div>
+  <div class="message"><span class="chatter">{{ name }}</span> {{{ message }}}</div>
+</script>
+
 <script type="text/template" id="feedback-template">
   <button class="feedback-button" tabindex="-1"><img src="http://shep.info.s3.amazonaws.com/140.png" class="icon"> Leave Feedback</button>
   <div id="feedback-form"></div>

@@ -384,6 +384,10 @@ a {
   overflow: hidden;
   text-align: right; }
 
+span.chatter {
+  display: inline;
+  width: auto; }
+
 .message,
 .system-message {
   float: left;
@@ -392,8 +396,12 @@ a {
   /* n=18 (21*n+16*(n-1)) / 888 */
   width: 73.1982%; }
 
-.system-message {
+.system-message,
+.action {
   margin-left: 193px; }
+
+.action {
+  font-style: italic; }
 
 #new-message {
   margin: 0 8px;

@@ -204,14 +204,23 @@ jQuery ->
           name: sender
           message: app.Helpers.parseMessage(message)
           time: timestamp
-          classes: "#{@classifyName(sender, now.name)}"
-          type:'chat'
+          classes: "#{@classifyName(sender, now.name, message)}"
+          type: @chatOrAction(message)
           consecutive: @isConsecutive(sender)
+
+    # If the message is an action event
+    chatOrAction: (message) ->
+      if message? and message.match(/^.ACTION./g)?
+        return 'action'
+      else
+        return 'chat'
 
     # Input name of the sender of a message and the value of now.name
     # Returns a string of classes to change styling of the message.
-    classifyName: (senderName, nowName) ->
+    classifyName: (senderName, nowName, message) ->
       classes = []
+      if message? and message.match(/^.ACTION./g)?
+        classes.push 'action'
       if senderName == nowName
         classes.push 'self'
       else if senderName == 'shep' || senderName == 'shepbot'
