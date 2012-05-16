@@ -207,6 +207,13 @@
     }
   }
 
+  &.action.consecutive {
+    padding: 1em 0 0.3em;
+    .chatter {
+      opacity: 1;
+    }
+  }
+
   // Make the .message-time visible when the mouse hovers the containing li.
   &:hover .message-time {
     opacity: 1;
@@ -254,12 +261,13 @@
 
 .chatter,
 .message,
-.system-message {
+.system-message,
+.action-message {
   display: block;
   @include box-sizing;
 }
 
-.chatter {
+div.chatter {
   float: left;
   font-size: 110%;
   line-height: 110%;
@@ -285,7 +293,7 @@ span.chatter {
 }
 
 .system-message,
-.action {
+.action-message {
   @include grid-offset(5);
 }
 

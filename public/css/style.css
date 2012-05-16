@@ -338,6 +338,10 @@ a {
     padding: 0.2em 0; }
     .chat-log li.consecutive .chatter {
       opacity: 0; }
+  .chat-log li.action.consecutive {
+    padding: 1em 0 0.3em; }
+    .chat-log li.action.consecutive .chatter {
+      opacity: 1; }
   .chat-log li:hover .message-time {
     opacity: 1; }
   .chat-log li.self .chatter {
@@ -368,13 +372,14 @@ a {
 
 .chatter,
 .message,
-.system-message {
+.system-message,
+.action-message {
   display: block;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-.chatter {
+div.chatter {
   float: left;
   font-size: 110%;
   line-height: 110%;
@@ -397,7 +402,7 @@ span.chatter {
   width: 73.1982%; }
 
 .system-message,
-.action {
+.action-message {
   margin-left: 193px; }
 
 .action {

@@ -219,7 +219,8 @@ jQuery ->
     # Returns a string of classes to change styling of the message.
     classifyName: (senderName, nowName, message) ->
       classes = []
-      if message? and message.match(/^.ACTION./g)?
+      window.test = message
+      if message? and message.match(/^\u0001ACTION /g)?
         classes.push 'action'
       if senderName == nowName
         classes.push 'self'

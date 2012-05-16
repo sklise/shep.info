@@ -116,6 +116,8 @@ nowShep = (app, logging, sessionStore) ->
       ircs[sid].talkingToShep = true
       @now.receiveChatMessage(Date.now(), sender, message, channel)
       ircs[sid].client.say('shepbot', "shep "+message)
+    else if message.match(/\/me (.*)/)
+      ircs[sid].client.action("##{channel}", message.replace(/\/me /,''))
     else
       ircs[sid].client.say("##{channel}", message)
 
@@ -168,7 +170,6 @@ nowShep = (app, logging, sessionStore) ->
   everyone.now.signOut = ->
     sid=decodeURIComponent(this.user.cookie['connect.sid'])
     quitAndStuff(sid)
-
 
   # Client -> Server
   everyone.now.leaveChannel = (channel) ->
