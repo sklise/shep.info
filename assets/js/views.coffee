@@ -265,13 +265,16 @@ jQuery ->
     events:
       'blur .chat-name' : 'updateName'
       'keypress .chat-name' : 'ignoreKeys'
-      'keyup .new-message-input' : 'resizeInput'
-      'paste .new-message-input' : 'resizeInput'
-      'cut .new-message-input' : 'resizeInput'
       'keypress .new-message-input' : 'sendMessage'
     initialize: (options) ->
       @linkToNow()
       @render().el
+      areas = document.querySelectorAll('.new-message-input')
+      l = areas.length
+      console.log areas
+      while l--
+        console.log 'hi'
+        @makeExpandingArea(areas[l])
     linkToNow: ->
       # Called from the server in the context of the userwhen IRC forces a nickname
       # change. Updates now.name and renders the new name in the chat.
@@ -290,15 +293,22 @@ jQuery ->
     ignoreKeys: (e) ->
       app.Helpers.ignoreKeys(e, [13,32], 20)
 
-    resizeInput: (e) ->
-      message = $(e.target).val()
-      messageDec = (ml) ->
-        if ml <= 78
-          return 1
-        else
-          return (ml / 78)
-      rows = Math.min(5, Math.ceil(messageDec(message.length)))
-      $(e.target).attr('rows', rows)
+    makeExpandingArea: (container) ->
+      # http://www.alistapart.com/articles/expanding-text-areas-made-elegant/
+      area = container.querySelector('textarea')
+      span = container.querySelector('span')
+      if (area.addEventListener)
+        area.addEventListener('input', (-> 
+          span.textContent = area.value),
+          false)
+        span.textContent = area.value
+      else if (area.attachEvent)
+        # IE8 compatibility
+        area.attachEvent 'onpropertychange', ->
+          span.innerText = area.value
+        span.innerText = area.value
+      # Enable extra CSS
+      container.className += ' active'
 
     sendMessage: (e) ->
       message = $(e.target).val().trim()

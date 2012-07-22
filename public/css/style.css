@@ -425,12 +425,10 @@ span.chatter {
   width: 650px;
   -webkit-appearance: none;
   -moz-appearance: none;
-  resize: none;
   -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   -moz-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
-  background-color: #efefef;
-  padding: 0.5em 0.5em; }
+  background-color: #efefef; }
   .new-message-input:focus {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -442,7 +440,7 @@ span.chatter {
   background: transparent url("http://shep.info.s3.amazonaws.com/140.png") right center;
   background-repeat: no-repeat;
   overflow: hidden;
-  padding: 0.5em 1.3em 0.5em 0.5em;
+  padding: 0.25em 1.3em 0.25em 0.5em;
   resize: none;
   text-align: right; }
 
@@ -464,6 +462,50 @@ span.chatter {
   .chat-name:focus {
     cursor: blink;
     outline: none; }
+
+/* from http://www.alistapart.com/articles/expanding-text-areas-made-elegant/ */
+.new-message-input {
+  position: relative;
+  border: 1px solid #888;
+  background: #fff; }
+  .new-message-input textarea,
+  .new-message-input pre {
+    margin: 0;
+    outline: 0;
+    border: 0;
+    padding: 0.5em;
+    background: transparent;
+    font: 400 13px/16px helvetica, arial, sans-serif;
+    /* Make the text soft-wrap */
+    white-space: pre-wrap;
+    word-wrap: break-word; }
+  .new-message-input textarea {
+    /* The border-box box model is used to allow
+     * padding whilst still keeping the overall width
+     * at exactly that of the containing element.
+     */
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    /* This height is used when JS is disabled */
+    height: 100px; }
+  .new-message-input.active > textarea {
+    /* Hide any scrollbars */
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    /* Remove WebKit user-resize widget */
+    resize: none; }
+  .new-message-input > pre {
+    display: none; }
+  .new-message-input.active > pre {
+    display: block;
+    /* Hide the text; just using it for sizing */
+    visibility: hidden; }
 
 #dialog {
   position: fixed;

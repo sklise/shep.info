@@ -317,12 +317,10 @@ span.chatter {
   @include grid-column(18);
   -webkit-appearance: none;
   -moz-appearance: none;
-  resize:none;
   -webkit-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
   -moz-box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
   box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
   background-color: #efefef;
-  padding: 0.5em 0.5em;
 
   &:focus {
     -webkit-box-shadow: none;
@@ -337,7 +335,7 @@ span.chatter {
   background: transparent url('http://shep.info.s3.amazonaws.com/140.png') right center;
   background-repeat: no-repeat;
   overflow: hidden;
-  padding: 0.5em 1.3em 0.5em 0.5em;
+  padding: 0.25em 1.3em 0.25em 0.5em;
   resize: none;
   text-align: right;
 }
@@ -358,5 +356,57 @@ span.chatter {
   &:focus {
     cursor: blink;
     outline: none;
+  }
+}
+
+/* from http://www.alistapart.com/articles/expanding-text-areas-made-elegant/ */
+.new-message-input {
+  position: relative;
+  border: 1px solid #888;
+  background: #fff;
+
+  textarea, 
+  pre {
+    margin: 0;
+    outline: 0;
+    border: 0;
+    padding: 0.5em;
+    background: transparent;
+    font: 400 13px/16px helvetica, arial, sans-serif;
+    /* Make the text soft-wrap */
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  textarea {
+    /* The border-box box model is used to allow
+     * padding whilst still keeping the overall width
+     * at exactly that of the containing element.
+     */
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+            box-sizing: border-box;
+    width: 100%;
+    /* This height is used when JS is disabled */
+    height: 100px;
+  }
+  &.active > textarea {
+    /* Hide any scrollbars */
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    /* Remove WebKit user-resize widget */
+    resize: none;
+  }
+  & > pre {
+    display: none;
+  }
+  &.active > pre {
+    display: block;
+    /* Hide the text; just using it for sizing */
+    visibility: hidden;
   }
 }
