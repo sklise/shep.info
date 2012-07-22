@@ -3,14 +3,14 @@ nowjs = require('now')
 irc = require('irc')
 redis = require('redis-url').connect(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
-defaultChannels = ['#itp']
-ircHost = process.env.ITPIRL_IRC_HOST || 'irc.freenode.net'
+defaultChannels = ['#itp','#thesis']
+ircHost = 'irc.shep.info'
 
 defaultValues = (session) ->
   session.loggedIn ?= false
   session.returningUser ?= false
   session.channels ?= defaultChannels
-  session.name ?= "itp" + "#{("abcdefghijklmnopqrstuvwkyz".split(''))[Math.floor(Math.random() * 26)]}#{Math.floor(Math.random()*10)}" + "#{Date.now()}"[8..] 
+  session.name ?= "itp" + "#{("abcdefghijklmnopqrstuvwkyz".split(''))[Math.floor(Math.random() * 26)]}#{Math.floor(Math.random()*10)}"
   session
 
 objectLength = (object) ->
@@ -40,7 +40,7 @@ class ircBridge
     @talkingToShep = false
     @client = new irc.Client ircHost, @name,
       channels: channels
-      port: process.env.ITPIRL_IRC_PORT || 6667
+      port: process.env.IRC_PORT || 6667
       autoConnect: true
 
     # Listen for IRC events relating to this user.
@@ -78,7 +78,7 @@ nowShep = (app, logging, sessionStore) ->
         sess.returningUser = true
         sess.name = ircs[sid].client.nick
         sessionStore.set sid, sess
-    
+
 
   # SETUP NOW.JS
   #-----------------------------------------------------
@@ -198,13 +198,13 @@ nowShep = (app, logging, sessionStore) ->
   #-----------------------------------------------------
   # Create an IRC client for the server. This is the main listener for IRC
   # events. The clients speak to IRC but only the server (this) listens.
-  ircNick = process.env.ITPIRL_IRC_NICK || 'itpirl_server'
+  ircNick = 'shepserv'
   everyone.ircClient = new irc.Client ircHost, ircNick,
     channels: defaultChannels
-    port: process.env.ITPIRL_IRC_PORT || 6667
+    port: 6667
     autoConnect: true
-    userName: process.env.ITPIRL_IRC_USERNAME || ''
-    password: process.env.ITPIRL_IRC_PASSWORD || ''
+    username: 'shepserv'
+    password: ''
 
   # IRC EVENT LISTENERS
   # Trigger events for everyone.now when nowjs.users is not empty.
