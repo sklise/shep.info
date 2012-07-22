@@ -5,13 +5,14 @@ querystring = require('querystring')
 express = require('express')
 ejs = require('ejs')
 RedisStore = require('connect-redis')(express)
-redisUrl = require('url').parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+url = require('url')
 
 # SETUP EXPRESS APP
 #-----------------------------------------------------
 app = express.createServer(express.logger())
 
 root = __dirname + "/../"
+redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
 app.configure ->
   # Setup static file server
