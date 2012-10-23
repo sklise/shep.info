@@ -1,7 +1,7 @@
 #chat-window {
   float: left;
   height: 600px;
-  width: grid-width(24,$gutter-width);
+  width: grid-width(26,$gutter-width);
 }
 
 #loading-screen {
@@ -11,7 +11,7 @@
 
 #chat-toolbar {
   @include grid-row;
-  @include grid-column(24);
+  @include grid-column(26);
   margin-bottom: -14px;
 }
 
@@ -142,7 +142,8 @@
 // CHAT LOG CONTAINER
 //----------------------------------------------------
 #chat-log-container {
-  @include grid-column(24);
+  @include grid-column(22);
+  border: desaturate(darken($chat-background, 20%), 70%) 1px solid;
   height: 500px;
   overflow-y: scroll;
   position: relative;
@@ -151,7 +152,7 @@
 // USER LIST
 //----------------------------------------------------
 #user-list {
-  background-color: $highlight-yellow;
+  // background-color: $highlight-yellow;
   color: rgb(119,119,119);
   padding: 0.55em;
   position: absolute;
@@ -261,7 +262,6 @@
 div.chatter {
   float: left;
   font-size: 110%;
-  line-height: 110%;
   margin: 0 0.9009009%;
   width: 19.0315315%;
   font-weight: bold;
@@ -295,7 +295,7 @@ span.chatter {
 // NEW MESSAGE
 //____________________________________________________
 #new-message {
-  @include grid-column(24);
+  @include grid-column(26);
   background-color: lighten($chat-background, 1%);
   border-top: 2px solid $divider-dark-gray;
   position: absolute;

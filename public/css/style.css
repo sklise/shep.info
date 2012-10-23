@@ -1,32 +1,26 @@
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+/* RESET
+_____________________________________________________________________________*/
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box; }
+
+html {
+  font-size: 100%;
+  margin: 0;
+  padding: 0; }
+
+body, div, p, h1, h2, h3, h4, h5, h6, pre, img, ol, ul, li, form, fieldset,
+label, table, article, aside, details, figcaption, figure, footer,
+header, hgroup, menu, nav, section {
+  border: 0;
+  display: block;
   margin: 0;
   padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline; }
+  position: relative; }
 
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-  display: block; }
-
-body {
-  line-height: 1; }
-
-ol, ul {
+ul {
   list-style: none; }
 
 blockquote, q {
@@ -41,12 +35,8 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-strong {
-  font-weight: bold; }
-
-em {
-  font-style: italic; }
-
+/* END RESET
+_____________________________________________________________________________*/
 /* Calendar colors */
 .pictos {
   font-family: "Pictos"; }
@@ -87,9 +77,6 @@ a {
   color: #006ed6; }
 
 #wrapper {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   width: 1258px;
   margin: 0 auto;
   font-size: 16px;
@@ -99,30 +86,24 @@ a {
   overflow: auto; }
 
 #menu-window {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   margin: 0 8px;
   float: left;
-  width: 354px;
+  width: 280px;
   max-height: 100%;
   overflow-y: scroll;
   padding-top: 16px;
   position: relative; }
 
 #heading {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  background-image: url("http://shep.info.s3.amazonaws.com/shep.jpg");
+  background-image: url("/images/banner.png");
   background-position: left top;
   background-repeat: no-repeat;
-  -webkit-background-size: 354px 169px;
-  -moz-background-size: 354px 169px;
-  background-size: 354px 169px;
-  height: 169px;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+  height: 6em;
   padding-left: 185px;
-  padding-top: 95px;
+  padding-top: 0;
   position: relative; }
 
 .feedback-button {
@@ -145,28 +126,19 @@ a {
     font-size: 12px; }
 
 .introduction {
-  margin: 1em 0;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
+  margin: 1em 0; }
   .introduction p {
     font-size: 13px;
     line-height: 18px;
     margin: 0.5em 0 0.6em; }
 
 #tips {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   background-color: #ffeec3;
   font-size: 12px;
   line-height: 12px;
   padding: 0.75em 1.5em; }
 
 #footer {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   bottom: 0;
   color: #dbd7d4;
   font-size: 11px;
@@ -181,12 +153,8 @@ a {
 
 #chat-window {
   float: left;
-  font-size: 12px;
-  line-height: 16px;
-  color: #000;
-  position: relative;
   height: 600px;
-  width: 888px; }
+  width: 962px; }
 
 #loading-screen {
   margin: 25% auto;
@@ -197,17 +165,13 @@ a {
   margin: 0 -8px;
   margin: 0 8px;
   float: left;
-  width: 872px;
+  width: 946px;
   margin-bottom: -14px; }
 
 .chat-room-list li {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   float: left;
   margin-bottom: 14px;
-  padding: 1em 1em 0.8em;
-  position: relative; }
+  padding: 1em 1em 0.8em; }
   .chat-room-list li .room-name {
     text-transform: uppercase; }
   .chat-room-list li:hover {
@@ -293,16 +257,13 @@ a {
 #chat-log-container {
   margin: 0 8px;
   float: left;
-  width: 872px;
+  width: 798px;
+  border: #b6c0d8 1px solid;
   height: 500px;
   overflow-y: scroll;
   position: relative; }
 
 #user-list {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  background-color: #ffeec3;
   color: #777777;
   padding: 0.55em;
   position: absolute;
@@ -316,9 +277,6 @@ a {
   width: 14.8648649%; }
 
 .chat-log {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   background-color: #f5f8ff;
   min-height: 400px;
   overflow-x: hidden;
@@ -374,15 +332,11 @@ a {
 .message,
 .system-message,
 .action-message {
-  display: block;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
+  display: block; }
 
 div.chatter {
   float: left;
   font-size: 110%;
-  line-height: 110%;
   margin: 0 0.9009009%;
   width: 19.0315315%;
   font-weight: bold;
@@ -411,7 +365,7 @@ span.chatter {
 #new-message {
   margin: 0 8px;
   float: left;
-  width: 872px;
+  width: 946px;
   background-color: #fafcff;
   border-top: 2px solid #dbd7d4;
   position: absolute;
@@ -446,9 +400,6 @@ span.chatter {
 
 .new-message-input,
 .chat-name {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -475,19 +426,11 @@ span.chatter {
     border: 0;
     padding: 0.5em;
     background: transparent;
-    font: 400 13px/16px helvetica, arial, sans-serif;
+    font: 400 13px/16px "source code pro", monospace;
     /* Make the text soft-wrap */
     white-space: pre-wrap;
     word-wrap: break-word; }
   .new-message-input textarea {
-    /* The border-box box model is used to allow
-     * padding whilst still keeping the overall width
-     * at exactly that of the containing element.
-     */
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
     width: 100%;
     /* This height is used when JS is disabled */
     height: 100px; }
@@ -790,3 +733,12 @@ span.chatter {
 .card.sideflip.flipped .wrapper {
   -webkit-transform: translateX(-100%) rotateY(180deg);
   -moz-transform: translateX(-100%) rotateY(180deg); }
+
+/* CHAT WINDOW
+_____________________________________________________________________________*/
+#chat-window {
+  font-family: "source code pro", "Menlo", "Monaco", monospace;
+  font-size: 75%;
+  color: #000;
+  line-height: 1.6em;
+  vertical-align: baseline; }
