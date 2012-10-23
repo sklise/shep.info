@@ -9,8 +9,53 @@
 // 370 / 10 = 37
 $column-width: 21px;
 $gutter-width: 16px;
-@import 'util';
-@import 'reset';
+
+/* RESET
+_____________________________________________________________________________*/
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body, div, p, h1, h2, h3, h4, h5, h6, pre, img, ol, ul, li, form, fieldset,
+label, table, input, article, aside, details, figcaption, figure, footer,
+header, hgroup, menu, nav, section {
+  border: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+/* END RESET
+_____________________________________________________________________________*/
+
 @import 'modular-scale';
 @import 'grid';
 
@@ -97,7 +142,6 @@ a {
 }
 
 #wrapper {
-  @include box-sizing;
   @include grid-page(34);
   font-size: modular-scale(2, $base-size, $golden);
   line-height: modular-scale(3, $base-size, $golden);
@@ -109,7 +153,6 @@ a {
 // MENU WINDOW aka the Left Side of the site.
 //----------------------------------------------------
 #menu-window {
-  @include box-sizing;
   @include grid-column(10);
   max-height: 100%;
   overflow-y: scroll;
@@ -118,16 +161,15 @@ a {
 }
 
 #heading {
-  @include box-sizing;
   background-image: url('http://shep.info.s3.amazonaws.com/shep.jpg');
   background-position: left top;
   background-repeat: no-repeat;
   -webkit-background-size: grid-width(10) grid-width(5);
-  -moz-background-size: grid-width(10) grid-width(5);
-  background-size: grid-width(10) grid-width(5);
-  height: grid-width(5);
+  // -moz-background-size: grid-width(10) grid-width(5);
+  // background-size: grid-width(10) grid-width(5);
+  height: 4em;
   padding-left: grid-width(5, $gutter-width);
-  padding-top: grid-width(3);
+  padding-top: 0;
   position: relative;
 }
 
@@ -160,8 +202,7 @@ a {
 //____________________________________________________
 .introduction {
   margin: 1em 0;
-  @include box-sizing;
-  
+
   p {
     font-size: ms(2, $alt-size, $golden);
     line-height: ms(3, $alt-size, $golden);
@@ -170,7 +211,6 @@ a {
 }
 
 #tips {
-  @include box-sizing;
   background-color: $highlight-yellow;
   font-size: ms(1, $base-size, $golden);
   line-height: ms(1, $base-size, $golden);
@@ -178,7 +218,6 @@ a {
 }
 
 #footer {
-  @include box-sizing;
   bottom: 0;
   color: $divider-dark-gray;
   font-size: ms(1, $alt-size, $golden);
@@ -197,3 +236,13 @@ a {
 
 @import 'chats';
 @import 'ui';
+
+/* CHAT WINDOW
+_____________________________________________________________________________*/
+#chat-window {
+  font-family: "source code pro", "Menlo", "Monaco", monospace;
+  font-size: 75%;
+  color: #000;
+  line-height: 1.6em;
+  vertical-align: baseline;
+}

@@ -1,9 +1,5 @@
 #chat-window {
   float: left;
-  font-size: modular-scale(1, $base-size, $golden);
-  line-height: modular-scale(2, $base-size, $golden);
-  color: #000;
-  position: relative;
   height: 600px;
   width: grid-width(24,$gutter-width);
 }
@@ -22,11 +18,9 @@
 .chat-room-list {
 
   li {
-    @include box-sizing;
     float: left;
     margin-bottom: 14px;
     padding: 1em 1em 0.8em;
-    position: relative;
 
     .room-name {
       text-transform: uppercase;
@@ -76,7 +70,7 @@
 .underline {
   background: url('/images/new-status-indicator.png');
   background-repeat: no-repeat;
-      
+
   display: block;
   height: 4px;
   left: 0;
@@ -92,7 +86,7 @@
   position: relative;
   width: ms(2, $base-size, $golden);
   height: ms(2, $base-size, $golden);
-  
+
   &.shep-icon {
     background-image:url('http://shep.info.s3.amazonaws.com/shep16.png');
   }
@@ -157,7 +151,6 @@
 // USER LIST
 //----------------------------------------------------
 #user-list {
-  @include box-sizing;
   background-color: $highlight-yellow;
   color: rgb(119,119,119);
   padding: 0.55em;
@@ -176,7 +169,6 @@
 // CHAT LOG
 //----------------------------------------------------
 .chat-log {
-  @include box-sizing;
   background-color: $chat-background;
   min-height: 400px;
   overflow-x: hidden;
@@ -264,7 +256,6 @@
 .system-message,
 .action-message {
   display: block;
-  @include box-sizing;
 }
 
 div.chatter {
@@ -342,7 +333,6 @@ span.chatter {
 
 .new-message-input,
 .chat-name {
-  @include box-sizing;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -365,28 +355,20 @@ span.chatter {
   border: 1px solid #888;
   background: #fff;
 
-  textarea, 
+  textarea,
   pre {
     margin: 0;
     outline: 0;
     border: 0;
     padding: 0.5em;
     background: transparent;
-    font: 400 13px/16px helvetica, arial, sans-serif;
+    font: 400 13px/16px "source code pro", monospace;
     /* Make the text soft-wrap */
     white-space: pre-wrap;
     word-wrap: break-word;
   }
-  
+
   textarea {
-    /* The border-box box model is used to allow
-     * padding whilst still keeping the overall width
-     * at exactly that of the containing element.
-     */
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-        -ms-box-sizing: border-box;
-            box-sizing: border-box;
     width: 100%;
     /* This height is used when JS is disabled */
     height: 100px;
