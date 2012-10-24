@@ -1,6 +1,6 @@
 {
   "name": "shep.info",
-  "version": "0.7.0",
+  "version": "2.0.0-a1",
   "author": "Steven Klise",
   "description": "web chat, events and dashboard for ITP",
   "licenses": [
@@ -21,13 +21,13 @@
     "irc": "0.3.3",
     "express": "2.5.8",
     "now": "0.8.0",
-    "mustache": "latest",
-    "ejs": "",
+    "mustache": "0.7.0",
+    "ejs": "0.8.3",
     "redis-url": "0.1.0",
-    "connect-redis": "~1.3.0",
-    "connect": "latest",
-    "ansi-color": "~0.2.1",
-    "connect-assets": "~2.1.9",
-    "coffee-script": "~1.3.1"
+    "connect-redis": "1.3.0",
+    "connect": "1.9.2",
+    "ansi-color": "0.2.1",
+    "connect-assets": "2.1.9",
+    "coffee-script": "1.4.0"
   }
 }
