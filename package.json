@@ -18,13 +18,14 @@
     "url": "http://github.com/stevenklise/shep.info.git"
   },
   "dependencies": {
+    "ansi-color": "0.2.1",
+    "connect": "2.6.1",
+    "debug": "0.7.0",
+    "ecstatic": "0.1.6",
+    "ejs": "",
     "irc": "0.3.3",
     "mustache": "0.7.0",
-    "ejs": "",
     "redis-url": "0.1.0",
-    "ansi-color": "0.2.1",
-    "ecstatic": "0.1.6",
-    "debug": "0.7.0",
     "socket.io": "0.9.10"
   }
 }

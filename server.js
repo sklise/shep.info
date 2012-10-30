@@ -1,6 +1,4 @@
-var http = require('http')
-var fs = require('fs')
-
+var connect = require('connect')
 var debug = require('debug')('http')
 var ecstatic = require('ecstatic')(__dirname + '/public')
 var ejs = require('ejs')
@@ -29,14 +27,15 @@ var matchRoutes = function (req, res) {
   }
 }
 
-// Create server
-var server = http.createServer(function (req, res) {
-  matchRoutes(req, res)
-});
+// Create app
+var app = connect()
+  .use(function (req, res) {
+    matchRoutes(req, res)
+  });
 
 var templates = require('./templates')(viewsDir)
-var chat = require('./chat')(server)
-
-server.listen(port, function (d,e) {
+// Create server
+var server = app.listen(port, function (d,e) {
   debug('listening on port %s', port)
 })
+var chat = require('./chat')(server)

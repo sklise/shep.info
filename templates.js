@@ -1,6 +1,6 @@
 var fs = require('fs')
 
-var loadTemplates = function(path) {
+var loadTemplatesFromPath = function(path) {
   var templates = {}
   // Load all files from the views path and save them to the templates object
   fs.readdir(path, function (err, files) {
@@ -25,4 +25,4 @@ var loadTemplateFromDisk = function(file, path, templates) {
   })
 }
 
-module.exports = loadTemplates;
+module.exports = loadTemplatesFromPath;
