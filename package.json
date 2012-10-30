@@ -20,6 +20,7 @@
   "dependencies": {
     "ansi-color": "0.2.1",
     "connect": "2.6.1",
+    "connect-redis": "1.4.4",
     "debug": "0.7.0",
     "ecstatic": "0.1.6",
     "ejs": "",
