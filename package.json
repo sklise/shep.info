@@ -24,6 +24,7 @@
     "redis-url": "0.1.0",
     "ansi-color": "0.2.1",
     "ecstatic": "0.1.6",
-    "debug": "0.7.0"
+    "debug": "0.7.0",
+    "socket.io": "0.9.10"
   }
 }
