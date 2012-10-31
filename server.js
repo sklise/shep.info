@@ -19,8 +19,8 @@ var matchRoutes = function (req, res) {
     case /^\/$/.test(req.url):
       res.end(ejs.render(templates['layout'], {title:'',body:ejs.render(templates['index'], {'foo':'bar'})}))
       break
-    case /^\/channel\/([^\/])*$/.test(req.url):
-      res.end('hi')
+    case /^\/channels\/([^\/])*$/.test(req.url):
+      res.end(ejs.render(templates['layout'], {title:'',body:ejs.render(templates['index'], {'foo':'bar'})}))
       break
     default:
       ecstatic(req,res)
