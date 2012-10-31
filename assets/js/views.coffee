@@ -18,48 +18,6 @@ now.receiveSystemMessage = () -> return
 now.receiveChatMessage = () -> return
 
 jQuery ->
-  class AppView extends Backbone.View
-    el: '#content'
-    initialize: (options) ->
-      # @collection.bind 'reset', @render, @
-      @feedbackview = new FeedbackView
-      @chatwindowview = new ChatWindowView
-    render: ->
-      @feedbackview.render().el
-      @
-
-  # Feedback Form
-  #---------------------------------------------------
-  class FeedbackView extends Backbone.View
-    el: '#feedback-box'
-    events:
-      'click .feedback-button' : 'toggleForm'
-      'click .feedback-send' : 'sendFeedback'
-    initialize: (options) ->
-      return
-    template: $('#feedback-template').html()
-    render: ->
-      $(@el).append Mustache.render(@template, {})
-      @
-
-    # Renders feedback form to the page prepopulated with current chat name or if
-    # the form is already on the page, removes it.
-    toggleForm: (e) ->
-      $feedbackForm = $('#feedback-form')
-      if($feedbackForm.html().length == 0)
-        $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {name:now.name}))
-      else
-        $feedbackForm.empty()
-      return false
-
-    # When the "Send Feedback" button is clicked, save the feedback message to
-    # Redis and empty the feedback form.
-    sendFeedback: (e) ->
-      sender = $('#feedback-name').val()
-      message = $('#feedback-message').val()
-      now.logFeedback sender, message
-      $('#feedback-form').empty()
-      return false
 
   # Chat Window
   #---------------------------------------------------
@@ -422,7 +380,5 @@ jQuery ->
     # Change the icon when rolling over exitable channels
 
   @app = window.app ? {}
-  @app.AppView = AppView
-  @app.ChatWindowView = ChatWindowView
   @app.ChannelView = ChannelView
   @app.ChannelsView = ChannelsView

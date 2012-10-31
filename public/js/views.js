@@ -639,7 +639,6 @@
     })(Backbone.View);
     this.app = (_ref = window.app) != null ? _ref : {};
     this.app.AppView = AppView;
-    this.app.ChatWindowView = ChatWindowView;
     this.app.ChannelView = ChannelView;
     return this.app.ChannelsView = ChannelsView;
   });

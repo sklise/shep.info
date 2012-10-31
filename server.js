@@ -1,12 +1,12 @@
 var connect = require('connect')
 var redis = require('connect-redis')(connect)
+var render = require('connect-render')
 var debug = require('debug')('http')
 var ecstatic = require('ecstatic')(__dirname + '/public')
 var ejs = require('ejs')
 var url = require('url')
 
 var publicDir = __dirname + '/public/'
-var viewsDir = __dirname + '/views/'
 var port = process.env.PORT || 3000
 var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 
@@ -17,20 +17,28 @@ var matchRoutes = function (req, res) {
 
   switch (true) {
     case /^\/$/.test(req.url):
-      res.end(ejs.render(templates['layout'], {title:'',body:ejs.render(templates['index'], {'foo':'bar'})}))
+      res.render('index.ejs', {'foo':'bar', 'title':'shep.info'})
       break
     case /^\/channels\/([^\/])*$/.test(req.url):
-      res.end(ejs.render(templates['layout'], {title:'',body:ejs.render(templates['index'], {'foo':'bar'})}))
+      res.render('index.ejs', {'foo':'bar', title: 'shep.info'})
       break
     default:
       ecstatic(req,res)
   }
 }
 
-var templates = require('./templates')(viewsDir)
 // Create app, attach routes and sessions
-var app = connect()
-  .use(connect.logger())
+var app = connect(
+  render({
+      root: __dirname + '/views',
+      layout: 'layout.ejs',
+      cache: false, // `false` for debug
+      helpers: {
+        sitename: 'Shep.info',
+        starttime: new Date().getTime(),
+      }
+  })
+).use(connect.logger())
   .use(function (req, res) {
     matchRoutes(req, res)
   })

@@ -66,13 +66,24 @@
       }
     },
 
+    padMinutes: function (rawMinutes) {
+      return (number < 10) ? '0' + number : number
+    },
+
+    padHours: function (rawHours) {
+      return (hour <= 12) ? hour : hour - 12
+    },
+
+    formatDate: function (datetime) {
+
+    },
+
     formatTime: function (timestamp) {
       var time = new Date(timestamp)
       var rawHours = time.getHours()
-      var hours = rawHours <= 12 ? rawHours : rawHours - 12
-      var rawMinutes = time.getMinutes()
-      var minutes = rawMinutes <= 10 ? '0' + rawMinutes : rawMinutes
-      var marker = hours >= 12 ? 'P' : 'A'
+      var hours = this.padHours(rawHours);
+      var minutes = this.padMinutes(time.getMinutes());
+      var marker = rawHours >= 12 ? 'P' : 'A'
       return '' + hours + ':' + minutes + marker
     },
 

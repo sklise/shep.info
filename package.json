@@ -21,6 +21,7 @@
     "ansi-color": "0.2.1",
     "connect": "2.6.1",
     "connect-redis": "1.4.4",
+    "connect-render": "0.1.7",
     "debug": "0.7.0",
     "ecstatic": "0.1.6",
     "ejs": "",
