@@ -7,6 +7,8 @@
 #     └── NewMessageView
 #     └── MessagesView
 
+now = {}
+
 # Empty now functions to be overwritten when other views are initiated.
 now.badNickname = () -> return
 now.updateUserList = () -> return
@@ -62,7 +64,7 @@ jQuery ->
   # Chat Window
   #---------------------------------------------------
   # This view holds chat toolbar, chat log, user list and new message
-  # views. Call routing functions on this view and have the events 
+  # views. Call routing functions on this view and have the events
   # propagate through.
   class ChatWindowView extends Backbone.View
     el: '#chat-window'
@@ -80,7 +82,7 @@ jQuery ->
       @channelsview = new ChannelsView collection: app.Channels
       @userListView = new UserListView collection: app.Users
       @messagesview = new MessagesView collection: app.Messages
-    # Bind window resize event 
+    # Bind window resize event
     bindToWindowResize: ->
       $(window).bind 'resize', -> app.Helpers.fitHeight($(this).height())
 
@@ -298,7 +300,7 @@ jQuery ->
       area = container.querySelector('textarea')
       span = container.querySelector('span')
       if (area.addEventListener)
-        area.addEventListener('input', (-> 
+        area.addEventListener('input', (->
           span.textContent = area.value),
           false)
         span.textContent = area.value

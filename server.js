@@ -13,20 +13,16 @@ var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
 debug('booting shep.info')
 
 var matchRoutes = function (req, res) {
-  console.log(req.method, req.url)
-  debug(req.method + ' ' + req.url)
+  console.log(req.method + ' ' + req.url)
 
   switch (true) {
     case /^\/$/.test(req.url):
-      console.log('root')
       res.end(ejs.render(templates['layout'], {title:'',body:ejs.render(templates['index'], {'foo':'bar'})}))
       break
     case /^\/channel\/([^\/])*$/.test(req.url):
-      console.log('channel')
       res.end('hi')
       break
     default:
-      console.log('ecstatic')
       ecstatic(req,res)
   }
 }
@@ -34,6 +30,7 @@ var matchRoutes = function (req, res) {
 var templates = require('./templates')(viewsDir)
 // Create app, attach routes and sessions
 var app = connect()
+  .use(connect.logger())
   .use(function (req, res) {
     matchRoutes(req, res)
   })

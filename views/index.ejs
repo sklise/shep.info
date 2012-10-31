@@ -1,3 +1,5 @@
+<script src="http://www.google.com/calendar/feeds/rj39klpe7dkg03r82dv5ip8rco%40group.calendar.google.com/public/full?alt=json-in-script&callback=insertAgenda&orderby=starttime&max-results=15&singleevents=true&sortorder=ascending&futureevents=true"></script>
+
 <script>
   // This is inline so that it loads so fast.
   if (!("autofocus" in document.createElement("textarea"))) {
@@ -19,15 +21,12 @@
     <p>Shep is ITP's chat bot, he's here for you. He answers questions, remembers things and sometimes makes jokes.</p>
 
     <p>Click the tab marked "SHEP" to speak directly with Shep. Click the menu tab to create or join new channels.</p>
+
   </div>
 
-  <div id="tips">
-    <h3>TIPS</h3>
+  <div id="calendar">
+    <h3>Calendar</h3>
     <ul>
-      <li>TO CHANGE YOUR NAME: Click on your name to the left of chat input. It is an input field.</li>
-      <li>Closing the window and reopening is better than refreshing.</li>
-      <li>If you have issues, email me at sklise@nyu.edu.</li>
-      <li>You can also access this same chat from http://webchat.freenode.net/ use channel 'itp'</li>
     </ul>
   </div>
 
@@ -122,4 +121,11 @@
     <textarea id="feedback-message"></textarea>
     <button class="feedback-send">Send Feedback</button>
   </div>
+</script>
+
+<script type="text/template" id="calendar-event-template">
+  <li>
+    <span class="when">{{dateString start}} to {{dateString end}}</span>
+    <span class="title"><a href="{{link}}">{{title}}</a></span>
+  </li>
 </script>

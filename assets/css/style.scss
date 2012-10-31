@@ -80,29 +80,22 @@ $event-color: rgba(147, 32, 214, 1);
 
 // FONTS
 //----------------------------------------------------
-.tk-colaborate {
-}
-
-.tk-museo-sans {
-}
-
 .pictos {
   font-family: "Pictos";
 }
 
 $main-font: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
-$header-font: "colaborate", "Helvetica Neue", "Helvetica", sans-serif;
+$header-font: "source sans pro", "Helvetica Neue", "Helvetica", sans-serif;
 
 $base-size: 10px 350px;
 $alt-size: 8px 320px;
-
 
 $base: 18px 150px;
 
 body {
   font-family: $main-font;
-  font-size: ms(1, $base-size, $golden);
-  line-height: ms(2, $base-size, $golden);
+  font-size: 100%;
+  line-height: 1em;
   background-color: rgb(255,255,255);
   margin: 0 auto;
   padding: 0;
@@ -210,32 +203,61 @@ a {
   }
 }
 
-#tips {
-  background-color: $highlight-yellow;
-  font-size: ms(1, $base-size, $golden);
-  line-height: ms(1, $base-size, $golden);
-  padding: 0.75em 1.5em;
+/* CALENDAR WIDGET
+_____________________________________________________________________________*/
+#calendar h3 {
+  border-bottom: 2px solid #fbe648;
 }
 
-#footer {
-  bottom: 0;
-  color: $divider-dark-gray;
-  font-size: ms(1, $alt-size, $golden);
-  line-height: ms(1, $alt-size, $golden);
-  padding: 1em 0;
-  position: absolute;
+#calendar ul {
+  display: block;
+  height: 240px;
+  position: relative;
+  overflow-y: scroll;
+}
 
-  a {
-    color: $divider-dark-gray;
-  }
+#calendar li {
+  background-color: #eee;
+  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid #fff;
+  font-size: 0.8rem;
+  line-height: 1.2em;
+  padding: 0.6em 0.5em;
+}
+
+#calendar li:first-child {
+  border-top: none;
+}
+
+#calendar a {
+  text-decoration: none;
+}
+
+#calendar .when {
+  color: #555;
+  display: block;
+  font-size: 0.75rem;
+}
+/* END CALENDAR WIDGET
+_____________________________________________________________________________*/
+
+#footer {
+  color: $divider-dark-gray;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
+  padding: 1em 0;
+}
+
+#footer a {
+  color: $divider-dark-gray;
 }
 
 .icon {
   display: inline;
 }
 
-@import 'chats';
 @import 'ui';
+@import 'chats';
 
 /* CHAT WINDOW
 _____________________________________________________________________________*/
