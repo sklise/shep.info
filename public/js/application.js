@@ -1,6 +1,6 @@
 Handlebars.registerHelper('dateString', function (date) {
   var d = new Date(date)
-  return d.getMonth() + "/" + pad(d.getDate()) + " " + hours(d.getHours()) + ":" + pad(d.getMinutes())
+  return (d.getMonth() + 1) + "/" + pad(d.getDate()) + " " + hours(d.getHours()) + ":" + pad(d.getMinutes())
 });
 
 
