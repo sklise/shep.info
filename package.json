@@ -3,12 +3,7 @@
   "version": "2.0.0-a1",
   "author": "Steven Klise",
   "description": "web chat, events and dashboard for ITP",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/stevenklise/shep.info/raw/master/License.md"
-    }
-  ],
+  "licenses": "MIT",
   "engines": {
     "node": "0.8.7",
     "npm": "1.1.49"
