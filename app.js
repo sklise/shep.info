@@ -1,3 +1,9 @@
+var env = require('./.env');
+
+Object.keys(env).forEach(function (k) {
+  process.env[k] = env[k];
+});
+
 var connect = require('connect')
 var redis = require('connect-redis')(connect)
 var render = require('connect-render')
@@ -29,16 +35,14 @@ var matchRoutes = function (req, res) {
 
 // Create app, attach routes and sessions
 var app = connect(
-  render({
+    render({
       root: __dirname + '/views',
       layout: 'layout.ejs',
       cache: false, // `false` for debug
-      helpers: {
-        sitename: 'Shep.info',
-        starttime: new Date().getTime(),
-      }
-  })
-).use(connect.logger())
+      helpers: { sitename: 'Shep.info' }
+    })
+  )
+  .use(connect.logger())
   .use(function (req, res) {
     matchRoutes(req, res)
   })
@@ -46,7 +50,7 @@ var app = connect(
     store: new redis({
       port: redisUrl.port,
       host: redisUrl.hostname,
-      // pass: redisUrl.auth.split(":")[1]
+      pass: (redisUrl.auth || "").split(":")[1]
     }),
     secret: process.env.SESSION_SECRET || 'woof woof'
   }));
@@ -57,4 +61,4 @@ var server = app.listen(port, function (d,e) {
 })
 
 // Attach sockets to Connect server
-var chat = require('./chat')(server)
+var chat = require('./lib/chat')(server)
