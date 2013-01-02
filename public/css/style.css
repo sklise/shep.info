@@ -483,4 +483,9 @@ _____________________________________________________________________________*/
   font-size: 75%;
   color: #000;
   line-height: 1.6em;
-  vertical-align: baseline; }
+  vertical-align: baseline;
+}
+
+#channel-viewport {
+  overflow: auto;
+}

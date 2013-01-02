@@ -41,52 +41,35 @@
 </div>
 
 <div id="chat-window">
-  <div id="loading-screen">
-    <h2>Hold yer horses, chat is loading<span id="trailing-dots">.</span></h2>
-    <script>
-      var animating;
-      $(document).ready(function(){
-        setInterval(moveDots, 1000);
-        function moveDots() {
-          $dots = $('#trailing-dots');
-          text = $dots.text();
-          numDots = text.length;
-
-          if(numDots < 4) {
-            $dots.text(text + '.');
-          }
-          else {
-            $dots.text('.');
-          }
-        }
-      });
-    </script>
+  <div id="chat-menu"></div>
+  <div id="channel-viewport">
+    <h3>Enter a nickname</h3>
+    <p>No spaces, names must be between<br>3 and 10 characters. </p>
+    <input tabindex="1" type="text" class="nickname-input">
+    <button class="nickname-submit">GO</button>
   </div>
 </div>
 
-<script type="text/template" id="chat-window-template">
-  <div id="chat-toolbar"></div>
-  <div id="chat-log-container"></div>
-  <ul id="user-list"></ul>
-  <form id="new-message"></form>
-</script>
-
-<script type="text/template" id="channels-template">
+<script type="text/template" id="channels-menu-template">
 <ul class="chat-room-list">
   <li class="channel-menu-button"><img src="http://shep.info.s3.amazonaws.com/276.png" style></li>
 </ul>
 </script>
 
-<script type="text/template" id="channel-template">
+<script type="text/template" id="channel-menu-template">
   <div class="room-status-icon {{#isShep}}shep-icon{{/isShep}}">&nbsp;</div> <div class="room-name">{{ name }}<div class="underline"></div></div>
 </script>
 
-<script type="text/template" id="messages-template">
-  <ul class="chat-log"></ul>
+<script type="text/template" id="channel-template">
+  <div id="chat-log-container">
+    <ul id="chat-log"></ul>
+  </div>
+  <ul id="user-list"></ul>
+  <form id="new-message"></form>
 </script>
 
 <script type="text/template" id="new-message-template">
-  <input class="chat-name" value="{{ name }}"/>
+  <input class="chat-name" value="{{ nickname }}"/>
   <div class="new-message-input">
     <pre><span></span><br></pre>
     <textarea></textarea>
@@ -98,10 +81,10 @@
   <div class="system-message">{{{ message }}}</div>
 </script>
 
-<script type="text/template" id="chat-message-template">
-  <div class="chatter">{{ name }}</div>
-  <div class="message-time">{{ time }}</div>
-  <div class="message">{{{ message }}}</div>
+<script type="text/template" id="message-template">
+  <div class="chatter">{{ from }}</div>
+  <div class="message">{{{ content }}}</div>
+  <div class="timestamp">{{timeString timestamp}}</div>
 </script>
 
 <script type="text/template" id="action-message-template">

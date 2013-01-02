@@ -7,23 +7,23 @@ $(document).ready(function () {
     },
 
     initialize: function () {
-      this.view = new app.AppView;
+      this.view = new app.AppView({collection: new app.Channels({name: 'itp'})});
       this.view.render().el;
       app.Helpers.fitHeight();
-      app.Messages.bind('change:channel', this.changeChannel, this);
+
+      this.view.collection.bind('change:channel', this.changeChannel, this);
     },
 
     changeChannel: function () {
-      Backbone.history.navigate("channels/" + app.Messages.channel);
+      Backbone.history.navigate("channels/" + app.Channels.currentChannelName);
     },
 
     mainChannel: function () {
-      app.Messages.setChannel('itp');
       Backbone.history.navigate('channels/itp', true)
     },
 
     show: function (channel) {
-      app.Messages.setChannel(channel);
+      // this.view.collection.setChannel(channel);
     }
   });
 
