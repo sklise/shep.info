@@ -37,10 +37,10 @@
       $('#chat-window').css('height', windowHeight + 'px')
       $('#menu-window').css('height', windowHeight + 'px')
       var chatWindowHeight = windowHeight - menuHeight;
-      var chatInterior = chatWindowHeight - $('#new-message').height();
+      var chatInterior = chatWindowHeight - $('#new-message').outerHeight();
       $('#channel-viewport').height(chatWindowHeight+'px');
       $('#chat-log-container').height(chatInterior+'px')
-      $('#chat-log').css('min-height', chatInterior+'px')
+      // $('#chat-log').css('min-height', chatInterior+'px')
     },
 
     unBlinkTitle: function () {

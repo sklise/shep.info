@@ -1,4 +1,4 @@
-<div id="menu-window">
+<div id="menu-window" class="col-3">
   <div id="heading">
     &nbsp;
   </div>
@@ -28,8 +28,8 @@
   </div>
 </div>
 
-<div id="chat-window">
-  <div id="chat-menu"></div>
+<div id="chat-window" class="col-9">
+  <div id="chat-menu" class="col-12"></div>
   <div id="channel-viewport">
     <div class="nickname-prompt">
       <h3>Enter a nickname</h3>
@@ -43,11 +43,12 @@
 <script type="text/template" id="menu-template">
 <ul class="chat-room-list">
   {{#each channels}}
-  <li>{{name}}</li>
+  <li data-name="{{name}}" class='channel {{#if isCurrent}}current-channel{{/if}}'>{{name}}</li>
   {{/each}}
+  <li><span class="channel-menu-button"><img src="http://shep.info.s3.amazonaws.com/276.png"></span></li>
 </ul>
 
-  <span class="channel-menu-button"><img src="http://shep.info.s3.amazonaws.com/276.png"></span>
+
 </script>
 
 <script type="text/template" id="menu-channel-template">
@@ -55,15 +56,16 @@
 </script>
 
 <script type="text/template" id="channel-template">
-  <div id="chat-log-container">
+  <div id="chat-log-container" class="col-10">
     <ul id="chat-log"></ul>
   </div>
-  <ul id="user-list"></ul>
-  <form id="new-message"></form>
+  <ul id="user-list" class="col-2">
+  <li><input class="chat-name" value="{{ nickname }}"/></li>
+  </ul>
+  <form id="new-message" class="col-10"></form>
 </script>
 
 <script type="text/template" id="new-message-template">
-  <input class="chat-name" value="{{ nickname }}"/>
   <div class="new-message-input">
     <pre><span></span><br></pre>
     <textarea></textarea>
@@ -76,8 +78,8 @@
 </script>
 
 <script type="text/template" id="message-template">
-  <div class="chatter">{{ from }}</div>
-  <div class="message">{{{ content }}}</div>
+  <div class="chatter col-3">{{ from }}</div>
+  <div class="message col-9">{{{ content }}}</div>
   <div class="timestamp">{{timeString timestamp}}</div>
 </script>
 

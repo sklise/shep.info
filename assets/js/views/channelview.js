@@ -14,6 +14,7 @@ $(document).ready(function () {
       var currentChannel = this.collection.getChannel();
 
       this.$el.empty();
+
       this.$el.html(template(currentChannel.toJSON()))
 
       var newMessageView = new NewMessageView({model: currentChannel});

@@ -5,10 +5,10 @@
 //= require helpers
 //= require models
 //= require collections
-//= require_tree views
-//= require calendar
 //= require routers
+//= require_tree ./views
 //= require_tree .
+//= require calendar
 
 $(document).ready(function () {
   app = window.app != null ? window.app : {}

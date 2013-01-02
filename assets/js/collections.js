@@ -6,11 +6,19 @@
     model: app.Channel,
 
     initialize: function (options) {
-      this.setChannel(options.name);
+      this.setChannel(options[0].name);
     },
 
     setChannel: function (channelName) {
+
       this.currentChannelName = channelName;
+      this.models.forEach(function (channel) {
+        if (channel.get('name') === channelName) {
+          channel.set('isCurrent', true)
+        } else {
+          channel.set('isCurrent', false)
+        }
+      })
       this.trigger('change:channel')
     },
 

@@ -7,7 +7,11 @@ $(document).ready(function () {
     },
 
     initialize: function () {
-      this.view = new app.AppView({collection: new app.Channels({name: 'itp'})});
+      this.view = new app.AppView({
+        collection: new app.Channels(
+          [{name: 'itp'}, {name:'thesis'}]
+        )
+      });
       this.view.render().el;
       app.Helpers.fitHeight();
 
@@ -15,7 +19,7 @@ $(document).ready(function () {
     },
 
     changeChannel: function () {
-      Backbone.history.navigate("channels/" + app.Channels.currentChannelName);
+      Backbone.history.navigate("channels/" + this.view.collection.getChannel().get('name'));
     },
 
     mainChannel: function () {

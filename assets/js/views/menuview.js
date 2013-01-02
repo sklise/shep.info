@@ -7,6 +7,10 @@ $(document).ready(function () {
       this.collection.bind('change:channel', this.render, this)
     },
 
+    events: {
+      'click .channel' : 'changeChannel'
+    },
+
     render: function () {
       var template = Handlebars.compile(this.templateSource);
 
@@ -15,6 +19,12 @@ $(document).ready(function () {
       this.$el.html(template({channels:this.collection.toJSON()}));
 
       return this;
+    },
+
+    changeChannel: function (event) {
+      var channelName = $(event.target).data().name
+      console.log(channelName)
+      this.collection.setChannel(channelName);
     }
   });
 
