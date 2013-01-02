@@ -42,6 +42,7 @@ var app = connect(
       helpers: { sitename: 'Shep.info' }
     })
   )
+  .use(require('connect-assets')({build: true}))
   .use(connect.logger())
   .use(function (req, res) {
     matchRoutes(req, res)
