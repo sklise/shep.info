@@ -13,15 +13,17 @@ insertAgenda = function (data) {
 var insertCalendar = function () {
   var templateSource = $('#calendar-event-template').html();
   var template = Handlebars.compile(templateSource);
-  window.entries.forEach(function (entry) {
-    var event = {
-      link: entry['link'][0]['href'],
-      start: entry['gd$when'][0]['startTime'],
-      end: entry['gd$when'][0]['endTime'],
-      title: entry['title']['$t'].trim()
-    }
-    $('#calendar ul').append(template(event));
-  });
+  if (typeof entries !== "undefined") {
+    window.entries.forEach(function (entry) {
+      var event = {
+        link: entry['link'][0]['href'],
+        start: entry['gd$when'][0]['startTime'],
+        end: entry['gd$when'][0]['endTime'],
+        title: entry['title']['$t'].trim()
+      }
+      $('#calendar ul').append(template(event));
+    });
+  }
 }
 
 var pad = function (number) {
