@@ -1,4 +1,4 @@
-jQuery(function () {
+$(document).ready(function () {
   // ChannelView
   // View for chat window encompassing NewMessageView, MessagesView, UsersView
   var ChannelView = Backbone.View.extend({
@@ -80,8 +80,6 @@ jQuery(function () {
       return this;
     }
   })
-
-
 
   // New Message View
   //___________________________________________________________________________

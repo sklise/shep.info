@@ -486,6 +486,17 @@ _____________________________________________________________________________*/
   vertical-align: baseline;
 }
 
+#chat-menu {
+  clear: both;
+  overflow-y: auto;
+}
+
 #channel-viewport {
   overflow: auto;
+}
+
+.nickname-prompt input,
+.nickname-prompt button {
+  font-size: 30px;
+  padding: 0.2em;
 }

@@ -8,9 +8,9 @@ $(document).ready(function () {
       this.collection.bind('change:channel', this.render, this)
 
       this.subviews = {
-        feedback: new FeedbackView(),
-        channel: new app.ChannelView({collection: this.collection})
-        //menu: new MenuView({collection: this.collection}),
+        feedback: new app.FeedbackView(),
+        channel: new app.ChannelView({collection: this.collection}),
+        menu: new app.MenuView({collection: this.collection})
       }
 
       this.bindToWindowResize();
@@ -18,6 +18,7 @@ $(document).ready(function () {
 
     events: {
       'keypress .nickname-input' : 'nicknameListener',
+      'keyup .nickname-input' : 'nicknameListener',
       'click .nickname-submit' : 'saveNickname'
     },
 
@@ -33,6 +34,10 @@ $(document).ready(function () {
       });
     },
 
+    // openSocket
+    // Binds client to socket.io connection
+    //
+    // nickname - a nickname is required to chat
     openSocket: function (nickname) {
       window.socket = io.connect('/');
 
@@ -41,12 +46,12 @@ $(document).ready(function () {
       socket.emit('setNickname', {nickname: nickname});
 
       socket.on('message', function (data) {
-        console.log('message', data)
+        // Get the channel the message is intended for.
         var thisChannel = _.find(channels.models, function (channel) {
-          console.log(channel.get('name'), data.channel, channel.get('name') === data.channel)
           return channel.get('name') === data.channel
-        })
+        });
 
+        // add the message to the appropriate channel
         thisChannel.get('messages').add(data)
       });
 
@@ -55,72 +60,35 @@ $(document).ready(function () {
       });
     },
 
+    // Key listener for nickname input
     nicknameListener: function (event) {
-      nicknameVal = $(event.target).val()
-      if (nicknameVal.length >= 3 && nicknameVal.length <= 10) {
+      if (event.keyCode === 32) return false;
+
+      nicknameVal = $(event.target).val();
+
+      if (nicknameVal.length >= 3 && nicknameVal.length <= 15) {
+        this.$el.find('.nickname-prompt button').removeAttr('disabled');
         if (event.keyCode === 13) {
-          this.saveNickname()
+          this.saveNickname();
         }
-        app.Helpers.ignoreKeys(event, [32], 10);
+      } else {
+        this.$el.find('.nickname-prompt button').attr('disabled', true)
       }
+
     },
 
+    //
     saveNickname: function () {
-      var nickname = this.$el.find('.nickname-input').val()
+      var nickname = this.$el.find('.nickname-prompt input').val()
       this.openSocket(nickname);
       this.collection.forEach(function (channel) {
         channel.set('nickname', nickname);
       });
       this.subviews.channel.render().el
-    }
-  });
-
-  // Feedback Form
-  //___________________________________________________________________________
-  var FeedbackView = Backbone.View.extend({
-    el: '#feedback-box',
-
-    events: {
-      'click .feedback-button': 'toggleForm',
-      'click .feedback-send': 'sendFeedback'
-    },
-
-    initialize: function (options) {
-      this.render().el;
-    },
-
-    templateSource: $('#feedback-template').html(),
-
-    render: function () {
-      this.template = Handlebars.compile(this.templateSource);
-      $(this.el).append(this.template());
-      return this;
-    },
-
-    // Renders feedback form to the page prepopulated with urrent chat name or if the form is already on the page, removes it.
-    toggleForm: function (event) {
-      var $feedbackForm = $('#feedback-form');
-      if ($feedbackForm.html().length === 0) {
-        $feedbackForm.append(Mustache.render($('#feedback-form-template').html(), {
-          name: now.name
-        }));
-      } else {
-        $feedbackForm.empty();
-      }
-      return false;
-    },
-
-    // When the "Send Feedback" button is clicked, save the feedback message to
-    // Redis and empty the feedback form.
-    sendFeedback: function (event) {
-      var sender = $('#feedback-name').val();
-      var message = $('#feedback-message').val();
-      now.logFeedback(sender, message);
-      $('#feedback-form').empty();
-      return false;
+      this.subviews.menu.render().el
     }
   });
 
   this.app = window.app != null ? window.app : {}
   this.app.AppView = AppView;
-})
+});
