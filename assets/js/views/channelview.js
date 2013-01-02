@@ -82,13 +82,14 @@ $(document).ready(function () {
       return this;
     },
 
-    scrollToBottom: function () {
-      var lastMessageHeight = $('.chat-log li').last().height() || 30;
+    scrollToBottom: function (force) {
+      var lastMessageHeight = this.$el.find('li').last().height() || 30;
       var scrollPosition = $('#chat-log-container').scrollTop();
       var containerHeight = $('#chat-log-container').height();
-      var chatHeight = this.$el.height();
+      var chatHeight = this.$el.outerHeight();
+      var logOverflow = chatHeight - containerHeight
 
-      if (scrollPosition + containerHeight - chatHeight < lastMessageHeight) {
+      if (scrollPosition - logOverflow + lastMessageHeight >= 0 || force === true) {
         $('#chat-log-container').scrollTop(chatHeight);
       }
 
