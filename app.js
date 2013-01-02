@@ -1,8 +1,10 @@
-var env = require('./.env');
+if (process.env.NODE_ENV !== 'production') {
+  var env = require('./.env');
 
-Object.keys(env).forEach(function (k) {
-  process.env[k] = env[k];
-});
+  Object.keys(env).forEach(function (k) {
+    process.env[k] = env[k];
+  });
+}
 
 var connect = require('connect')
 var assets = require('connect-assets')
