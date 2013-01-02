@@ -27,9 +27,9 @@ $(document).ready(function () {
 
     // Bind window resize event
     bindToWindowResize: function () {
-      app.Helpers.fitHeight($(window).height());
+      app.Helpers.fitHeight();
       $(window).bind('resize', function () {
-        app.Helpers.fitHeight($(this).height());
+        app.Helpers.fitHeight();
       });
     },
 

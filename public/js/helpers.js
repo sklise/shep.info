@@ -15,13 +15,8 @@
     window.pageTitle = $(document).attr('title')
     window.titleFlash = ''
 
-    $(window).blur(function () {
-      return window.windowBlurred = true;
-    });
-
-    $(window).focus(function () {
-      return Helpers.unBlinkTitle();
-    });
+    $(window).blur(function () { return window.windowBlurred = true; });
+    $(window).focus(function () { return Helpers.unBlinkTitle(); });
   });
 
   var Helpers = {
@@ -36,9 +31,7 @@
     },
 
     fitHeight: function (windowHeight) {
-      if (windowHeight == null) {
-        windowHeight = $(window).height();
-      }
+      var windowHeight = $(window).height();
 
       var toolbarHeight = $('#chat-toolbar').height();
       $('#chat-window').css('height', windowHeight + 'px')
@@ -46,7 +39,7 @@
       var chatWindowHeight = windowHeight - toolbarHeight;
       var chatInterior = chatWindowHeight - $('#new-message').height() + 14;
       $('#chat-log-container').height(chatInterior)
-      $('.chat-log').css('min-height', chatInterior)
+      $('#chat-log').css('min-height', chatInterior)
     },
 
     unBlinkTitle: function () {
@@ -120,4 +113,5 @@
 
   this.app = window.app != null ? window.app : {};
   this.app.Helpers = Helpers;
+  this.app.Helpers.fitHeight();
 }).call(this);

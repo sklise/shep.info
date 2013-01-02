@@ -19,6 +19,8 @@ jQuery(function () {
       var newMessageView = new NewMessageView({model: currentChannel});
       var messagesView = new MessagesView({model: currentChannel});
 
+      app.Helpers.fitHeight()
+
       return this;
     }
   });
