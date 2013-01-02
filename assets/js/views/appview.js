@@ -86,6 +86,7 @@ $(document).ready(function () {
       });
       this.subviews.channel.render().el
       this.subviews.menu.render().el
+      app.Helpers.fitHeight();
     }
   });
 

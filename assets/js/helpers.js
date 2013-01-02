@@ -33,13 +33,14 @@
     fitHeight: function (windowHeight) {
       var windowHeight = $(window).height();
 
-      var toolbarHeight = $('#chat-toolbar').height();
+      var menuHeight = $('#chat-menu').height();
       $('#chat-window').css('height', windowHeight + 'px')
       $('#menu-window').css('height', windowHeight + 'px')
-      var chatWindowHeight = windowHeight - toolbarHeight;
-      var chatInterior = chatWindowHeight - $('#new-message').height() + 14;
-      $('#chat-log-container').height(chatInterior)
-      $('#chat-log').css('min-height', chatInterior)
+      var chatWindowHeight = windowHeight - menuHeight;
+      var chatInterior = chatWindowHeight - $('#new-message').height();
+      $('#channel-viewport').height(chatWindowHeight+'px');
+      $('#chat-log-container').height(chatInterior+'px')
+      $('#chat-log').css('min-height', chatInterior+'px')
     },
 
     unBlinkTitle: function () {
