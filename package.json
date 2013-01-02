@@ -21,6 +21,7 @@
     "ecstatic": "0.3.0",
     "ejs": "",
     "redis-url": "0.1.0",
-    "socket.io": "0.9.10"
+    "socket.io": "0.9.10",
+    "string":"1.1.0"
   }
 }
