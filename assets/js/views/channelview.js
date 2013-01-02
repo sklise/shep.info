@@ -19,8 +19,9 @@ $(document).ready(function () {
 
       var newMessageView = new NewMessageView({model: currentChannel});
       var messagesView = new MessagesView({model: currentChannel});
-
       app.Helpers.fitHeight()
+
+      messagesView.scrollToBottom();
 
       return this;
     }
@@ -55,10 +56,11 @@ $(document).ready(function () {
 
   var MessagesView = Backbone.View.extend({
     el: '#chat-log',
+
     initialize: function (options) {
       this.render().el
       this.model.get('messages').bind('add', this.appendLast, this)
-      // this.model.bind('add', @scrollToBottom, this)
+      this.model.get('messages').bind('add', this.scrollToBottom, this)
     },
 
     appendLast: function () {
@@ -72,13 +74,24 @@ $(document).ready(function () {
     render: function () {
       var self = this;
       this.$el.empty()
-      console.log('rendering')
 
       this.model.get('messages').forEach(function (message) {
         var messageView = new MessageView({model: message});
         self.$el.append(messageView.render().el)
-      })
+      });
       return this;
+    },
+
+    scrollToBottom: function () {
+      var lastMessageHeight = $('.chat-log li').last().height() || 30;
+      var scrollPosition = $('#chat-log-container').scrollTop();
+      var containerHeight = $('#chat-log-container').height();
+      var chatHeight = this.$el.height();
+
+      if (scrollPosition + containerHeight - chatHeight < lastMessageHeight) {
+        $('#chat-log-container').scrollTop(chatHeight);
+      }
+
     }
   })
 
@@ -120,7 +133,6 @@ $(document).ready(function () {
       var messageContent = this.$el.find('textarea').val();
       if (event.which === 13) {
         // halt if field is empty.
-        console.log(messageContent.length)
         if (messageContent.length === 0) {return false;}
 
         this.emptyInput()
