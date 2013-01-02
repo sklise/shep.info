@@ -5,6 +5,7 @@ Object.keys(env).forEach(function (k) {
 });
 
 var connect = require('connect')
+var assets = require('connect-assets')
 var redis = require('connect-redis')(connect)
 var render = require('connect-render')
 var debug = require('debug')('http')
@@ -35,18 +36,17 @@ var matchRoutes = function (req, res) {
 
 // Create app, attach routes and sessions
 var app = connect(
-    render({
-      root: __dirname + '/views',
-      layout: 'layout.ejs',
-      cache: false, // `false` for debug
-      helpers: { sitename: 'Shep.info' }
-    })
-  )
-  .use(require('connect-assets')({build: true}))
-  .use(connect.logger())
-  .use(function (req, res) {
-    matchRoutes(req, res)
+  render({
+    root: __dirname + '/views',
+    layout: 'layout.ejs',
+    cache: false, // `false` for debug
+    helpers: { sitename: 'Shep.info' }
   })
+);
+
+app.use(assets())
+  .use(connect.logger())
+  .use(function (req, res) { matchRoutes(req, res) })
   .use(connect.session({
     store: new redis({
       port: redisUrl.port,
