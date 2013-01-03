@@ -3,25 +3,34 @@
   overflow-y: auto;
 }
 
+.chat-room-list {
+  overflow-y: hidden;
+}
+
 .chat-room-list li {
   float: left;
   padding: 1em 1em 0.8em;
   text-transform: uppercase;
 }
 
-.chat-room-list li .room-name {}
 .chat-room-list li:hover {
   background-color: #dbd7d4;
-  cursor: pointer; }
+  cursor: pointer;
+}
+
 .chat-room-list li div {
-  float: left; }
+  display: inline-block;
+}
+
 .chat-room-list li.current-channel {
   background-color: #006ed6;
-  color: white; }
-  .chat-room-list li.current-channel .underline {
-    visibility: hidden; }
-.chat-room-list li.current-channel::after {
-  background-image: url("/images/room-indicator.png"); }
+  color: white;
+}
+
+.chat-room-list li.current-channel .underline {
+  visibility: hidden;
+}
+
 .chat-room-list li.current-channel::after, .chat-room-list li:hover::after {
   background-repeat: no-repeat;
   background-position-x: 50%;
@@ -51,14 +60,20 @@
   display: inline;
   position: relative;
   width: 16px;
-  height: 16px; }
-  .room-status-icon.shep-icon {
-    background-image: url("http://shep.info.s3.amazonaws.com/shep16.png"); }
+  height: 16px;
+}
+
+.room-status-icon.shep-icon {
+  background-image: url("http://shep.info.s3.amazonaws.com/shep16.png");
+}
 
 .current-channel .room-status-icon {
-  background-image: url("http://shep.info.s3.amazonaws.com/236white.png"); }
-  .current-channel .room-status-icon.shep-icon {
-    background-image: url("http://shep.info.s3.amazonaws.com/shep16.png"); }
+  background-image: url("http://shep.info.s3.amazonaws.com/236white.png");
+}
+
+.current-channel .room-status-icon.shep-icon {
+  background-image: url("http://shep.info.s3.amazonaws.com/shep16.png");
+}
 
 .shep-icon {
   background-image: url("/images/shep.jpg");
@@ -69,25 +84,13 @@
   background-size: 16px 16px;
   display: block;
   width: 16px;
-  height: 16px; }
-
-.room-status-icon, .shep-icon {
-  margin-right: 4px; }
-
-.room-name {
-  position: relative; }
+  height: 16px;
+}
 
 .exitable-room:hover {
-  color: #f03528; }
-
-.room-menu-icon {
-  font-size: 20px; }
-
-.channel-menu-button {
-  margin-top: -2px;
-  margin-bottom: -2px;
+  color: #f03528;
 }
 
 .channel-menu-button img {
-  width: 20px;
+  width: 16px;
 }

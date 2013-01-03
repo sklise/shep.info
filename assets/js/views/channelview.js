@@ -38,9 +38,6 @@ $(document).ready(function () {
       var template = Handlebars.compile(this.templateSource);
       var message = this.model.toJSON()
 
-      // Move this function to a Handlebars helper
-      // message.time = app.Helpers.formatTime(this.model.get('time'))
-
       if (this.model.get('consecutive')) {
         this.$el.addClass('consecutive')
       };

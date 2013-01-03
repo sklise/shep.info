@@ -14,6 +14,11 @@
   width: 97.0%;
 }
 
+.no-margin {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .col-page {
   /*margin: 0 -1.5%;*/
 }
@@ -72,12 +77,14 @@ Change widths as necessary
   .col-1  { width: 5.333333333%; }
   .col-2  { width: 13.666666667%; }
   .col-3  { width: 22%; }
+  .no-margin.col-3 { width: 25%;}
   .col-4  { width: 30.333333333%; }
   .col-5  { width: 38.666666667%; }
   .col-6  { width: 47%; }
   .col-7  { width: 55.333333333%; }
   .col-8  { width: 63.666666667%; }
   .col-9  { width: 72%; }
+  .no-margin.col-9  { width: 75%; }
   .col-10  { width: 80.333333333%; }
   .col-11  { width: 88.666666667%; }
   .col-12  { width: 97%; }

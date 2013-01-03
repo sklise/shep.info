@@ -76,9 +76,6 @@ a {
   overflow: auto; }
 
 #menu-window {
-  margin: 0 8px;
-  float: left;
-  /*width: 280px;*/
   max-height: 100%;
   overflow-y: scroll;
   padding-top: 16px;
@@ -324,7 +321,6 @@ _____________________________________________________________________________*/
 }
 
 .new-message-input {
-  float: left;
   width: 100%;
   -webkit-appearance: none;
   -moz-appearance: none;
