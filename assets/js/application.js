@@ -5,9 +5,11 @@
 //= require helpers
 //= require models
 //= require collections
+//= require views/appview.js
+//= require views/channelview.js
+//= require views/menuview.js
+//= require views/feedbackview.js
 //= require routers
-//= require_tree ./views
-//= require_tree .
 //= require calendar
 
 $(document).ready(function () {
