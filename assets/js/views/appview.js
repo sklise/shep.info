@@ -60,8 +60,6 @@ $(document).ready(function () {
           return channel.get('name') === data.channel
         });
 
-        console.log(data)
-
         // add the message to the appropriate channel
         thisChannel.get('messages').add(data)
       });
