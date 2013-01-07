@@ -9,7 +9,7 @@ $(document).ready(function () {
     initialize: function () {
       this.view = new app.AppView({
         collection: new app.Channels(
-          [{name: 'itp'}, {name:'thesis'}]
+          [{name: 'itp'}]
         )
       });
       this.view.render().el;
