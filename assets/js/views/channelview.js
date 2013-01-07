@@ -6,7 +6,17 @@ $(document).ready(function () {
     templateSource: $('#channel-template').html(),
 
     initialize: function (options) {
-      this.collection.bind('change:channel', this.render, this)
+      this.collection.bind('change:channel', this.render, this);
+      this.collection.bind('change:users', this.refreshUserList, this);
+    },
+
+    refreshUserList: function () {
+      var userList = this.$el.find('#user-list');
+      var alphabetizedList = _.sortBy(this.collection.users, function (u) {return u})
+      $(userList).empty();
+      _.each(alphabetizedList, function (username) {
+        $(userList).append('<li>'+username+'</li>')
+      })
     },
 
     render: function () {

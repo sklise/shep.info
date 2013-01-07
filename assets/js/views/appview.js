@@ -10,7 +10,7 @@ $(document).ready(function () {
       this.subviews = {
         feedback: new app.FeedbackView(),
         channel: new app.ChannelView({collection: this.collection}),
-        menu: new app.MenuView({collection: this.collection})
+        // menu: new app.MenuView({collection: this.collection})
       }
 
       this.bindToWindowResize();
@@ -41,9 +41,18 @@ $(document).ready(function () {
     openSocket: function (nickname) {
       window.socket = io.connect('/');
 
-      var channels = this.collection
+      var channels = this.collection;
+      var logIn = this.saveNickname;
+      var invalidNickname = this.nicknameError;
+      var context = this;
 
-      socket.emit('setNickname', {nickname: nickname});
+      socket.emit('requestNickname', nickname);
+
+      socket.on('loggedIn', function () { logIn(context) });
+
+      socket.on('invalid-nickname', function (resp) {
+        invalidNickname(resp, context);
+      });
 
       socket.on('message', function (data) {
         // Get the channel the message is intended for.
@@ -58,6 +67,10 @@ $(document).ready(function () {
       socket.on('disconnect', function (data) {
         console.log('disconnect', data);
       });
+
+      socket.on('userlist', function (data) {
+        context.updateUserlist(data);
+      })
     },
 
     // Key listener for nickname input
@@ -69,7 +82,7 @@ $(document).ready(function () {
       if (nicknameVal.length >= 3 && nicknameVal.length <= 15) {
         this.$el.find('.nickname-prompt button').removeAttr('disabled');
         if (event.keyCode === 13) {
-          this.saveNickname();
+          this.requestNickname();
         }
       } else {
         this.$el.find('.nickname-prompt button').attr('disabled', true)
@@ -77,16 +90,30 @@ $(document).ready(function () {
 
     },
 
-    //
-    saveNickname: function () {
+    requestNickname: function () {
       var nickname = this.$el.find('.nickname-prompt input').val()
       this.openSocket(nickname);
-      this.collection.forEach(function (channel) {
+    },
+
+    nicknameError: function (resp, context) {
+      context.$el.find('.nickname-prompt input').val('')
+      alert('Sorry, the name ' + resp.nickname + ' is already in use, please choose another');
+    },
+
+    saveNickname: function (context) {
+      var self = context
+      var nickname = self.$el.find('.nickname-prompt input').val()
+      self.collection.forEach(function (channel) {
         channel.set('nickname', nickname);
       });
-      this.subviews.channel.render().el
-      this.subviews.menu.render().el
+      self.subviews.channel.render().el
+      // self.subviews.menu.render().el
       app.Helpers.fitHeight();
+    },
+
+    updateUserlist: function (userlist) {
+      this.collection.users = userlist
+      this.collection.trigger("change:users")
     }
   });
 
