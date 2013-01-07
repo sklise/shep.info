@@ -43,15 +43,15 @@ $(document).ready(function () {
 
       var channels = this.collection;
       var logIn = this.saveNickname;
-      var invalidNickname = this.nicknameError;
       var context = this;
 
       socket.emit('requestNickname', nickname);
 
-      socket.on('loggedIn', function () { logIn(context) });
+      socket.on('loggedIn', function () { context.saveNickname() });
 
       socket.on('invalid-nickname', function (resp) {
-        invalidNickname(resp, context);
+        socket.disconnect();
+        context.nicknameError(resp);
       });
 
       socket.on('message', function (data) {
@@ -59,6 +59,8 @@ $(document).ready(function () {
         var thisChannel = _.find(channels.models, function (channel) {
           return channel.get('name') === data.channel
         });
+
+        console.log(data)
 
         // add the message to the appropriate channel
         thisChannel.get('messages').add(data)
@@ -95,13 +97,13 @@ $(document).ready(function () {
       this.openSocket(nickname);
     },
 
-    nicknameError: function (resp, context) {
-      context.$el.find('.nickname-prompt input').val('')
+    nicknameError: function (resp) {
+      this.$el.find('.nickname-prompt input').val('')
       alert('Sorry, the name ' + resp.nickname + ' is already in use, please choose another');
     },
 
-    saveNickname: function (context) {
-      var self = context
+    saveNickname: function () {
+      var self = this;
       var nickname = self.$el.find('.nickname-prompt input').val()
       self.collection.forEach(function (channel) {
         channel.set('nickname', nickname);
