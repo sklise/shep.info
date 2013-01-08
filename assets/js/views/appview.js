@@ -12,14 +12,14 @@ $(document).ready(function () {
         channel: new app.ChannelView({collection: this.collection}),
         // menu: new app.MenuView({collection: this.collection})
       }
-
+      window.socket = io.connect('/');
       this.bindToWindowResize();
     },
 
     events: {
       'keypress .nickname-input' : 'nicknameListener',
-      'keyup .nickname-input' : 'nicknameListener',
-      'click .nickname-submit' : 'saveNickname'
+      // 'keyup .nickname-input' : 'nicknameListener',
+      'click .nickname-submit' : 'requestNickname'
     },
 
     render: function () {
@@ -39,18 +39,14 @@ $(document).ready(function () {
     //
     // nickname - a nickname is required to chat
     openSocket: function (nickname) {
-      window.socket = io.connect('/');
-
       var channels = this.collection;
-      var logIn = this.saveNickname;
       var context = this;
 
       socket.emit('requestNickname', nickname);
 
-      socket.on('loggedIn', function () { context.saveNickname() });
+      socket.on('loggedIn', function () { console.log(); context.saveNickname(); });
 
       socket.on('invalid-nickname', function (resp) {
-        socket.disconnect();
         context.nicknameError(resp);
       });
 
@@ -59,6 +55,8 @@ $(document).ready(function () {
         var thisChannel = _.find(channels.models, function (channel) {
           return channel.get('name') === data.channel
         });
+
+        console.log(data)
 
         // add the message to the appropriate channel
         thisChannel.get('messages').add(data)
@@ -70,7 +68,7 @@ $(document).ready(function () {
 
       socket.on('userlist', function (data) {
         context.updateUserlist(data);
-      })
+      });
     },
 
     // Key listener for nickname input
@@ -82,6 +80,7 @@ $(document).ready(function () {
       if (nicknameVal.length >= 3 && nicknameVal.length <= 15) {
         this.$el.find('.nickname-prompt button').removeAttr('disabled');
         if (event.keyCode === 13) {
+          console.log('nicknameListener')
           this.requestNickname();
         }
       } else {
@@ -91,8 +90,8 @@ $(document).ready(function () {
     },
 
     requestNickname: function () {
-      var nickname = this.$el.find('.nickname-prompt input').val()
-      this.openSocket(nickname);
+      this.nickname = this.$el.find('.nickname-prompt input').val()
+      this.openSocket(this.nickname);
     },
 
     nicknameError: function (resp) {
@@ -101,10 +100,11 @@ $(document).ready(function () {
     },
 
     saveNickname: function () {
+      console.log('save nickanem')
       var self = this;
-      var nickname = self.$el.find('.nickname-prompt input').val()
+
       self.collection.forEach(function (channel) {
-        channel.set('nickname', nickname);
+        channel.set('nickname', this.nickname);
       });
       self.subviews.channel.render().el
       // self.subviews.menu.render().el
