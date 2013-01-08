@@ -17,7 +17,7 @@ $(document).ready(function () {
     },
 
     events: {
-      'keypress .nickname-input' : 'nicknameListener',
+      // 'keypress .nickname-input' : 'nicknameListener',
       // 'keyup .nickname-input' : 'nicknameListener',
       'click .nickname-submit' : 'requestNickname'
     },
@@ -69,6 +69,10 @@ $(document).ready(function () {
       socket.on('userlist', function (data) {
         context.updateUserlist(data);
       });
+
+      window.onbeforeunload = function () {
+        window.socket.disconnect();
+      }
     },
 
     // Key listener for nickname input
