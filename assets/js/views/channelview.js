@@ -110,7 +110,7 @@ $(document).ready(function () {
     templateSource: $('#new-message-template').html(),
     events: {
       // 'blur .chat-name'             : 'updateName',
-      'keypress .chat-name'         : 'ignoreKeys',
+      // 'keypress .chat-name'         : 'ignoreKeys',
       'keypress .new-message-input' : 'keyListener'
     },
 
@@ -125,7 +125,8 @@ $(document).ready(function () {
 
     render: function () {
       this.template = Handlebars.compile(this.templateSource)
-      $(this.el).html(this.template(this.model.toJSON()))
+      this.$el.html(this.template(this.model.toJSON()));
+      this.$el.find('.new-message-input textarea').focus()
       return this;
     },
 
