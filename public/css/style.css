@@ -67,7 +67,7 @@ a {
   color: #006ed6; }
 
 #wrapper {
-  width: 98%;
+  width: 100%;
   margin: 0 auto;
   font-size: 16px;
   line-height: 20px;
@@ -76,42 +76,22 @@ a {
   overflow: auto; }
 
 #menu-window {
+  margin-top: 0.75em;
   max-height: 100%;
   overflow-y: scroll;
-  padding-top: 16px;
-  position: relative;
 }
 
 #heading {
-  background-image: url("/images/banner.png");
+  background-image: url("/images/shep.png");
+  background-image: url("/images/shep.svg");
   background-position: left top;
   background-repeat: no-repeat;
   -webkit-background-size: contain;
   -moz-background-size: contain;
   background-size: contain;
-  height: 6em;
-  padding-left: 185px;
-  padding-top: 0;
-  position: relative; }
-
-.feedback-button {
-  height: 24px;
-  margin: 4px 0; }
-
-.feedback-button:hover {
-  color: #006ed6;
-  cursor: pointer; }
-
-.feedback-send {
-  clear: both;
-  display: block; }
-
-#feedback {
-  position: relative; }
-  #feedback label {
-    clear: both;
-    display: block;
-    font-size: 12px; }
+  height: 12em;
+  position: relative;
+}
 
 .introduction {
   margin: 1em 0; }

@@ -32,15 +32,26 @@
 
     fitHeight: function (windowHeight) {
       var windowHeight = $(window).height();
-
       var menuHeight = $('#chat-menu').height();
-      $('#chat-window').css('height', windowHeight + 'px')
-      $('#menu-window').css('height', windowHeight + 'px')
       var chatWindowHeight = windowHeight - menuHeight;
       var chatInterior = chatWindowHeight - $('#new-message').outerHeight();
+
+      var heading = $('#heading');
+
+      headingHeight = function () {
+        if (heading.width() > 225) {
+          return '225px'
+        } else {
+          return heading.width()
+        }
+      }
+
+      heading.height(headingHeight)
+      $('#chat-window').css('height', windowHeight + 'px')
+      $('#menu-window').css('height', windowHeight + 'px')
       $('#channel-viewport').height(chatWindowHeight+'px');
       $('#chat-log-container').height(chatInterior+'px')
-      // $('#chat-log').css('min-height', chatInterior+'px')
+
     },
 
     unBlinkTitle: function () {
