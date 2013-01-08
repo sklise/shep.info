@@ -17,8 +17,7 @@ $(document).ready(function () {
     },
 
     events: {
-      // 'keypress .nickname-input' : 'nicknameListener',
-      // 'keyup .nickname-input' : 'nicknameListener',
+      'keypress .nickname-input' : 'nicknameListener',
       'click .nickname-submit' : 'requestNickname'
     },
 
