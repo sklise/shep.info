@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'thin'
+gem 'shotgun'
+gem 'dalli', '1.0.5'
+gem 'json', '1.7.5'
+gem 'data_mapper', '1.2.0'
+gem 'dm-postgres-adapter', '1.2.0'
+gem 'warden', '1.2.1'
+gem 'omniauth', '1.1.1'
+gem 'omniauth-saml', '1.0.0'
+gem 'rack-flash3', '1.0.1', require: 'rack/flash'

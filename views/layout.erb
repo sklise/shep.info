@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title><%= @title %></title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/chat-menu.css">
+  <link rel="stylesheet" href="/css/grid.css">
+
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+  <script type="text/javascript" src="/js/vendor/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/vendor/underscore.js"></script>
+  <script type="text/javascript" src="/js/vendor/backbone.js"></script>
+  <script type="text/javascript" src="/js/vendor/handlebars.js"></script>
+  <script type="text/javascript" src="/js/helpers.js"></script>
+  <script type="text/javascript" src="/js/models.js"></script>
+  <script type="text/javascript" src="/js/collections.js"></script>
+  <script type="text/javascript" src="/js/views/appview.js"></script>
+  <script type="text/javascript" src="/js/views/channelview.js"></script>
+  <script type="text/javascript" src="/js/views/menuview.js"></script>
+  <script type="text/javascript" src="/js/views/feedbackview.js"></script>
+  <script type="text/javascript" src="/js/routers.js"></script>
+  <script type="text/javascript" src="/js/calendar.js"></script>
+  <script type="text/javascript" src="/js/application.js"></script>
+
+  <link href="http://sklise.s3.amazonaws.com/pictos/pictos.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <div id="wrapper">
+    <div id="menu-window" class="col-3">
+      <div id="heading">
+        &nbsp;
+      </div>
+
+      <div class="introduction">
+        <p>Shep is ITP's chat bot, he's here for you. He answers questions, remembers things and sometimes makes jokes.</p>
+
+        <!-- <p>Click the tab marked "SHEP" to speak directly with Shep. Click the menu tab to create or join new channels.</p> -->
+
+      </div>
+
+      <div id="calendar">
+        <h3>Calendar</h3>
+        <ul>
+        </ul>
+      </div>
+
+      <div id="footer">
+        <p>
+          <a href="https://github.com/stevenklise/shep.info/blob/master/readme.md">v2.0.0-a1</a>
+        </p>
+        <p><strong>This is a public site</strong> &#x2605;
+          <a href="https://github.com/stevenklise/shep.info" target="_blank">Source</a>
+        </p>
+      </div>
+    </div>
+
+    <%= yield %>
+  </div>
+</body>
+</html>
