@@ -12,7 +12,9 @@ $(document).ready(function () {
         channel: new app.ChannelView({collection: this.collection}),
         // menu: new app.MenuView({collection: this.collection})
       }
-      window.socket = io.connect('/');
+      var socketHost = $('body').data().socketHost;
+
+      window.socket = io.connect(socketHost);
       this.bindToWindowResize();
     },
 
