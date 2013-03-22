@@ -13,17 +13,12 @@
     "url": "http://github.com/stevenklise/shep.info.git"
   },
   "dependencies": {
-    "connect": "2.6.1",
-    "connect-assets": "2.3.3",
     "connect-redis": "1.4.4",
-    "connect-render": "0.1.7",
     "debug": "0.7.0",
-    "ecstatic": "0.3.0",
-    "ejs": "",
-    "redis-url": "0.1.0",
+    "express": "3.1.0",
     "socket.io": "0.9.10",
     "string": "1.1.0",
-    "redis": "",
-    "request": ""
+    "redis": "0.8.2",
+    "request": "2.16.6"
   }
 }

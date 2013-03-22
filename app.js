@@ -6,57 +6,44 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-var connect = require('connect')
-var assets = require('connect-assets')
-var redis = require('connect-redis')(connect)
-var render = require('connect-render')
+var express = require('express');
+var RedisStore = require('connect-redis')(express)
 var debug = require('debug')('http')
-var ecstatic = require('ecstatic')(__dirname + '/public')
-var ejs = require('ejs')
 var url = require('url')
 
-var publicDir = __dirname + '/public/'
 var port = process.env.PORT || 3000
-var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379')
+
+var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+
+redisUrl.password = (function () {
+  if (redisUrl.auth) {
+    return redisUrl.auth.split(':')[1]
+  } else
+    return null;
+  }
+)()
 
 debug('booting shep.info')
 
-var matchRoutes = function (req, res) {
-  console.log(req.method + ' ' + req.url)
-
-  switch (true) {
-    case /^\/$/.test(req.url):
-      res.render('index.ejs', {'foo':'bar', 'title':'shep.info'})
-      break
-    case /^\/channels\/([^\/])*$/.test(req.url):
-      res.render('index.ejs', {'foo':'bar', title: 'shep.info'})
-      break
-    default:
-      ecstatic(req,res)
-  }
-}
-
 // Create app, attach routes and sessions
-var app = connect(
-  render({
-    root: __dirname + '/views',
-    layout: 'layout.ejs',
-    cache: false, // `false` for debug
-    helpers: { sitename: 'Shep.info' }
-  })
-);
+var app = express()
 
-app.use(assets())
-  .use(connect.logger())
-  .use(function (req, res) { matchRoutes(req, res) })
-  .use(connect.session({
-    store: new redis({
-      port: redisUrl.port,
-      host: redisUrl.hostname,
-      pass: (redisUrl.auth || "").split(":")[1]
-    }),
-    secret: process.env.SESSION_SECRET || 'woof woof'
+app.configure(function () {
+  app.use(express.bodyParser())
+  app.use(express.logger())
+  app.use(express.directory('public'))
+  app.use(express.static('public'))
+  app.use(express.cookieParser())
+  app.use(express.session({
+    secret: "lkashjgfekfleljfkjwjekfwekf",
+    store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass: redisUrl.password})
   }));
+});
+
+app.post('/responses/:channel', function (req, res) {
+  console.log(req.params['channel'], req.params, req.body)
+  res.end('hi')
+});
 
 // Create server
 var server = app.listen(port, function (d,e) {
