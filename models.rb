@@ -1,6 +1,8 @@
+require 'bundler'
+Bundler.require
+
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "postgres://localhost/shep")
 DataMapper::Property::String.length(255)
-
 
 class User
   include DataMapper::Resource

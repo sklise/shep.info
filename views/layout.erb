@@ -26,7 +26,7 @@
 
   <link href="http://sklise.s3.amazonaws.com/pictos/pictos.css" rel="stylesheet" type="text/css">
 </head>
-<body data-socket-host="<%= ENV['SOCKET_HOST'] %>">
+<body data-socket-host="<%= ENV['SOCKET_HOST'] %>" data-nickname="<%= env['warden'].user.nickname if env['warden'].authenticated? %>">
   <div id="wrapper">
     <div id="menu-window" class="col-3">
       <div id="heading">

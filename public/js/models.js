@@ -35,7 +35,9 @@
     defaults: { type: 'Chat' },
   });
 
-  var User = Backbone.Model.extend({});
+  var User = Backbone.Model.extend({
+    urlRoot: '/users'
+  });
 
   this.app = window.app != null ? window.app : {};
   this.app.Message = Message;

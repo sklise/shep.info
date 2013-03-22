@@ -2,20 +2,25 @@
   <div id="chat-menu" class="col-12"></div>
   <div id="channel-viewport">
     <h1>Welcome to Shep.info</h1>
-  </div>
-  <div class="signup-form col-4">
-    <h3>Sign Up</h3>
-    <p>No spaces, names must be between<br>3 and 32 characters.</p>
-    <input id="signup-nickname" tabindex="1" type="text" placeholder="nickname"/>
-    <input id="signup-password1" type="password" placeholder="password"/>
-    <input id="signup-password2" type="password" placeholder="retype password"/>
-    <button class="signup-button">signup</button>
-  </div>
 
-  <div class="signin-form col-4">
-    <h3>Sign In</h3>
-    <input id="signin-nickname" tabindex="1" type="text" placeholder="nickname"/>
-    <input id="signin-password" type="password" placeholder="password"/>
-    <button class="signin-button">signup</button>
+    <div id="login-panel">
+      <h3>Sign Up</h3>
+
+      <h3>Sign In</h3>
+
+      <p>
+        <input class="nickname-input" tabindex="1" type="text" placeholder="nickname"/>
+        <span class="nickname-status"></span>
+        No spaces, names must be between 3 and 32 characters.
+      </p>
+
+      <p>
+        <input id="password-input" type="password" placeholder="password"/>
+        <input id="password-confirm" type="password" placeholder="retype password"/>
+        <div class="password-status"></div>
+      </p>
+
+      <button class="signup-button">signup</button>
+    </div>
   </div>
 </div>

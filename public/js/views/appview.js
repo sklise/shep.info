@@ -5,6 +5,9 @@ $(document).ready(function () {
     el: '#wrapper',
 
     initialize: function (options) {
+      var view = this;
+
+      this.nickname = $('body').data().nickname;
       this.collection.bind('change:channel', this.render, this)
 
       this.subviews = {
@@ -15,12 +18,26 @@ $(document).ready(function () {
       var socketHost = $('body').data().socketHost;
 
       window.socket = io.connect(socketHost);
-      this.bindToWindowResize();
+
+      socket.on('connectionSuccessful', function () {
+        socket.emit('setNickname', view.nickname);
+      });
+
+      socket.on('nicknameSet', function () {
+        view.openSocket(view.nickname);
+        view.bindToWindowResize();
+
+        view.collection.forEach(function (channel) {
+          channel.set('nickname', view.nickname);
+        });
+
+        view.subviews.channel.render().el
+        app.Helpers.fitHeight();
+      });
     },
 
     events: {
-      'keypress .nickname-input' : 'nicknameListener',
-      'click .nickname-submit' : 'requestNickname'
+
     },
 
     render: function () {
@@ -41,23 +58,13 @@ $(document).ready(function () {
     // nickname - a nickname is required to chat
     openSocket: function (nickname) {
       var channels = this.collection;
-      var context = this;
-
-      socket.emit('requestNickname', nickname);
-
-      socket.on('loggedIn', function () { console.log(); context.saveNickname(); });
-
-      socket.on('invalid-nickname', function (resp) {
-        context.nicknameError(resp);
-      });
+      var view = this;
 
       socket.on('message', function (data) {
         // Get the channel the message is intended for.
         var thisChannel = _.find(channels.models, function (channel) {
           return channel.get('name') === data.channel
         });
-
-        console.log(data)
 
         // add the message to the appropriate channel
         thisChannel.get('messages').add(data)
@@ -68,52 +75,12 @@ $(document).ready(function () {
       });
 
       socket.on('userlist', function (data) {
-        context.updateUserlist(data);
+        view.updateUserlist(data);
       });
 
       window.onbeforeunload = function () {
         window.socket.disconnect();
       }
-    },
-
-    // Key listener for nickname input
-    nicknameListener: function (event) {
-      if (event.keyCode === 32) return false;
-
-      nicknameVal = $(event.target).val();
-
-      if (nicknameVal.length >= 3 && nicknameVal.length <= 15) {
-        this.$el.find('.nickname-prompt button').removeAttr('disabled');
-        if (event.keyCode === 13) {
-          console.log('nicknameListener')
-          this.requestNickname();
-        }
-      } else {
-        this.$el.find('.nickname-prompt button').attr('disabled', true)
-      }
-
-    },
-
-    requestNickname: function () {
-      this.nickname = this.$el.find('.nickname-prompt input').val()
-      this.openSocket(this.nickname);
-    },
-
-    nicknameError: function (resp) {
-      this.$el.find('.nickname-prompt input').val('')
-      alert('Sorry, the name ' + resp.nickname + ' is already in use, please choose another');
-    },
-
-    saveNickname: function () {
-      console.log('save nickanem')
-      var self = this;
-
-      self.collection.forEach(function (channel) {
-        channel.set('nickname', this.nickname);
-      });
-      self.subviews.channel.render().el
-      // self.subviews.menu.render().el
-      app.Helpers.fitHeight();
     },
 
     updateUserlist: function (userlist) {
