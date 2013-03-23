@@ -12,6 +12,7 @@
     "type": "git",
     "url": "http://github.com/stevenklise/shep.info.git"
   },
+  "main": "./src/sockets/app.js",
   "dependencies": {
     "connect-redis": "1.4.4",
     "debug": "0.7.0",

@@ -51,4 +51,4 @@ var server = app.listen(port, function (d,e) {
 })
 
 // Attach sockets to Connect server
-var chat = require('./lib/chat')(server)
+var chat = require('./chat')(server)
