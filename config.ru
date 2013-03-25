@@ -5,7 +5,7 @@ require './models'
 require './app'
 
 builder = Rack::Builder.new do
-  use Rack::Session::Cookie, secret: "nothingissecretontheinternet"
+  use Rack::Session::Cookie, secret: ENV['SESSION_SECRET']
   use Rack::Flash, accessorize: [:error, :success]
 
   use Warden::Manager do |config|
