@@ -5,11 +5,12 @@ class Shep < Sinatra::Base
   set :enable_cache, true
 
   get '/' do
+    redirect "/channels/itp" if env['warden'].authenticated?
     erb :index
   end
 
   get '/channels/:channel_name' do
-    # env['warden'].authenticate!
+    env['warden'].authenticate!
     erb :chatroom
   end
 
