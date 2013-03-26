@@ -1,6 +1,3 @@
-require 'bundler'
-Bundler.require
-
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "postgres://localhost/shep")
 DataMapper::Property::String.length(255)
 
@@ -12,6 +9,9 @@ class User
   property :email, String
   property :password, BCryptHash
 
+  property :created_at, DateTime
+  property :updated_at, DateTime
+
   def authenticate(attempted_password)
     if self.password == attempted_password
       true
@@ -19,6 +19,16 @@ class User
       false
     end
   end
+end
+
+class Channel
+  include DataMapper::Resource
+
+  property :id, Serial
+  property :created_at, DateTime
+  property :updated_at, DateTime
+  property :name, String, length: 3..20, unique: true
+
 end
 
 DataMapper.finalize
