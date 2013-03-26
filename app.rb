@@ -51,11 +51,13 @@ class Shep < Sinatra::Base
     erb :index
   end
 
+  # This is the view for all channels.
   get '/channels/:channel_name' do
     env['warden'].authenticate!
     erb :chatroom
   end
 
+  # Check to see if a nickname is available
   post '/nicknames/check' do
     content_type :json
     @user = User.first nickname: params[:nickname]
@@ -67,6 +69,7 @@ class Shep < Sinatra::Base
     end
   end
 
+  # Create a new User. For Sign Ups.
   post '/users' do
     content_type :json
 
@@ -81,7 +84,7 @@ class Shep < Sinatra::Base
   end
 
   #############################################
-  #  AUTH                                     #
+  #                  AUTH                     #
   #############################################
 
   post '/auth/unauthenticated' do
@@ -92,7 +95,7 @@ class Shep < Sinatra::Base
   end
 
   get '/auth/login' do
-    erb :login
+    erb :index
   end
 
   post '/auth/login' do
