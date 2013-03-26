@@ -1,16 +1,17 @@
 $(document).ready(function () {
   app = window.app != null ? window.app : {}
 
-  var LoginView = Backbone.View.extend({
+  var SignUpView = Backbone.View.extend({
     el: '#login-panel',
-
-    initialize: function () {
-    },
 
     events: {
       'click .signup-button' : 'signUp',
-      'click .signin-button' : 'signIn',
       'blur .nickname-input' : 'checkNickname'
+    },
+
+    initialize: function () {
+      console.log("sign up!")
+      this.render().el;
     },
 
     checkNickname: function () {
@@ -28,8 +29,15 @@ $(document).ready(function () {
       })
     },
 
-    signIn: function () {
-      return false;
+    render: function () {
+      var view = this;
+      var template = Handlebars.compile($('#sign-up-template').html());
+
+      this.$el.empty();
+
+      this.$el.html(template());
+
+      return this;
     },
 
     signUp: function () {
@@ -55,6 +63,57 @@ $(document).ready(function () {
         this.$el.find('.password-status').html('Your passwords do not match');
       }
 
+      return false;
+    }
+  });
+
+  var SignInView = Backbone.View.extend({
+    el: '#login-panel',
+
+    events: {
+      'click .signin-button' : 'signIn'
+    },
+
+    initialize: function () {
+      this.render().el;
+    },
+
+    render: function () {
+      var view = this;
+      var template = Handlebars.compile($('#sign-in-template').html());
+
+      this.$el.empty();
+
+      this.$el.html(template());
+
+      return this;
+    },
+
+    signIn: function () {
+      console.log('sign in');
+    }
+  });
+
+  var LoginView = Backbone.View.extend({
+    el: '#channel-viewport',
+
+    initialize: function () {
+      this.signIn();
+    },
+
+    events: {
+      'click .signin-link' : 'signIn',
+      'click .signup-link' : 'signUp'
+    },
+
+    signIn: function () {
+      console.log("hi!")
+      this.subview = new SignInView();
+      return false;
+    },
+
+    signUp: function () {
+      this.subview = new SignUpView();
       return false;
     }
   });
