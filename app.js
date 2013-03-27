@@ -48,7 +48,8 @@ app.post('/responses/:channel', function (req, res) {
   var m = {
     'channel': req.params.channel,
     'content': req.body.message,
-    'from': 'shep'
+    'from': 'shep',
+    'timestamp': Date.now()
   }
   io.sockets.emit('message', m);
   res.end('hi')

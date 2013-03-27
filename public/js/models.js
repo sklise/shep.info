@@ -35,9 +35,19 @@
     defaults: {
       type: 'Chat',
       is_shep: false,
-      is_self: false },
+      is_self: false,
+      consecutive: false },
 
     initialize: function () {
+      var lengthOfMessages = this.collection.models.length;
+
+      if (lengthOfMessages >= 1) {
+        var previousMessage = this.collection.models[lengthOfMessages - 1]
+        if (previousMessage.get('from') === this.get('from')) {
+          this.set('consecutive', true);
+        }
+      }
+
       if (this.get('from') === "shep") {
         this.set('is_shep', true);
       }

@@ -48,11 +48,11 @@ $(document).ready(function () {
       var template = Handlebars.compile(this.templateSource);
       var message = this.model.toJSON()
 
+      this.$el.html(template(message));
+
       if (this.model.get('consecutive')) {
         this.$el.addClass('consecutive')
       };
-
-      this.$el.html(template(message));
 
       if (this.model.get('is_shep')) {
         this.$el.addClass('shep');
@@ -118,8 +118,6 @@ $(document).ready(function () {
     el: '#new-message',
     templateSource: $('#new-message-template').html(),
     events: {
-      // 'blur .chat-name'             : 'updateName',
-      // 'keypress .chat-name'         : 'ignoreKeys',
       'keypress .new-message-input' : 'keyListener'
     },
 
@@ -137,10 +135,6 @@ $(document).ready(function () {
       this.$el.html(this.template(this.model.toJSON()));
       this.$el.find('.new-message-input textarea').focus()
       return this;
-    },
-
-    ignoreKeys: function (event) {
-      app.Helpers.ignoreKeys(event, [13, 32], 10);
     },
 
     emptyInput: function () {
