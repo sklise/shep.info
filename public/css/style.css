@@ -149,7 +149,6 @@ _____________________________________________________________________________*/
   height: 600px;
 }
 
-
 #chat-log {
   overflow-x: hidden;
   overflow-y: auto;
@@ -163,26 +162,43 @@ _____________________________________________________________________________*/
   word-wrap: break-word;
 }
 
-  #chat-log li.system-notice {
-    padding: 0.2em 0; }
-  #chat-log li.consecutive {
-    padding: 0.2em 0; }
-    #chat-log li.consecutive .chatter {
-      opacity: 0; }
-  #chat-log li.action.consecutive {
-    padding: 1em 0 0.3em; }
-    #chat-log li.action.consecutive .chatter {
-      opacity: 1; }
-  #chat-log li.self .chatter {
-    color: #110df5; }
-  #chat-log li.shep {
-    background: rgba(95, 206, 237, 0.3); }
-    #chat-log li.shep .chatter {
-      color: #db8c3d; }
-  #chat-log li.system-notice, #chat-log li.previous-message {
-    background-color: #f6f8ff;
-    color: gray;
-    font-style: italic; }
+#chat-log li.system-notice {
+  padding: 0.2em 0;
+}
+
+#chat-log li.consecutive {
+  padding: 0.2em 0;
+}
+
+#chat-log li.consecutive .nickname {
+  opacity: 0;
+}
+
+#chat-log li.action.consecutive {
+  padding: 1em 0 0.3em;
+}
+
+#chat-log li.action.consecutive .nickname {
+  opacity: 1;
+}
+
+#chat-log li.self .nickname {
+  color: #5ca2d8;
+}
+
+#chat-log li.shep {
+  background: rgba(95, 206, 237, 0.3);
+}
+
+#chat-log li.shep .nickname {
+  color: #db8c3d;
+}
+
+#chat-log li.system-notice, #chat-log li.previous-message {
+  background-color: #f6f8ff;
+  color: gray;
+  font-style: italic;
+}
 
 .timestamp {
   background-color: rgba(0, 0, 0, 0.5);
@@ -203,7 +219,7 @@ li:hover .timestamp {
   opacity: 1;
 }
 
-div.chatter {
+div.nickname {
   font-size: 110%;
   margin: 0 0.9009009%;
   font-weight: bold;
@@ -211,7 +227,7 @@ div.chatter {
   text-align: right;
 }
 
-span.chatter {
+span.nickname {
   display: inline;
   width: auto;
 }
@@ -332,6 +348,7 @@ _____________________________________________________________________________*/
 .new-message-input,
 .chat-name {
   border: 1px solid transparent;
+  color: #5ca2d8;
 }
 
 #user-list {
