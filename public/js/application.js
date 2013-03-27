@@ -17,15 +17,26 @@ $(document).ready(function () {
     checkNickname: function () {
       var view = this;
 
+      var nickname = $('.nickname-input').val();
+
+      if (nickname.length < 3 || nickname.length > 32) {
+        view.$el.find('.nickname-status').html("nickname must be between 3 and 32 characters");
+        view.$el.find('button').prop('disabled',true);
+        return false;
+      }
+
+
       $.ajax({
         url: '/nicknames/check',
         type: 'post',
-        data: {'nickname': $('.nickname-input').val()},
+        data: {'nickname': nickname},
         dataType: 'json'
       }).done(function (data) {
         view.$el.find('.nickname-status').html("nickname is available");
+        view.$el.find('button').prop('disabled',false);
       }).fail(function (data) {
         view.$el.find('.nickname-status').html("nickname is already in use");
+        view.$el.find('button').prop('disabled',true);
       })
     },
 
@@ -70,10 +81,6 @@ $(document).ready(function () {
   var SignInView = Backbone.View.extend({
     el: '#login-panel',
 
-    events: {
-      'click .signin-button' : 'signIn'
-    },
-
     initialize: function () {
       this.render().el;
     },
@@ -87,10 +94,6 @@ $(document).ready(function () {
       this.$el.html(template());
 
       return this;
-    },
-
-    signIn: function () {
-      console.log('sign in');
     }
   });
 
@@ -120,7 +123,7 @@ $(document).ready(function () {
 
   this.app.LoginView = LoginView;
 
-  if (window.location.pathname === '/') {
+  if (window.location.pathname === '/' || window.location.pathname === "/auth/login") {
     var lv = new LoginView();
   } else {
     app.router = new app.ChannelRouter

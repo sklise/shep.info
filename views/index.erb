@@ -25,17 +25,19 @@
     <div class="password-status"></div>
   </p>
 
-  <button class="signup-button" tabindex="4">Sign Up</button>
+  <button class="signup-button" tabindex="4" disabled>Sign Up</button>
 </script>
 
 <script type="text/template" id="sign-in-template">
+<form action="/auth/login" method="post">
   <p>
-    <input class="nickname-input" tabindex="1" type="text" placeholder="nickname"/>
+    <input name="nickname" class="nickname-input" tabindex="1" type="text" placeholder="nickname"/>
   </p>
 
   <p>
-    <input id="password-input" type="password" placeholder="password" tabindex="2"/>
+    <input name="password" id="password-input" type="password" placeholder="password" tabindex="2"/>
   </p>
 
   <button class="signin-button" tabindex="3">Sign In</button>
+</form>
 </script>

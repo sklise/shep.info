@@ -23,17 +23,17 @@ class Shep < Sinatra::Base
 
   Warden::Strategies.add(:password) do
     def valid?
-      params['user'] && params['user']['username'] && params['user']['password']
+      params['nickname'] && params['password']
     end
 
     def authenticate!
-      user = User.first(username: params['user']['username'])
+      user = User.first(nickname: params['nickname'])
 
       if user.nil?
-        fail!("The username you entered does not exist.")
-        flash.error = ""
-      elsif user.authenticate(params['user']['password'])
-        flash.success = "Successfully Logged In"
+        fail!("The nickname you entered does not exist.")
+        # flash.error = ""
+      elsif user.authenticate(params['password'])
+        # flash.success = "Successfully Logged In"
         success!(user)
       else
         fail!("Could not log in")
@@ -90,7 +90,7 @@ class Shep < Sinatra::Base
   post '/auth/unauthenticated' do
     session[:return_to] = env['warden.options'][:attempted_path]
     puts env['warden.options'][:attempted_path]
-    flash.error = env['warden'].message || "You must log in"
+    # flash.error = env['warden'].message || "You must log in"
     redirect '/auth/login'
   end
 
@@ -101,11 +101,12 @@ class Shep < Sinatra::Base
   post '/auth/login' do
     env['warden'].authenticate!
 
-    flash.success = env['warden'].message
+    # flash.success = env['warden'].message
 
     if session[:return_to].nil?
-      redirect '/'
+      redirect '/channels/itp'
     else
+      puts session[:return_to]
       redirect session[:return_to]
     end
   end

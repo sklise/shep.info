@@ -12,6 +12,8 @@ class User
   property :created_at, DateTime
   property :updated_at, DateTime
 
+  has n, :channels, through: Resource
+
   def authenticate(attempted_password)
     if self.password == attempted_password
       true
@@ -29,6 +31,7 @@ class Channel
   property :updated_at, DateTime
   property :name, String, length: 3..20, unique: true
 
+  has n, :users, through: Resource
 end
 
 DataMapper.finalize
