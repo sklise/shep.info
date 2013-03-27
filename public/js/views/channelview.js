@@ -52,7 +52,16 @@ $(document).ready(function () {
         this.$el.addClass('consecutive')
       };
 
-      this.$el.addClass(this.model.get('classes')).html(template(message))
+      this.$el.html(template(message));
+
+      if (this.model.get('is_shep')) {
+        this.$el.addClass('shep');
+      }
+
+      if (this.model.get('is_self')) {
+        this.$el.addClass('self');
+      }
+
       return this;
     }
   });

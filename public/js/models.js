@@ -32,7 +32,20 @@
   // timestamp  -
   //
   var Message = Backbone.Model.extend({
-    defaults: { type: 'Chat' },
+    defaults: {
+      type: 'Chat',
+      is_shep: false,
+      is_self: false },
+
+    initialize: function () {
+      if (this.get('from') === "shep") {
+        this.set('is_shep', true);
+      }
+
+      if (this.get('from') === $('body').data().nickname) {
+        this.set('is_self', true);
+      }
+    }
   });
 
   var User = Backbone.Model.extend({

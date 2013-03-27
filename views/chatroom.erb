@@ -37,14 +37,14 @@
 </script>
 
 <script type="text/template" id="message-template">
-  <div class="chatter col-3">{{ from }}</div>
+  <div class="nickname col-3">{{ from }}</div>
   <div class="message col-9">{{{ content }}}</div>
   <div class="timestamp">{{timeString timestamp}}</div>
 </script>
 
 <script type="text/template" id="action-message-template">
   <div class="message-time">{{ time }}</div>
-  <div class="action-message"><span class="chatter"><span style="font-style:normal;">★</span> {{ name }}</span> {{{ message }}}</div>
+  <div class="action-message"><span class="nickname"><span style="font-style:normal;">★</span> {{ name }}</span> {{{ message }}}</div>
 </script>
 
 <script type="text/template" id="feedback-template">
