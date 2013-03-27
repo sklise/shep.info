@@ -13,14 +13,19 @@
     },
 
     sendMessage: function (message) {
-      var channelName = this.get('name')
-      var nickname = this.get('nickname')
+      var channelName = this.get('name');
+      var nickname = this.get('nickname');
+
+      var model = this;
+
       socket.emit('message', {
         from: nickname,
         content: message,
         channel: channelName
       });
-    }
+    },
+
+
   });
 
 

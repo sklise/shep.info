@@ -312,7 +312,6 @@ _____________________________________________________________________________*/
 
 #new-message {
   background-color: #fafcff;
-  border-top: 2px solid #dbd7d4;
   padding: 0;
 }
 
@@ -320,35 +319,14 @@ _____________________________________________________________________________*/
   width: 100%;
   -webkit-appearance: none;
   -moz-appearance: none;
-  -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
-  -moz-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
   background-color: #efefef;
 
   margin-top: 0.25em;
   margin-bottom: 0.25em;
 
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  border: 1px solid #0069ee;
   font-size: 16px;
   line-height: 20px;
-}
-
-.new-message-input:focus {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  background-color: #ffffff;
-  border: 1px solid blue;
-  cursor: blink;
-  outline: none;
-}
-
-.new-message-input,
-.chat-name {
-  border: 1px solid transparent;
-  color: #5ca2d8;
 }
 
 #user-list {
@@ -362,4 +340,8 @@ _____________________________________________________________________________*/
   background-repeat: no-repeat;
   overflow: hidden;
   resize: none;
+}
+
+.comic {
+  font-family: "Comic Sans", "Marker Felt";
 }
