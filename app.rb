@@ -62,7 +62,7 @@ class Shep < Sinatra::Base
     content_type :json
     @user = User.first nickname: params[:nickname]
 
-    if @user.nil?
+    if @user.nil? || @user.password.nil?
       {nickname: params[:nickname], available: true}.to_json
     else
       halt 500
@@ -73,7 +73,12 @@ class Shep < Sinatra::Base
   post '/users' do
     content_type :json
 
-    @user = User.new(JSON.parse(request.body.read))
+    user_data = JSON.parse(request.body.read)
+    user_data.delete('password') if user_data['password'] == ""
+
+    @user = User.first_or_create(nickname: user_data['nickname'])
+
+    @user.password = user_data['password'] if user_data['password']
 
     if @user.save
       env['warden'].set_user @user
