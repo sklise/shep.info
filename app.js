@@ -93,7 +93,7 @@ io.sockets.on('connection', function(socket) {
       }
 
       // Forward the message to Shep
-      request.post('http://localhost:8080/receive/'+msg.channel).form({
+      request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel).form({
         from: msg.from,
         message: msg.content
       });
