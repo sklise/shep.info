@@ -1,2 +1,2 @@
 sockets: node app.js
-server: shotgun config.ru
+server: bundle exec config.ru -p $PORT

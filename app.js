@@ -17,7 +17,7 @@ var request = require('request');
 var S = require('string');
 var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
-var port = process.env.PORT || 3000;
+var port = process.env.SOCKET_PORT || 3000;
 var sessionStore = new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass: redisUrl.password});
 var cookieParser = express.cookieParser('secert');
 
