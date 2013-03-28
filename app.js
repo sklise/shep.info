@@ -6,14 +6,20 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+var http = require('http'),
+  url = require('url');
 var debug = require('debug')('http');
 var express = require('express');
+var app = express();
 var redis = require('redis');
 var RedisStore = require('connect-redis')(express);
 var request = require('request');
 var S = require('string');
-var url = require('url');
 var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
+
+var port = process.env.PORT || 3000;
+var sessionStore = new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass: redisUrl.password});
+var cookieParser = express.cookieParser('secert');
 
 redisUrl.password = (function () {
   if (redisUrl.auth) {
@@ -28,38 +34,17 @@ console.log('\033[34mbooting shep.info\033[0m')
 ///////////////////////////////////////////////////////////////////////////////
 //   CREATE AND CONFIGURE APP                                                //
 ///////////////////////////////////////////////////////////////////////////////
-var app = express()
-
 app.configure(function () {
-  app.use(express.bodyParser())
-  app.use(express.logger())
-  app.use(express.directory('public'))
-  app.use(express.static('public'))
-  app.use(express.cookieParser())
-  app.use(express.session({
-    secret: "lkashjgfekfleljfkjwjekfwekf",
-    store: new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass: redisUrl.password})
-  }));
-});
-
-app.post('/responses/:channel', function (req, res) {
-  console.log(req.params['channel'], req.params, req.body);
-  var jBody = req.body;
-  var m = {
-    'channel': req.params.channel,
-    'content': req.body.message,
-    'from': 'shep',
-    'timestamp': Date.now()
-  }
-  io.sockets.emit('message', m);
-  res.end('hi')
+  app.use(express.bodyParser());
+  app.use(express.logger());
+  app.use(express.directory('public'));
+  app.use(express.static('public'));
+  app.use(cookieParser);
+  app.use(express.session({ store: sessionStore, secret: 'keyboard' }));
 });
 
 // Create server
-var port = process.env.PORT || 3000;
-var server = app.listen(port, function (d,e) {
-  console.log('\033[34mlistening on port %s\033[0m', port);
-})
+var server = http.createServer(app).listen(port);
 
 var client = redis.createClient(redisUrl.port, redisUrl.hostname);
 client.auth(redisUrl.password, function (err, reply) {
@@ -77,14 +62,7 @@ var updateUserList = function (io) {
   });
 }
 
-var io = require('socket.io').listen(server)
-
-if (process.env.NODE_ENV === "production") {
-  io.configure(function () {
-    io.set("transports", ["xhr-polling"]);
-    io.set('log level', 1);
-  });
-}
+var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function(socket) {
   socket.emit('connectionSuccessful', {hey: "buddy"});
@@ -114,8 +92,6 @@ io.sockets.on('connection', function(socket) {
         timestamp: Date.now()
       }
 
-      console.log("HERE")
-
       // Forward the message to Shep
       request.post('http://localhost:8080/receive/'+msg.channel).form({
         from: msg.from,
@@ -135,9 +111,17 @@ io.sockets.on('connection', function(socket) {
       });
     });
   });
+});
 
-  // Send a message to everyone in the main namespace
-  // io.sockets.emit('message', {
-    // to: 'sockets'
-  // });
+app.post('/responses/:channel', function (req, res) {
+  console.log(req.params['channel'], req.params, req.body);
+  var jBody = req.body;
+  var m = {
+    'channel': req.params.channel,
+    'content': req.body.message,
+    'from': 'shep',
+    'timestamp': Date.now()
+  }
+  io.sockets.emit('message', m);
+  res.end('hi')
 });

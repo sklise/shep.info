@@ -17,7 +17,9 @@ $(document).ready(function () {
       }
       var socketHost = $('body').data().socketHost;
 
-      window.socket = io.connect(socketHost);
+      window.socket = io.connect(socketHost, {
+        "sync disconnect on unload": true
+      });
 
       socket.on('connectionSuccessful', function () {
         socket.emit('setNickname', view.nickname);
