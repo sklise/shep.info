@@ -1,2 +1,2 @@
 sockets: node app.js
-server: bundle exec config.ru -p $PORT
+server: bundle exec rackup config.ru -p $PORT
