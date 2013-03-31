@@ -1,11 +1,3 @@
-if (process.env.NODE_ENV !== 'production') {
-  var env = require('./.env');
-
-  Object.keys(env).forEach(function (k) {
-    process.env[k] = env[k];
-  });
-}
-
 var http = require('http'),
   url = require('url');
 var debug = require('debug')('http');
