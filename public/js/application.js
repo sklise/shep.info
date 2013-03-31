@@ -47,6 +47,8 @@ $(document).ready(function () {
       this.$el.empty();
 
       this.$el.html(template());
+      $('.signin-link').removeClass('current-login-choice');
+      $('.signup-link').addClass('current-login-choice');
 
       return this;
     },
@@ -92,6 +94,8 @@ $(document).ready(function () {
       this.$el.empty();
 
       this.$el.html(template());
+      $('.signin-link').addClass('current-login-choice');
+      $('.signup-link').removeClass('current-login-choice');
 
       return this;
     }
@@ -110,7 +114,6 @@ $(document).ready(function () {
     },
 
     signIn: function () {
-      console.log("hi!")
       this.subview = new SignInView();
       return false;
     },

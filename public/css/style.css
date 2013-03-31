@@ -4,12 +4,14 @@ _____________________________________________________________________________*/
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   -ms-box-sizing: border-box;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+}
 
 html {
   font-size: 100%;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 body, div, p, h1, h2, h3, h4, h5, h6, pre, img, ol, ul, li, form, fieldset,
 label, table, article, aside, details, figcaption, figure, footer,
@@ -29,51 +31,113 @@ ul {
 _____________________________________________________________________________*/
 /* Calendar colors */
 .pictos {
-  font-family: "Pictos"; }
+  font-family: "Pictos";
+}
 
 body {
-  font-family: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
+  color: #000;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 100%;
-  line-height: 1em;
-  background-color: white;
+  line-height: 1.5em;
+  background-color: #fff;
   margin: 0 auto;
-  padding: 0; }
+  padding: 0;
+}
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "source sans pro", "Helvetica Neue", "Helvetica", sans-serif; }
+  font-family: "Source Sans Pro", sans-serif;
+}
 
 h1 {
   font-size: 69px;
   font-weight: 600;
-  line-height: 83px; }
+  line-height: 83px;
+}
 
 h2 {
   font-size: 32px;
   font-weight: 600;
   line-height: 42px;
-  margin: 0.5em 0; }
+  margin: 0.5em 0;
+}
 
 h3 {
   font-size: 26px;
-  line-height: 32px; }
+  line-height: 32px;
+}
 
 h4 {
   font-size: 20px;
   font-weight: 600;
   line-height: 26px;
-  margin: 0.5em 0; }
+  margin: 0.5em 0;
+}
 
 a {
-  color: #006ed6; }
+  color: #006ed6;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: #5ca2d8;
+  text-decoration: underline;
+}
+
+input, textarea, button {
+  border: 1px solid #ccc;
+}
+
+input:focus,
+textarea:focus,
+button:focus {
+  border: 1px solid #0069ee;
+  outline: 1px solid #ddd;
+}
+
+input[type='text'],
+input[type='password'],
+textarea {
+  display: block;
+  font: inherit;
+  margin: 0.35em 0;
+  min-width: 20em;
+  padding: 0.5em 0.75em;
+}
+
+input[type='submit'],
+button {
+  background-color: #f0f0f0;
+  color: #666;
+  font: inherit;
+  margin: 0;
+  padding: 0.25em 0.75em;
+  line-height: 1.5em;
+}
+
+input[type='submit']:hover,
+button:hover {
+  background-color: #d7eaff;
+  cursor: pointer;
+}
+
+input[type='submit'][disabled],
+button[disabled],
+input[type='submit'][disabled]:hover,
+button[disabled]:hover {
+  color: #ccc;
+  background: inherit;
+  cursor: default;
+}
 
 #wrapper {
   width: 100%;
   margin: 0 auto;
   font-size: 16px;
   line-height: 20px;
-  font-family: "myriad-pro", "Helvetica Neue", "Helvetica", sans-serif;
   clear: both;
-  overflow: auto; }
+  overflow: auto;
+}
 
 #menu-window {
   margin-top: 0.75em;
@@ -94,22 +158,27 @@ a {
 }
 
 .introduction {
-  margin: 1em 0; }
-  .introduction p {
-    font-size: 13px;
-    line-height: 18px;
-    margin: 0.5em 0 0.6em; }
+  margin: 1em 0;
+}
+
+.introduction p {
+  font-size: 13px;
+  line-height: 18px;
+  margin: 0.5em 0 0.6em;
+}
 
 /* CALENDAR WIDGET
 _____________________________________________________________________________*/
 #calendar h3 {
-  border-bottom: 2px solid #fbe648; }
+  border-bottom: 2px solid #fbe648;
+}
 
 #calendar ul {
   display: block;
   height: 240px;
   position: relative;
-  overflow-y: scroll; }
+  overflow-y: scroll;
+}
 
 #calendar li {
   background-color: #eee;
@@ -117,18 +186,22 @@ _____________________________________________________________________________*/
   border-top: 1px solid #fff;
   font-size: 0.8rem;
   line-height: 1.2em;
-  padding: 0.6em 0.5em; }
+  padding: 0.6em 0.5em;
+}
 
 #calendar li:first-child {
-  border-top: none; }
+  border-top: none;
+}
 
 #calendar a {
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 #calendar .when {
   color: #555;
   display: block;
-  font-size: 0.75rem; }
+  font-size: 0.75rem;
+}
 
 /* END CALENDAR WIDGET
 _____________________________________________________________________________*/
@@ -136,13 +209,16 @@ _____________________________________________________________________________*/
   color: #dbd7d4;
   font-size: 0.7rem;
   line-height: 0.7rem;
-  padding: 1em 0; }
+  padding: 1em 0;
+}
 
 #footer a {
-  color: #dbd7d4; }
+  color: #dbd7d4;
+}
 
 .icon {
-  display: inline; }
+  display: inline;
+}
 
 
 #chat-window {
@@ -152,7 +228,8 @@ _____________________________________________________________________________*/
 #chat-log {
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 1.4em 0 1em; }
+  padding: 1.4em 0 1em;
+}
 
 #chat-log li {
   width: auto;
@@ -234,56 +311,59 @@ span.nickname {
 
 .system-message,
 .action-message {
-  margin-left: 193px; }
+  margin-left: 193px;
+}
 
 .action {
   font-style: italic;
 }
 
 /* from http://www.alistapart.com/articles/expanding-text-areas-made-elegant/ */
-.new-message-input {
-  position: relative;
-  border: 1px solid #888;
-  background: #fff; }
-  .new-message-input textarea,
-  .new-message-input pre {
-    margin: 0;
-    outline: 0;
-    border: 0;
-    padding: 0.5em;
-    background: transparent;
-    font: 400 13px/16px "source code pro", monospace;
-    /* Make the text soft-wrap */
-    white-space: pre-wrap;
-    word-wrap: break-word; }
-  .new-message-input textarea {
-    width: 100%;
-    /* This height is used when JS is disabled */
-    height: 100px; }
-  .new-message-input.active > textarea {
-    /* Hide any scrollbars */
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    /* Remove WebKit user-resize widget */
-    resize: none; }
-  .new-message-input > pre {
-    display: none; }
-  .new-message-input.active > pre {
-    display: block;
-    /* Hide the text; just using it for sizing */
-    visibility: hidden; }
+
+.new-message-input textarea,
+.new-message-input pre {
+  margin: 0;
+  outline: 0;
+  border: 0;
+  padding: 0.5em;
+  background: transparent;
+  font: 400 13px/16px "source code pro", monospace;
+  /* Make the text soft-wrap */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.new-message-input textarea {
+  width: 100%;
+  /* This height is used when JS is disabled */
+  height: 100px;
+}
+.new-message-input.active > textarea {
+  /* Hide any scrollbars */
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* Remove WebKit user-resize widget */
+  resize: none;
+}
+.new-message-input > pre {
+  display: none;
+}
+.new-message-input.active > pre {
+  display: block;
+  /* Hide the text; just using it for sizing */
+  visibility: hidden;
+}
 
 /* CHAT WINDOW
 _____________________________________________________________________________*/
 #chat-window {
-  font-family: "source code pro", "Menlo", "Monaco", monospace;
-  font-size: 75%;
-  color: #000;
-  line-height: 1.6em;
-  vertical-align: baseline;
+  /*font-family: "Source Code Pro", "Menlo", "Monaco", monospace;*/
+  /*font-size: 75%;*/
+  /*color: #000;*/
+  /*line-height: 1.6em;*/
+  /*vertical-align: baseline;*/
 }
 
 #channel-viewport {
@@ -344,4 +424,29 @@ _____________________________________________________________________________*/
 
 .comic {
   font-family: "Comic Sans", "Marker Felt";
+}
+
+#login-wrapper {
+  /*background-color: rgba(255, 206, 95, 0.8);*/
+  padding: 1em 0;
+}
+
+#login-choices {
+  font-size: 1.5em;
+  line-height: 1.5em;
+}
+
+#login-choices a {
+  color: #777;
+  padding-right: 0.5em;
+}
+
+#login-choices a.current-login-choice {
+  color: #000;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.nickname-status {
+  display: block;
 }

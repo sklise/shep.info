@@ -1,20 +1,24 @@
 <div id="chat-window" class="col-9">
   <div id="chat-menu" class="col-12"></div>
   <div id="channel-viewport">
-    <h1>Welcome to Shep.info</h1>
-<p>
-    <a href="#" class="signup-link">Sign Up</a>
-    <a href="#" class="signin-link">Log In</a>
-</p>
-    <div id="login-panel"></div>
+    <h1>Shep.info</h1>
 
-    <p>Lemme know if you&rsquo;ve got questions</p>
+    <div id="login-wrapper">
+      <div id="login-choices">
+        <a href="#" class="signup-link">Sign Up</a>
+        <a href="#" class="signin-link">Log In</a>
+      </div>
+
+      <div id="login-panel"></div>
+
+      <p>Lemme know if you&rsquo;ve got questions</p>
+    </div>
   </div>
 </div>
 
 <script type="text/template" id="sign-up-template">
   <p>
-    <input class="nickname-input" tabindex="1" type="text" placeholder="nickname"/>
+    <input class="nickname-input" tabindex="1" type="text" placeholder="Choose a nickname"/>
     <span class="nickname-status"></span>
     No spaces, names must be between 3 and 32 characters.
   </p>
