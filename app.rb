@@ -48,7 +48,7 @@ class Shep < Sinatra::Base
 
   get '/' do
     redirect "/channels/itp" if env['warden'].authenticated?
-    erb :index
+    erb :index, layout: false
   end
 
   # This is the view for all channels.
@@ -100,7 +100,7 @@ class Shep < Sinatra::Base
   end
 
   get '/auth/login' do
-    erb :index
+    erb :index, layout: false
   end
 
   post '/auth/login' do
