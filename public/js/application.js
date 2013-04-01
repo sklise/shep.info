@@ -6,21 +6,27 @@ $(document).ready(function () {
 
     events: {
       'click .signup-button' : 'signUp',
-      'blur .nickname-input' : 'checkNickname'
+      'blur .signup-nickname-input' : 'checkNickname'
     },
 
     initialize: function () {
-      console.log("sign up!")
       this.render().el;
     },
 
     checkNickname: function () {
       var view = this;
 
-      var nickname = $('.nickname-input').val();
+      var nickname = $('.signup-nickname-input').val();
 
-      if (nickname.length < 3 || nickname.length > 32) {
-        view.$el.find('.nickname-status').html("nickname must be between 3 and 32 characters");
+      if (nickname.length === 0) {
+        return false;
+      } else if (nickname.length < 3 || nickname.length > 32) {
+        view.$el.find('.nickname-status').html("<span class='error'>nickname must be between 3 and 32 characters</span>");
+        view.$el.find('button').prop('disabled',true);
+        console.log("oyea")
+        return false;
+      } else if (S(nickname).contains(' ')) {
+        view.$el.find('.nickname-status').html("<span class='error'>No spaces please.</span>");
         view.$el.find('button').prop('disabled',true);
         return false;
       }
@@ -32,10 +38,10 @@ $(document).ready(function () {
         data: {'nickname': nickname},
         dataType: 'json'
       }).done(function (data) {
-        view.$el.find('.nickname-status').html("nickname is available");
+        view.$el.find('.nickname-status').html("<span class='success'>nickname is available</span>");
         view.$el.find('button').prop('disabled',false);
       }).fail(function (data) {
-        view.$el.find('.nickname-status').html("nickname is already in use");
+        view.$el.find('.nickname-status').html("<span class='error'>nickname is already in use</span>");
         view.$el.find('button').prop('disabled',true);
       })
     },
@@ -105,7 +111,7 @@ $(document).ready(function () {
     el: '#channel-viewport',
 
     initialize: function () {
-      this.signIn();
+      this.signUp();
     },
 
     events: {

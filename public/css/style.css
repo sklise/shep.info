@@ -126,7 +126,7 @@ button[disabled],
 input[type='submit'][disabled]:hover,
 button[disabled]:hover {
   color: #ccc;
-  background: inherit;
+  background: #e0e0e0;
   cursor: default;
 }
 
@@ -327,7 +327,7 @@ span.nickname {
   border: 0;
   padding: 0.5em;
   background: transparent;
-  font: 400 13px/16px "source code pro", monospace;
+  font: 400 13px/16px ;
   /* Make the text soft-wrap */
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -359,11 +359,8 @@ span.nickname {
 /* CHAT WINDOW
 _____________________________________________________________________________*/
 #chat-window {
-  /*font-family: "Source Code Pro", "Menlo", "Monaco", monospace;*/
-  /*font-size: 75%;*/
-  /*color: #000;*/
-  /*line-height: 1.6em;*/
-  /*vertical-align: baseline;*/
+  font-size: 0.875em;
+  line-height: 1.142857143em;
 }
 
 #channel-viewport {
@@ -431,8 +428,13 @@ _____________________________________________________________________________*/
   padding: 1em 0;
 }
 
+#login-wrapper p {
+  font-size: .875em;
+  color: #888;
+}
+
 #login-choices {
-  font-size: 1.5em;
+  font-size: 1.25em;
   line-height: 1.5em;
 }
 
@@ -449,4 +451,13 @@ _____________________________________________________________________________*/
 
 .nickname-status {
   display: block;
+}
+
+
+.success {
+  color: rgb(122,196,0);
+}
+
+.error {
+  color: red;
 }
