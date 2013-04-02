@@ -9,6 +9,9 @@ var request = require('request');
 var S = require('string');
 var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
 
+var emoji = require('emoji-images');
+
+
 var port = process.env.SOCKET_PORT || 3000;
 var sessionStore = new RedisStore({port: redisUrl.port, host: redisUrl.hostname, pass: redisUrl.password});
 var cookieParser = express.cookieParser('secert');
@@ -77,8 +80,10 @@ io.sockets.on('connection', function(socket) {
         return 'err';
       }
 
+      var emojified = emoji(data.content, "http://shep.info/emojis", 32);
+
       var msg = {
-        content: data.content,
+        content: emojified,
         channel: data.channel,
         from: nickname,
         timestamp: Date.now()
