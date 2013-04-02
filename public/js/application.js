@@ -67,7 +67,7 @@ $(document).ready(function () {
       if (password === passwordConfirm) {
         var u = new app.User()
         u.set({
-          'nickname': this.$el.find('.nickname-input').val(),
+          'nickname': this.$el.find('.signup-nickname-input').val(),
           'password': this.$el.find('#password-input').val()
         });
         u.save(u.attributes, {
