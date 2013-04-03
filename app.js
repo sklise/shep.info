@@ -80,7 +80,7 @@ io.sockets.on('connection', function(socket) {
         return 'err';
       }
 
-      var emojified = emoji(data.content, "http://shep.info/emojis", 32);
+      var emojified = emoji(data.content, "http://shep.info/emojis", 18);
 
       var msg = {
         content: emojified,
@@ -92,7 +92,7 @@ io.sockets.on('connection', function(socket) {
       // Forward the message to Shep
       request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel).form({
         from: msg.from,
-        message: msg.content
+        message: data.content
       });
 
       io.sockets.emit('message', msg);
