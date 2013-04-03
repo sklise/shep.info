@@ -29,10 +29,6 @@ ul {
 
 /* END RESET
 _____________________________________________________________________________*/
-/* Calendar colors */
-.pictos {
-  font-family: "Pictos";
-}
 
 body {
   color: #000;
@@ -232,31 +228,26 @@ _____________________________________________________________________________*/
 }
 
 #chat-log li {
+  padding: 0.25em 0.25em 0.25em 2.25em;
   width: auto;
-  overflow-y: auto;
   position: relative;
   display: block;
   word-wrap: break-word;
+}
+
+.nickname {
+  margin-left: -2em;
+  padding-right: 0.25em;
+  font-weight: bold;
+  overflow: hidden;
 }
 
 #chat-log li.system-notice {
   padding: 0.2em 0;
 }
 
-#chat-log li.consecutive {
-  padding: 0.2em 0;
-}
-
 #chat-log li.consecutive .nickname {
-  opacity: 0;
-}
-
-#chat-log li.action.consecutive {
-  padding: 1em 0 0.3em;
-}
-
-#chat-log li.action.consecutive .nickname {
-  opacity: 1;
+  display: none;
 }
 
 #chat-log li.self .nickname {
@@ -286,6 +277,7 @@ _____________________________________________________________________________*/
   line-height: 11px;
   opacity: 0;
   padding: 0.2em 0.3em 0.15em;
+  right: 0;
   position: absolute;
   -moz-transition: opacity 200ms ease-in-out;
   -webkit-transition: opacity 200ms ease-in-out;
@@ -294,19 +286,6 @@ _____________________________________________________________________________*/
 
 li:hover .timestamp {
   opacity: 1;
-}
-
-div.nickname {
-  font-size: 110%;
-  margin: 0 0.9009009%;
-  font-weight: bold;
-  overflow: hidden;
-  text-align: right;
-}
-
-span.nickname {
-  display: inline;
-  width: auto;
 }
 
 .system-message,
@@ -374,11 +353,8 @@ _____________________________________________________________________________*/
   padding: 0.2em;
 }
 
-
-
 /* CHANNEL
-
-*/
+_____________________________________________________________________________*/
 
 #chat-log-container {
   background-color: #f5f8ff;
@@ -460,4 +436,8 @@ _____________________________________________________________________________*/
 
 .error {
   color: red;
+}
+
+.emoji {
+  display: inline;
 }
