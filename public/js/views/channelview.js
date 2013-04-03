@@ -76,7 +76,6 @@ $(document).ready(function () {
     initialize: function (options) {
       this.render().el
       this.model.get('messages').bind('add', this.appendLast, this)
-      this.model.get('messages').bind('add', this.scrollToBottom, this)
     },
 
     appendLast: function () {
@@ -84,6 +83,7 @@ $(document).ready(function () {
       var messageView = new MessageView({model: message});
 
       this.$el.append(messageView.render().el);
+      this.scrollToBottom();
       return this;
     },
 
@@ -103,9 +103,9 @@ $(document).ready(function () {
       var scrollPosition = $('#chat-log-container').scrollTop();
       var containerHeight = $('#chat-log-container').height();
       var chatHeight = this.$el.outerHeight();
-      var logOverflow = chatHeight - containerHeight
+      var logOverflow = chatHeight - containerHeight;
 
-      if (scrollPosition - logOverflow + lastMessageHeight >= 0 || force === true) {
+      if (scrollPosition - logOverflow + lastMessageHeight <= 0 || force === true) {
         $('#chat-log-container').scrollTop(chatHeight);
       }
 
