@@ -149,21 +149,10 @@ $(document).ready(function () {
 
         this.emptyInput()
         // send message
-        this.model.sendMessage(this.preprocessMessage(messageContent))
+        this.model.sendMessage(messageContent)
 
         return false;
       }
-    },
-
-    preprocessMessage: function(m) {
-      var escaped = S(m).escapeHTML().s;
-
-      escaped = escaped.replace(/\*([^\*]*)\*/g, "<strong>$1</strong>")
-        .replace(/\b_([^_]*)_\b/gi, "<em>$1</em>")
-        .replace(/~([^~]*)~/gi, "<span class='comic'>$1</span>")
-        .replace(/(\W|^)\-([^\-]*)\-(\W|$)/gi, "$1<del>$2</del>$3");
-
-      return escaped
     },
 
     makeExpandingArea: function (container) {

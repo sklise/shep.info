@@ -57,6 +57,15 @@ var updateUserList = function (io) {
   });
 }
 
+var preprocessMessage = function(m) {
+  return S(m).escapeHTML().s
+    .replace(/(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$1'>$1</a>")
+    .replace(/\*([^\*]*)\*/g, "<strong>$1</strong>")
+    .replace(/\b_([^_]*)_\b/gi, "<em>$1</em>")
+    .replace(/\b~([^~]*)~\b/gi, "<span class='comic'>$1</span>")
+    .replace(/(\W|^)\-([^\-]*)\-(\W|$)/gi, "$1<del>$2</del>$3");
+}
+
 var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function(socket) {
@@ -83,7 +92,7 @@ io.sockets.on('connection', function(socket) {
       var emojified = emoji(data.content, "http://shep.info/emojis", 18);
 
       var msg = {
-        content: emojified,
+        content: preprocessMessage(emojified),
         channel: data.channel,
         from: nickname,
         timestamp: Date.now()
@@ -115,7 +124,7 @@ app.post('/responses/:channel', function (req, res) {
   var jBody = req.body;
   var m = {
     'channel': req.params.channel,
-    'content': req.body.message,
+    'content': preprocessMessage(req.body.message),
     'from': 'shep',
     'timestamp': Date.now()
   }
