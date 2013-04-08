@@ -246,7 +246,12 @@ _____________________________________________________________________________*/
   padding: 0.2em 0;
 }
 
-#chat-log li.consecutive .nickname {
+li.consecutive {
+  padding-top: 0;
+  margin-top: -0.25em;
+}
+
+li.consecutive .nickname {
   display: none;
 }
 

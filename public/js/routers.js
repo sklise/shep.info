@@ -7,11 +7,11 @@ $(document).ready(function () {
     },
 
     initialize: function () {
+      this.user = new app.User($('body').data().user)
       this.view = new app.AppView({
-        collection: new app.Channels(
-          [{name: 'itp'}]
-        )
+        collection: new app.Channels(this.user.get('channels'))
       });
+      this.view.user = this.user
       this.view.render().el;
       app.Helpers.fitHeight();
 
@@ -27,7 +27,7 @@ $(document).ready(function () {
     },
 
     show: function (channel) {
-      // this.view.collection.setChannel(channel);
+      this.view.collection.setChannel(channel);
     }
   });
 

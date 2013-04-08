@@ -52,8 +52,13 @@ class Shep < Sinatra::Base
   end
 
   # This is the view for all channels.
-  get '/channels/:channel_name' do
+  get '/channels/:name' do
     env['warden'].authenticate!
+
+    @channel = Channel.first_or_create name: params[:name]
+    env['warden'].user.channels << @channel unless env['warden'].user.channels.include?(@channel)
+    env['warden'].user.save
+
     erb :chatroom
   end
 
@@ -85,6 +90,55 @@ class Shep < Sinatra::Base
       @user.to_json
     else
       halt 500
+    end
+  end
+
+  get '/users/:id' do
+    content_type :json
+    @user = User.first(id: params[:id])
+
+    if @user.nil?
+      halt 404
+    else
+      @user.to_json(relationships: {channels: {include: [:name]}})
+    end
+  end
+
+  put '/users/:id' do
+    content_type :json
+    @user = User.first(id: params[:id])
+
+    user_data = JSON.parse(request.body.read)
+    @user.update user_data
+
+
+  end
+
+  get '/channels' do
+    content_type :json
+    @channels = Channel.all(private: false)
+
+    @channels.to_json
+  end
+
+  post '/channels' do
+    content_type :json
+    channel_data = JSON.parse(request.body.read)
+
+    @channel = Channel.first_or_create(name: channel_data['channel'])
+
+    @channel.to_json
+  end
+
+  get '/channels/:id' do
+    content_type :json
+
+    @channel = Channel.first(id: params[:id])
+
+    if @channel.nil?
+      halt 404
+    else
+      @channel.to_json
     end
   end
 

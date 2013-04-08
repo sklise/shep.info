@@ -4,7 +4,7 @@ $(document).ready(function () {
     templateSource: $('#menu-template').html(),
 
     initialize: function (options) {
-      this.collection.bind('change:channel', this.render, this)
+      this.collection.bind('change:channel', this.render, this);
     },
 
     change: function (e) {

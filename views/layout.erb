@@ -27,7 +27,11 @@
 
   <link href="http://sklise.s3.amazonaws.com/pictos/pictos.css" rel="stylesheet" type="text/css">
 </head>
-<body data-socket-host="<%= ENV['SOCKET_HOST'] %>" data-nickname="<%= env['warden'].user.nickname if env['warden'].authenticated? %>">
+<body data-socket-host="<%= ENV['SOCKET_HOST'] %>"
+  <% if env['warden'].authenticated? %>
+  data-nickname="<%= env['warden'].user.nickname %>"
+  data-user='<%= env['warden'].user.to_json(relationships: {channels: {include: [:name]}}) %>'
+  <% end %>>
   <div id="wrapper">
     <div id="menu-window" class="col-3">
       <div id="heading">

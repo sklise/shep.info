@@ -5,7 +5,7 @@ class User
   include DataMapper::Resource
 
   property :id, Serial
-  property :nickname, String, length: 3..32, unique: true
+  property :nickname, String, length: 3..24, unique: true
   property :email, String
   property :password, BCryptHash
 
@@ -21,6 +21,13 @@ class User
       false
     end
   end
+
+  before :create, :add_channel
+
+  def add_channel
+    self.channels << Channel.first(name: "itp")
+  end
+
 end
 
 class Channel
@@ -29,7 +36,9 @@ class Channel
   property :id, Serial
   property :created_at, DateTime
   property :updated_at, DateTime
-  property :name, String, length: 3..20, unique: true
+  property :name, String, length: 3..24, unique: true
+  property :password, BCryptHash
+  property :private, Boolean, default: false
 
   has n, :users, through: Resource
 end

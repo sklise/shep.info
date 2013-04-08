@@ -6,14 +6,13 @@ $(document).ready(function () {
 
     initialize: function (options) {
       var view = this;
-
       this.nickname = $('body').data().nickname;
       this.collection.bind('change:channel', this.render, this)
 
       this.subviews = {
         feedback: new app.FeedbackView(),
         channel: new app.ChannelView({collection: this.collection}),
-        // menu: new app.MenuView({collection: this.collection})
+        menu: new app.MenuView({collection: this.collection})
       }
       var socketHost = $('body').data().socketHost;
 
@@ -34,6 +33,7 @@ $(document).ready(function () {
         });
 
         view.subviews.channel.render().el
+        view.subviews.menu.render().el
         app.Helpers.fitHeight();
       });
     },
