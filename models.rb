@@ -25,7 +25,7 @@ class User
   before :create, :add_channel
 
   def add_channel
-    self.channels << Channel.first(name: "itp")
+    self.channels << Channel.first_or_create(name: "itp")
   end
 
 end

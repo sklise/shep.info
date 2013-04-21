@@ -1,15 +1,13 @@
 var http = require('http'),
-  url = require('url');
-var debug = require('debug')('http');
-var express = require('express');
-var app = express();
-var redis = require('redis');
-var RedisStore = require('connect-redis')(express);
-var request = require('request');
-var S = require('string');
-var redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379');
-
-var emoji = require('emoji-images');
+  url = require('url'),
+  express = require('express'),
+  app = express(),
+  redis = require('redis'),
+  RedisStore = require('connect-redis')(express),
+  request = require('request'),
+  S = require('string'),
+  redisUrl = url.parse(process.env.REDISTOGO_URL || 'redis://localhost:6379'),
+  emoji = require('emoji-images');
 
 
 var port = process.env.SOCKET_PORT || 3000;
@@ -29,6 +27,7 @@ console.log('\033[34mbooting shep.info\033[0m')
 ///////////////////////////////////////////////////////////////////////////////
 //   CREATE AND CONFIGURE APP                                                //
 ///////////////////////////////////////////////////////////////////////////////
+
 app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.logger());
@@ -66,52 +65,83 @@ var preprocessMessage = function(m) {
     .replace(/(\W|^)\-([^\-]*)\-(\W|$)/gi, "$1<del>$2</del>$3");
 }
 
+var setupChat = function (io, channelName) {
+  var plainName = S(channelName).replace('/','').s;
+
+  var updateUserList = function (channel, channelName) {
+    client.smembers(plainName, function (err, reply) {
+      if (err) { return }
+      channel.emit('userlist', reply);
+    });
+  }
+
+  var channel = io.of(channelName)
+    .on('connection', function (socket) {
+      console.log("joined " + channelName);
+
+      socket.emit('joinedSuccessful', {time: Date.now()});
+
+      socket.on('setChannelNickname', function (nickname) {
+        socket.emit('nicknameSet', {nickname: nickname});
+        client.sismember(plainName, nickname, function (err, reply) {
+          console.log("REDIS>>>>>>>>>>>>>>>>>>>>>>>>>", err, reply)
+          if (reply !== 1) {
+            client.sadd(S(channelName).replace('/','').s, nickname);
+            updateUserList(channel, channelName);
+          } else {
+            updateUserList(channel, channelName);
+          }
+        });
+
+      });
+
+      socket.on('message', function (data) {
+        var emojified = emoji(data.content, "http://shep.info/emojis", 18);
+
+        var msg = {
+          content: preprocessMessage(emojified),
+          channel: data.channel,
+          nickname: data.nickname,
+          timestamp: Date.now()
+        }
+
+        // Forward the message to Shep
+        request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel).form({
+          from: msg.nickname,
+          message: data.content
+        });
+
+        channel.emit('message', msg);
+      });
+
+      socket.on('disconnect', function (data) {
+        console.log("disconnect");
+        socket.get('nickname', function(err, nickname) {
+          console.log(">>>> DISCONNECT: " + nickname);
+          client.srem(S(channelName).replace('/','').s, nickname, function (err, reply) {
+            updateuserList(channel, channelName);
+          });
+        });
+      });
+
+    });
+
+  return channel;
+}
+
 var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function(socket) {
+
   socket.emit('connectionSuccessful', {hey: "buddy"});
-  socket.on('setNickname', function (nickname) {
-    client.sismember('users', nickname, function (err, reply) {
-      if (reply !== 1) {
-        client.sadd('users', nickname);
-        updateUserList(io);
-      }
-    });
 
-    socket.set('nickname', nickname, function () {
-      socket.emit('nicknameSet', {nickname: nickname});
-    });
-  })
-
-  socket.on('message', function (data) {
-    socket.get('nickname', function (err, nickname) {
-      if(err) {
-        return 'err';
-      }
-
-      var emojified = emoji(data.content, "http://shep.info/emojis", 18);
-
-      var msg = {
-        content: preprocessMessage(emojified),
-        channel: data.channel,
-        from: nickname,
-        timestamp: Date.now()
-      }
-
-      // Forward the message to Shep
-      request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel).form({
-        from: msg.from,
-        message: data.content
-      });
-
-      io.sockets.emit('message', msg);
-    });
-
+  socket.on('join-channel', function (channel) {
+    setupChat(io, channel);
+    socket.emit('joined', {channelName: channel})
   });
 
   socket.on('disconnect', function (data) {
     socket.get('nickname', function(err, nickname) {
-      debug(">>>> DISCONNECT: " + nickname)
       client.srem('users', nickname, function (err, reply) {
         updateUserList(io);
       });
@@ -120,12 +150,12 @@ io.sockets.on('connection', function(socket) {
 });
 
 app.post('/responses/:channel', function (req, res) {
-  console.log(req.params['channel'], req.params, req.body);
+  console.log("FROM SHEP>>>>", req.params['channel'], req.params, req.body);
   var jBody = req.body;
   var m = {
     'channel': req.params.channel,
     'content': preprocessMessage(req.body.message),
-    'from': 'shep',
+    'nickname': 'shep',
     'timestamp': Date.now()
   }
   io.sockets.emit('message', m);

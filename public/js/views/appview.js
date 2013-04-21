@@ -21,17 +21,21 @@ $(document).ready(function () {
       });
 
       socket.on('connectionSuccessful', function () {
-        socket.emit('setNickname', view.nickname);
-      });
-
-      socket.on('nicknameSet', function () {
-        view.openSocket(view.nickname);
-        view.bindToWindowResize();
-
         view.collection.forEach(function (channel) {
           channel.set('nickname', view.nickname);
+
+          console.log('join-channel', channel.get('name'));
+          socket.emit('join-channel', '/' + channel.get('name'));
+
+          channel.initializeSocket(io, socketHost, function (xo) {
+            console.log(xo);
+            xo.on('userlist', function (data) {
+              view.updateUserlist(data);
+            });
+          });
         });
 
+        view.bindToWindowResize();
         view.subviews.channel.render().el
         view.subviews.menu.render().el
         app.Helpers.fitHeight();
@@ -52,37 +56,6 @@ $(document).ready(function () {
       $(window).bind('resize', function () {
         app.Helpers.fitHeight();
       });
-    },
-
-    // openSocket
-    // Binds client to socket.io connection
-    //
-    // nickname - a nickname is required to chat
-    openSocket: function (nickname) {
-      var channels = this.collection;
-      var view = this;
-
-      socket.on('message', function (data) {
-        // Get the channel the message is intended for.
-        var thisChannel = _.find(channels.models, function (channel) {
-          return channel.get('name') === data.channel
-        });
-
-        // add the message to the appropriate channel
-        thisChannel.get('messages').add(data)
-      });
-
-      socket.on('disconnect', function (data) {
-        console.log('disconnect', data);
-      });
-
-      socket.on('userlist', function (data) {
-        view.updateUserlist(data);
-      });
-
-      window.onbeforeunload = function () {
-        window.socket.disconnect();
-      }
     },
 
     updateUserlist: function (userlist) {
