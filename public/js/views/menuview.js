@@ -56,7 +56,8 @@ $(document).ready(function () {
     },
 
     changeChannel: function (event) {
-      this.model.collection.setChannel(this.model.get('name'))
+      this.model.collection.setChannel(this.model.get('name'));
+      window.socket.emit('changeChannel', this.model.get('name'));
     }
   });
 

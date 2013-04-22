@@ -127,3 +127,11 @@
   this.app.Helpers = Helpers;
   this.app.Helpers.fitHeight();
 }).call(this);
+
+var pad = function (number) {
+  return (number < 10) ? '0' + number : number
+}
+
+var hours = function (hour) {
+  return (hour <= 12) ? hour : hour - 12
+}

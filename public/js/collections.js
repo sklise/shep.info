@@ -18,8 +18,9 @@
         } else {
           channel.set('isCurrent', false)
         }
-      })
-      this.trigger('change:channel')
+      });
+
+      this.trigger('change:channel');
     },
 
     getChannel: function () {

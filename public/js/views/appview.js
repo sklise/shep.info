@@ -6,8 +6,8 @@ $(document).ready(function () {
 
     initialize: function (options) {
       var view = this;
-      this.nickname = $('body').data().nickname;
-      this.collection.bind('change:channel', this.render, this)
+      view.nickname = $('body').data().nickname;
+      view.collection.bind('change:channel', this.render, this);
 
       this.subviews = {
         feedback: new app.FeedbackView(),
@@ -20,37 +20,30 @@ $(document).ready(function () {
         "sync disconnect on unload": true
       });
 
-      window.onbeforeunload = function () {
-        _.forEach(io.sockets['http://localhost:3001'].namespaces, function (x,v) {
-          var s = io.sockets['http://localhost:3001'].namespaces[v];
-          s.disconnect();
-        });
-      }
-
-      socket.on('connectionSuccessful', function () {
-        view.collection.forEach(function (channel) {
-          channel.set('nickname', view.nickname);
-
-          console.log('join-channel', channel.get('name'));
-          socket.emit('join-channel', '/' + channel.get('name'));
-
-          channel.initializeSocket(io, socketHost, function (xo) {
-            console.log(xo);
-            xo.on('userlist', function (data) {
-              view.updateUserlist(data);
-            });
-          });
+      socket.on('connect', function () {
+        socket.emit('join', {
+          nickname: view.nickname,
+          rooms: _.map(view.collection.models, function (channel) {
+            return channel.get('name');
+          }),
+          currentRoom: 'itp'
         });
 
+        view.collection.nickname = view.nickname;
         view.bindToWindowResize();
         view.subviews.channel.render().el
         view.subviews.menu.render().el
         app.Helpers.fitHeight();
       });
-    },
 
-    events: {
+      socket.on('message', function (d) {
+        console.log('received message: ', d);
+        var room = view.collection.find(function (channel) {
+          return channel.get('name') === d.channel;
+        });
 
+        room.get('messages').add(d);
+      });
     },
 
     render: function () {

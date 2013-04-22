@@ -9,43 +9,12 @@
 
     sendMessage: function (message) {
       var channelName = this.get('name');
-      var nickname = this.get('nickname');
+      var nickname = this.collection.nickname;
 
-      var model = this;
-
-      console.log('sendMessage', this.channelSocket);
-
-      this.channelSocket.emit('message', {
+      window.socket.emit('newmessage', {
         nickname: nickname,
         content: message,
         channel: channelName
-      });
-    },
-
-    initializeSocket: function (io, socketHost, callback) {
-      var channelName = this.get('name');
-      var nickname = this.get('nickname');
-      var messages = this.get('messages');
-      // Connect to namespace
-
-      this.channelSocket = io.connect(socketHost + "/" + channelName, {
-        "sync disconnect on unload": true
-      });
-
-      var channelSocket = this.channelSocket;
-
-      channelSocket.on('connect', function () {
-        console.log('connected to ' + channelName);
-        channelSocket.emit('setChannelNickname', nickname);
-      });
-
-      channelSocket.on('nicknameSet', function () {
-        callback(channelSocket);
-      });
-
-      channelSocket.on('message', function (data){
-        console.log(data);
-        messages.add(data);
       });
     }
   });
