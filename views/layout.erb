@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/chat-menu.css">
   <link rel="stylesheet" href="/css/grid.css">
+  <link rel="stylesheet" href="/css/glyphicons.css" type="text/css">
 
   <script type="text/javascript" src="<%= ENV['SOCKET_HOST'] %>/socket.io/socket.io.js"></script>
 
@@ -27,12 +28,14 @@
   <script type="text/javascript" src="/js/views/channelview.js"></script>
   <script type="text/javascript" src="/js/views/menuview.js"></script>
   <script type="text/javascript" src="/js/views/feedbackview.js"></script>
+  <script type="text/javascript" src="/js/views/signin.js"></script>
+  <script type="text/javascript" src="/js/views/signup.js"></script>
+  <script type="text/javascript" src="/js/views/login.js"></script>
 
   <script type="text/javascript" src="/js/routers.js"></script>
   <script type="text/javascript" src="/js/calendar.js"></script>
   <script type="text/javascript" src="/js/application.js"></script>
 
-  <link href="http://sklise.s3.amazonaws.com/pictos/pictos.css" rel="stylesheet" type="text/css">
 </head>
 <body data-socket-host="<%= ENV['SOCKET_HOST'] %>"
   <% if env['warden'].authenticated? %>

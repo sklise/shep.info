@@ -33,8 +33,8 @@
 
       var channelSocket = this.channelSocket;
 
-      channelSocket.on('joinedSuccessful', function () {
-        console.log('joined ' + channelName);
+      channelSocket.on('connect', function () {
+        console.log('connected to ' + channelName);
         channelSocket.emit('setChannelNickname', nickname);
 
         channelSocket.on('nicknameSet', function () {

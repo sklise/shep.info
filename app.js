@@ -79,23 +79,32 @@ var setupChat = function (io, channelName) {
     .on('connection', function (socket) {
       console.log("joined " + channelName);
 
-      socket.emit('joinedSuccessful', {time: Date.now()});
-
       socket.on('setChannelNickname', function (nickname) {
-        socket.emit('nicknameSet', {nickname: nickname});
-        client.sismember(plainName, nickname, function (err, reply) {
-          console.log("REDIS>>>>>>>>>>>>>>>>>>>>>>>>>", err, reply)
-          if (reply !== 1) {
-            client.sadd(S(channelName).replace('/','').s, nickname);
-            updateUserList(channel, channelName);
-          } else {
-            updateUserList(channel, channelName);
-          }
+        socket.set('nickname', nickname, function () {
+          socket.emit('nicknameSet', {nickname: nickname});
+          client.sismember(plainName, nickname, function (err, reply) {
+            if (reply !== 1) {
+              client.sadd(S(channelName).replace('/','').s, nickname);
+              updateUserList(channel, channelName);
+            } else {
+              updateUserList(channel, channelName);
+            }
+          });
         });
+      });
 
+      socket.on('disconnect', function (data) {
+        console.log("disconnect");
+        socket.get('nickname', function(err, nickname) {
+          console.log(">>>> DISCONNECT: " + nickname);
+          client.srem(S(channelName).replace('/','').s, nickname, function (err, reply) {
+            updateUserList(channel, channelName);
+          });
+        });
       });
 
       socket.on('message', function (data) {
+        console.log("GOT A MESSAGE MOTHERFUCKER")
         var emojified = emoji(data.content, "http://shep.info/emojis", 18);
 
         var msg = {
@@ -113,17 +122,6 @@ var setupChat = function (io, channelName) {
 
         channel.emit('message', msg);
       });
-
-      socket.on('disconnect', function (data) {
-        console.log("disconnect");
-        socket.get('nickname', function(err, nickname) {
-          console.log(">>>> DISCONNECT: " + nickname);
-          client.srem(S(channelName).replace('/','').s, nickname, function (err, reply) {
-            updateuserList(channel, channelName);
-          });
-        });
-      });
-
     });
 
   return channel;
@@ -154,10 +152,12 @@ app.post('/responses/:channel', function (req, res) {
   var jBody = req.body;
   var m = {
     'channel': req.params.channel,
-    'content': preprocessMessage(req.body.message),
+    'content': req.body.message.replace(/(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$1'>$1</a>"),
     'nickname': 'shep',
     'timestamp': Date.now()
   }
-  io.sockets.emit('message', m);
-  res.end('hi')
+
+  io.of('/' + req.params.channel).emit('message', m);
+
+  res.end('hi');
 });

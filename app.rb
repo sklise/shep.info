@@ -114,6 +114,9 @@ class Shep < Sinatra::Base
 
   end
 
+  #############################################
+  #                CHANNELS                   #
+  #############################################
   get '/channels' do
     content_type :json
     @channels = Channel.all(private: false)

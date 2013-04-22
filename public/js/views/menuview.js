@@ -3,8 +3,16 @@ $(document).ready(function () {
     el: '#chat-menu',
     templateSource: $('#menu-template').html(),
 
+    events: {
+      'click .add-channel' : 'addChannel'
+    },
+
     initialize: function (options) {
       this.collection.bind('change:channel', this.render, this);
+    },
+
+    addChannel: function () {
+
     },
 
     change: function (e) {
@@ -21,7 +29,7 @@ $(document).ready(function () {
       this.collection.forEach(function (channel) {
         var channelTabView = new ChannelTabView({model: channel});
         this.$el.find('li').last().before(channelTabView.render().el)
-      },this)
+      },this);
 
       return this;
     }
