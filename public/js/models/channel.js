@@ -2,6 +2,7 @@
   var Channel = Backbone.Model.extend({
     // Create users and messages collections
     initialize: function (options) {
+      console.log("new channel");
       this.set('users', options.users || new app.Users);
       this.set('messages', options.messages || new app.Messages);
     },
@@ -36,15 +37,15 @@
       channelSocket.on('connect', function () {
         console.log('connected to ' + channelName);
         channelSocket.emit('setChannelNickname', nickname);
+      });
 
-        channelSocket.on('nicknameSet', function () {
-          callback(channelSocket);
-        });
+      channelSocket.on('nicknameSet', function () {
+        callback(channelSocket);
+      });
 
-        channelSocket.on('message', function (data){
-          console.log(data);
-          messages.add(data);
-        });
+      channelSocket.on('message', function (data){
+        console.log(data);
+        messages.add(data);
       });
     }
   });

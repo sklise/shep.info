@@ -77,14 +77,14 @@ var setupChat = function (io, channelName) {
 
   var channel = io.of(channelName)
     .on('connection', function (socket) {
-      console.log("joined " + channelName);
+      console.log("[" + plainName + "] => joined");
 
       socket.on('setChannelNickname', function (nickname) {
         socket.set('nickname', nickname, function () {
           socket.emit('nicknameSet', {nickname: nickname});
           client.sismember(plainName, nickname, function (err, reply) {
             if (reply !== 1) {
-              client.sadd(S(channelName).replace('/','').s, nickname);
+              client.sadd(plainName, nickname);
               updateUserList(channel, channelName);
             } else {
               updateUserList(channel, channelName);
@@ -94,17 +94,15 @@ var setupChat = function (io, channelName) {
       });
 
       socket.on('disconnect', function (data) {
-        console.log("disconnect");
         socket.get('nickname', function(err, nickname) {
-          console.log(">>>> DISCONNECT: " + nickname);
-          client.srem(S(channelName).replace('/','').s, nickname, function (err, reply) {
+          console.log("[" + plainName + "] (" + nickname + ") => disconnected");
+          client.srem(plainName, nickname, function (err, reply) {
             updateUserList(channel, channelName);
           });
         });
       });
 
       socket.on('message', function (data) {
-        console.log("GOT A MESSAGE MOTHERFUCKER")
         var emojified = emoji(data.content, "http://shep.info/emojis", 18);
 
         var msg = {
@@ -115,10 +113,21 @@ var setupChat = function (io, channelName) {
         }
 
         // Forward the message to Shep
-        request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel).form({
-          from: msg.nickname,
-          message: data.content
-        });
+        request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel, {
+          'form': {
+            from: msg.nickname,
+            message: data.content
+          }}, function (err, res, body) {
+            if (err) {
+              console.log('ERROR TALKING TO SHEP');
+              channel.emit('message', {
+                timestamp: Date.now(),
+                nickname: "SYSTEM",
+                channel: data.channel,
+                content: "There was an error talking to Shep."
+              });
+            }
+          });
 
         channel.emit('message', msg);
       });
@@ -148,7 +157,7 @@ io.sockets.on('connection', function(socket) {
 });
 
 app.post('/responses/:channel', function (req, res) {
-  console.log("FROM SHEP>>>>", req.params['channel'], req.params, req.body);
+  console.log("[[FROM SHEP]] ", req.params['channel'], req.params, req.body);
   var jBody = req.body;
   var m = {
     'channel': req.params.channel,
