@@ -20,6 +20,13 @@ $(document).ready(function () {
         "sync disconnect on unload": true
       });
 
+      window.onbeforeunload = function () {
+        _.forEach(io.sockets['http://localhost:3001'].namespaces, function (x,v) {
+          var s = io.sockets['http://localhost:3001'].namespaces[v];
+          s.disconnect();
+        });
+      }
+
       socket.on('connectionSuccessful', function () {
         view.collection.forEach(function (channel) {
           channel.set('nickname', view.nickname);
