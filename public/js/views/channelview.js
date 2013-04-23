@@ -33,6 +33,7 @@ $(document).ready(function () {
       app.Helpers.fitHeight()
 
       messagesView.scrollToBottom();
+      this.refreshUserList();
 
       return this;
     }

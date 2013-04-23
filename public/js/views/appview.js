@@ -10,7 +10,6 @@ $(document).ready(function () {
       view.collection.bind('change:channel', this.render, this);
 
       this.subviews = {
-        feedback: new app.FeedbackView(),
         channel: new app.ChannelView({collection: this.collection}),
         menu: new app.MenuView({collection: this.collection})
       }
@@ -65,7 +64,7 @@ $(document).ready(function () {
 
     updateUserList: function (userlist) {
       this.collection.users = userlist
-      this.collection.trigger("change:users")
+      this.collection.trigger("change:users");
     }
   });
 

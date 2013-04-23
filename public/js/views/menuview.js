@@ -29,8 +29,9 @@ $(document).ready(function () {
       this.collection.forEach(function (channel) {
         var channelTabView = new ChannelTabView({model: channel});
         this.$el.find('.chat-room-list').append(channelTabView.render().el)
-      },this);
+      }, this);
 
+      this.$el.find('.chat-room-list').append('<li class="add-channel"><span class="channel-menu-button"><div class="channel-icon glyphicons circle_plus"><i></i></div></span></li>');
       return this;
     }
   });

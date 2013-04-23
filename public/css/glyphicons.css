@@ -12,6 +12,7 @@
   font-weight: normal;
   font-style: normal;
 }
+
 .glyphicons {
   display: inline-block;
   position: relative;
@@ -33,22 +34,23 @@
   color: #1d1d1b;
 }
 
-#account-nav .glyphicons {
-  padding-top: .25em;
-  padding-bottom: 1em;
+.channel-icon.glyphicons {
+  display: inline-block;
+  position: relative;
+  padding: 0.5em 0.5em 0.5em 0.5em;
+  text-decoration: none;
 }
 
-#account-nav .glyphicons i:before {
+.channel-icon.glyphicons i:before {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   line-height: 1.5em;
-}
-
-.comment-icon.glyphicons {
-  padding: 1em 1em 0.7em 0em;
-}
-
-.comment-icon.glyphicons i:before {
-  color: #bbbbbb;
-  font-size: 1.2em;
+  font-size: inherit;
+  font-family: 'Glyphicons';
+  font-style: normal;
 }
 
 a.glyphicons:hover i:before {
