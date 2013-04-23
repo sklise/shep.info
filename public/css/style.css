@@ -8,6 +8,7 @@ _____________________________________________________________________________*/
 }
 
 html {
+  background-color: #fff;
   font-size: 100%;
   margin: 0;
   padding: 0;
@@ -35,13 +36,10 @@ body {
   font-family: "Source Sans Pro", sans-serif;
   font-size: 100%;
   line-height: 1.5em;
-  background-color: #fff;
   margin: 0 auto;
-  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Source Sans Pro", sans-serif;
 }
 
 h1 {
@@ -141,54 +139,6 @@ button[disabled]:hover {
   overflow-y: scroll;
 }
 
-.introduction {
-  margin: 1em 0;
-}
-
-.introduction p {
-  font-size: 13px;
-  line-height: 18px;
-  margin: 0.5em 0 0.6em;
-}
-
-/* CALENDAR WIDGET
-_____________________________________________________________________________*/
-#calendar h3 {
-  border-bottom: 2px solid #fbe648;
-}
-
-#calendar ul {
-  display: block;
-  height: 240px;
-  position: relative;
-  overflow-y: scroll;
-}
-
-#calendar li {
-  background-color: #eee;
-  border-bottom: 1px solid #e0e0e0;
-  border-top: 1px solid #fff;
-  font-size: 0.8rem;
-  line-height: 1.2em;
-  padding: 0.6em 0.5em;
-}
-
-#calendar li:first-child {
-  border-top: none;
-}
-
-#calendar a {
-  text-decoration: none;
-}
-
-#calendar .when {
-  color: #555;
-  display: block;
-  font-size: 0.75rem;
-}
-
-/* END CALENDAR WIDGET
-_____________________________________________________________________________*/
 #footer {
   color: #dbd7d4;
   font-size: 0.7rem;
@@ -200,11 +150,6 @@ _____________________________________________________________________________*/
   color: #dbd7d4;
 }
 
-.icon {
-  display: inline;
-}
-
-
 #chat-window {
   height: 600px;
 }
@@ -215,118 +160,10 @@ _____________________________________________________________________________*/
   padding: 1.4em 0 1em;
 }
 
-#chat-log li {
-  padding: 0.25em 0.25em 0.25em 2.25em;
-  width: auto;
-  position: relative;
-  display: block;
-  word-wrap: break-word;
-}
-
-.nickname {
-  margin-left: -2em;
-  padding-right: 0.25em;
-  font-weight: bold;
-  overflow: hidden;
-}
-
-#chat-log li.system-notice {
-  padding: 0.2em 0;
-}
-
-li.consecutive {
-  padding-top: 0;
-  margin-top: -0.25em;
-}
-
-li.consecutive .nickname {
-  display: none;
-}
-
-#chat-log li.self .nickname {
-  color: #5ca2d8;
-}
-
-#chat-log li.shep {
-  background: rgba(95, 206, 237, 0.3);
-}
-
-#chat-log li.shep .nickname {
-  color: #db8c3d;
-}
-
-#chat-log li.system-notice, #chat-log li.previous-message {
-  background-color: #f6f8ff;
-  color: gray;
-  font-style: italic;
-}
-
-.timestamp {
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #f5f8ff;
-  display: block;
-  font-size: 11px;
-  font-style: normal;
-  line-height: 11px;
-  opacity: 0;
-  padding: 0.2em 0.3em 0.15em;
-  right: 0;
-  position: absolute;
-  -moz-transition: opacity 200ms ease-in-out;
-  -webkit-transition: opacity 200ms ease-in-out;
-  transition: opacity 200ms ease-in-out;
-}
-
-li:hover .timestamp {
-  opacity: 1;
-}
-
-.system-message,
-.action-message {
-  margin-left: 193px;
-}
-
 .action {
   font-style: italic;
 }
 
-/* from http://www.alistapart.com/articles/expanding-text-areas-made-elegant/ */
-
-.new-message-input textarea,
-.new-message-input pre {
-  margin: 0;
-  outline: 0;
-  border: 0;
-  padding: 0.5em;
-  background: transparent;
-  font: 400 13px/16px ;
-  /* Make the text soft-wrap */
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-.new-message-input textarea {
-  width: 100%;
-  /* This height is used when JS is disabled */
-  height: 100px;
-}
-.new-message-input.active > textarea {
-  /* Hide any scrollbars */
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  /* Remove WebKit user-resize widget */
-  resize: none;
-}
-.new-message-input > pre {
-  display: none;
-}
-.new-message-input.active > pre {
-  display: block;
-  /* Hide the text; just using it for sizing */
-  visibility: hidden;
-}
 
 /* CHAT WINDOW
 _____________________________________________________________________________*/
@@ -340,12 +177,6 @@ _____________________________________________________________________________*/
   overflow: auto;
 }
 
-.nickname-prompt input,
-.nickname-prompt button {
-  font-size: 30px;
-  padding: 0.2em;
-}
-
 /* CHANNEL
 _____________________________________________________________________________*/
 
@@ -356,44 +187,27 @@ _____________________________________________________________________________*/
   position: relative;
 }
 
-#new-message {
-  background-color: #fafcff;
-  padding: 0;
-}
-
-.new-message-input {
-  width: 100%;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #efefef;
-
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
-
-  border: 1px solid #0069ee;
-  font-size: 16px;
-  line-height: 20px;
-}
-
 #user-list {
   color: #777777;
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.chat-name {
-  background: transparent url("http://shep.info.s3.amazonaws.com/140.png") right center;
-  background-repeat: no-repeat;
-  overflow: hidden;
-  resize: none;
+.success {
+  color: rgb(122,196,0);
 }
 
-.comic {
-  font-family: "Comic Sans", "Comic Sans MS", "Marker Felt";
+.error {
+  color: red;
 }
+
+/******************************************************************************
+
+  SIGN UP / LOG IN
+
+******************************************************************************/
 
 #login-wrapper {
-  /*background-color: rgba(255, 206, 95, 0.8);*/
   padding: 1em 0;
 }
 
@@ -422,15 +236,135 @@ _____________________________________________________________________________*/
   display: block;
 }
 
+/******************************************************************************
 
-.success {
-  color: rgb(122,196,0);
+  NEW MESSAGE
+
+******************************************************************************/
+
+#new-message {
+  background-color: #fafcff;
+  padding: 0;
 }
 
-.error {
-  color: red;
+.new-message-input {
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #efefef;
+
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+
+  border: 1px solid #0069ee;
+  font-size: 16px;
+  line-height: 20px;
 }
 
-.emoji {
+/* from http://www.alistapart.com/articles/expanding-text-areas-made-elegant/ */
+.new-message-input textarea,
+.new-message-input pre {
+  margin: 0;
+  outline: 0;
+  border: 0;
+  padding: 0.5em;
+  background: transparent;
+  font: 400 13px/16px ;
+  /* Make the text soft-wrap */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.new-message-input textarea {
+  width: 100%;
+  /* This height is used when JS is disabled */
+  height: 100px;
+}
+.new-message-input.active > textarea {
+  /* Hide any scrollbars */
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* Remove WebKit user-resize widget */
+  resize: none;
+}
+
+.new-message-input > pre {
+  display: none;
+}
+
+.new-message-input.active > pre {
+  display: block;
+  /* Hide the text; just using it for sizing */
+  visibility: hidden;
+}
+
+/******************************************************************************
+
+  MESSAGES
+
+******************************************************************************/
+.message {
+  padding: 0.25em 0.25em 0.25em 2.25em;
+  width: auto;
+  position: relative;
+  display: block;
+  word-wrap: break-word;
+}
+
+.message-content .comic {
+  font-family: "Comic Sans", "Comic Sans MS", "Marker Felt";
+}
+
+.message-content .emoji {
   display: inline;
+}
+
+.message .nickname {
+  margin-left: -2em;
+  padding-right: 0.25em;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.message.consecutive {
+  padding-top: 0;
+  margin-top: -0.25em;
+}
+
+.message.consecutive .nickname {
+  display: none;
+}
+
+.message.self .nickname {
+  color: #5ca2d8;
+}
+
+.message.shep {
+  background: rgba(95, 206, 237, 0.3);
+}
+
+.message.shep .nickname {
+  color: #db8c3d;
+}
+
+.message .timestamp {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #f5f8ff;
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 11px;
+  opacity: 0;
+  padding: 0.2em 0.3em 0.15em;
+  right: 0;
+  position: absolute;
+  -moz-transition: opacity 200ms ease-in-out;
+  -webkit-transition: opacity 200ms ease-in-out;
+  transition: opacity 200ms ease-in-out;
+}
+
+.message:hover .timestamp {
+  opacity: 1;
 }

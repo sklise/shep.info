@@ -22,7 +22,7 @@
     <ul id="chat-log"></ul>
   </div>
   <ul id="user-list" class="col-2">
-  <li><input class="chat-name" value="{{ nickname }}"/></li>
+  <li></li>
   </ul>
   <form id="new-message" class="col-10"></form>
 </script>
@@ -42,32 +42,5 @@
 <script type="text/template" id="message-template">
   <div class="timestamp">{{timeString timestamp}}</div>
   <span class="nickname">{{ nickname }}:</span>
-  <span class="message">{{{ content }}}</span>
-</script>
-
-<script type="text/template" id="action-message-template">
-  <div class="message-time">{{ time }}</div>
-  <div class="action-message"><span class="nickname"><span style="font-style:normal;">★</span> {{ name }}</span> {{{ message }}}</div>
-</script>
-
-<script type="text/template" id="feedback-template">
-  <button class="feedback-button" tabindex="-1"><img src="http://shep.info.s3.amazonaws.com/140.png" class="icon"> Leave Feedback</button>
-  <div id="feedback-form"></div>
-</script>
-
-<script type="text/template" id="feedback-form-template">
-  <div>
-    <label>Your Name:</label>
-    <input type="text" id="feedback-name" value="{{ name }}"/>
-    <label>Feedback:</label>
-    <textarea id="feedback-message"></textarea>
-    <button class="feedback-send">Send Feedback</button>
-  </div>
-</script>
-
-<script type="text/template" id="calendar-event-template">
-  <li>
-    <span class="when">{{dateString start}} to {{dateString end}}</span>
-    <span class="title"><a href="{{link}}" target="_blank">{{title}}</a></span>
-  </li>
+  <span class="message-content">{{{ content }}}</span>
 </script>

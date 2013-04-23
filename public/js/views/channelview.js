@@ -43,6 +43,7 @@ $(document).ready(function () {
   // Individual message view. Sets the template based on the value of model.type
   var MessageView = Backbone.View.extend({
     tagName: 'li',
+    className: 'message',
     templateSource: $('#message-template').html(),
 
     render: function () {

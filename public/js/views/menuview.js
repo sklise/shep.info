@@ -24,7 +24,7 @@ $(document).ready(function () {
 
       this.$el.empty();
 
-      this.$el.html(template({channels:this.collection.toJSON()}));
+      this.$el.html(template({channels: this.collection.toJSON()}));
 
       this.collection.forEach(function (channel) {
         var channelTabView = new ChannelTabView({model: channel});

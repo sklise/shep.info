@@ -80,29 +80,6 @@
   height: 16px;
 }
 
-.room-status-icon.shep-icon {
-  background-image: url("http://shep.info.s3.amazonaws.com/shep16.png");
-}
-
-.current-channel .room-status-icon {
-}
-
-.current-channel .room-status-icon.shep-icon {
-  background-image: url("http://shep.info.s3.amazonaws.com/shep16.png");
-}
-
-.shep-icon {
-  background-image: url("/images/shep.jpg");
-  background-position: left top;
-  background-repeat: no-repeat;
-  -webkit-background-size: 16px 16px;
-  -moz-background-size: 16px 16px;
-  background-size: 16px 16px;
-  display: block;
-  width: 16px;
-  height: 16px;
-}
-
 .exitable-room:hover {
   color: #f03528;
 }
