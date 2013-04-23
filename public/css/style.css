@@ -141,18 +141,6 @@ button[disabled]:hover {
   overflow-y: scroll;
 }
 
-#heading {
-  background-image: url("/images/shep.png");
-  background-image: url("/images/shep.svg");
-  background-position: left top;
-  background-repeat: no-repeat;
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  height: 12em;
-  position: relative;
-}
-
 .introduction {
   margin: 1em 0;
 }

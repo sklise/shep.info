@@ -1,16 +1,19 @@
-<div id="chat-window" class="col-9">
+<div id="chat-window">
   <div id="chat-menu" class="col-12"></div>
   <div id="channel-viewport"></div>
 </div>
 
 <script type="text/template" id="menu-template">
+<div id="heading">
+  &nbsp;
+</div>
 <ul class="chat-room-list">
-  <li class="add-channel"><span class="channel-menu-button"><div class="glyphicons circle_plus"><i></i></div></span></li>
+  <!--<li class="add-channel"><span class="channel-menu-button"><div class="glyphicons circle_plus"><i></i></div></span></li>-->
 </ul>
 </script>
 
 <script type="text/template" id="channel-tab-template">
-  <div class="room-status-icon">&nbsp;</div>
+  <div class="room-status-icon"><div class="glyphicons conversation"><i></i></div></div>
   <div class="room-name">{{ name }}</div>
 </script>
 

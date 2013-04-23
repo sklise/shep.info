@@ -28,7 +28,7 @@ $(document).ready(function () {
 
       this.collection.forEach(function (channel) {
         var channelTabView = new ChannelTabView({model: channel});
-        this.$el.find('li').last().before(channelTabView.render().el)
+        this.$el.find('.chat-room-list').append(channelTabView.render().el)
       },this);
 
       return this;

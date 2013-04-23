@@ -3,7 +3,24 @@
   overflow-y: auto;
 }
 
+#heading {
+  background-image: url("/images/shep.png");
+  background-image: url("/images/shep.svg");
+  background-position: left top;
+  background-repeat: no-repeat;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+  position: relative;
+  display: block;
+  width: 3em;
+  height: 3em;
+  float: left;
+  margin-right: 1em;
+}
+
 .chat-room-list {
+  display: inline-block;
   overflow-y: hidden;
 }
 
@@ -22,7 +39,8 @@
   display: inline-block;
 }
 
-.chat-room-list li.current-channel {
+.chat-room-list li.current-channel,
+.chat-room-list li.current-channel .glyphicons i:before {
   background-color: #006ed6;
   color: white;
 }
@@ -56,7 +74,6 @@
   width: 20px; }
 
 .room-status-icon {
-  background: transparent url("http://shep.info.s3.amazonaws.com/236.png") no-repeat center;
   display: inline;
   position: relative;
   width: 16px;
@@ -68,7 +85,6 @@
 }
 
 .current-channel .room-status-icon {
-  background-image: url("http://shep.info.s3.amazonaws.com/236white.png");
 }
 
 .current-channel .room-status-icon.shep-icon {

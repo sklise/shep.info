@@ -44,6 +44,11 @@ $(document).ready(function () {
 
         room.get('messages').add(d);
       });
+
+      socket.on('userlist', function (userlist) {
+        console.log('userlist', userlist)
+        view.updateUserList(userlist);
+      });
     },
 
     render: function () {
@@ -58,7 +63,7 @@ $(document).ready(function () {
       });
     },
 
-    updateUserlist: function (userlist) {
+    updateUserList: function (userlist) {
       this.collection.users = userlist
       this.collection.trigger("change:users")
     }

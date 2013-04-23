@@ -36,17 +36,6 @@
       var chatWindowHeight = windowHeight - menuHeight;
       var chatInterior = chatWindowHeight - $('#new-message').outerHeight();
 
-      var heading = $('#heading');
-
-      headingHeight = function () {
-        if (heading.width() > 225) {
-          return '225px'
-        } else {
-          return heading.width()
-        }
-      }
-
-      heading.height(headingHeight)
       $('#chat-window').css('height', windowHeight + 'px')
       $('#menu-window').css('height', windowHeight + 'px')
       $('#channel-viewport').height(chatWindowHeight+'px');

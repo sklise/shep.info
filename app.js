@@ -44,15 +44,13 @@ client.auth(redisUrl.password, function (err, reply) {
 });
 
 // On server start, erase all users and quickly add Shep back.
-client.del('users');
-client.sadd('users','shep');
-
-var updateUserList = function (io) {
-  client.smembers('users', function (err, reply) {
-    if (err) { return }
-    io.sockets.emit('userlist', reply);
+client.keys('users:*', function (err, reply) {
+  if (err) return;
+  _.forEach(reply, function (key) {
+    client.del(key);
+    client.sadd(key,'shep');
   });
-}
+});
 
 var preprocessMessage = function(m) {
   return S(m).escapeHTML().s
@@ -63,10 +61,11 @@ var preprocessMessage = function(m) {
     .replace(/(\W|^)\-([^\-]*)\-(\W|$)/gi, "$1<del>$2</del>$3");
 }
 
-var updateUserList = function (socket, roomname) {
+var updateUserList = function (io, roomname) {
   client.smembers('users:'+roomname, function (err, reply) {
     if (err) { return }
-    socket.emit('userlist', reply);
+    console.log(reply)
+    io.sockets.in(roomname).emit('userlist', reply);
   });
 }
 
@@ -87,10 +86,10 @@ io.sockets.on('connection', function(socket) {
         client.sismember('users:'+room, msg.nickname, function (err, reply) {
           if (reply !== 1) {
             client.sadd('users:'+room, msg.nickname, function (err, res) {
-              updateUserList(socket, room);
+              updateUserList(io, room);
             });
           } else {
-            updateUserList(socket, room);
+            updateUserList(io, room);
           }
         });
       });
@@ -144,14 +143,13 @@ io.sockets.on('connection', function(socket) {
       _.forEach(socket.rooms, function (room) {
         socket.leave(room);
         client.srem('users:'+room, nickname, function (err, reply) {
+          console.log('remove ' + nickname + ' from ' + room)
           // return if the nickname was not in the room
           if (reply === 0) { return; }
           // get list of remaining users in this room.
           client.smembers(key, function (err, reply) {
-            // extract the room name from the userlist key
-            var roomName = S(key).chompLeft('users:').s;
             // broadcast the updated userlist to the room
-            socket.broadcast.to(roomName).emit('userlist', reply)
+            io.sockets.in(room).emit('userlist', reply)
           });
         });
       });
