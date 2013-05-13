@@ -53,8 +53,8 @@ client.keys('users:*', function (err, reply) {
 });
 
 var preprocessMessage = function(m) {
-  return S(m).escapeHTML().s
-    .replace(/(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$1'>$1</a>")
+  return m
+    .replace(/(^|\w)(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$2'>$2</a>")
     .replace(/\*([^\*]*)\*/g, "<strong>$1</strong>")
     .replace(/\b_([^_]*)_\b/gi, "<em>$1</em>")
     .replace(/\b~([^~]*)~\b/gi, "<span class='comic'>$1</span>")
@@ -106,7 +106,7 @@ io.sockets.on('connection', function(socket) {
   })
 
   socket.on('newmessage', function (data) {
-    var emojified = emoji(data.content, "http://shep.info/emojis", 18);
+    var emojified = emoji(S(data.content).escapeHTML().s, "http://shep.info/emojis", 18);
 
     var msg = {
       content: preprocessMessage(emojified),
