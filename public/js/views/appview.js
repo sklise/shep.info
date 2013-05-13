@@ -37,6 +37,9 @@ $(document).ready(function () {
 
       socket.on('message', function (d) {
         console.log('received message: ', d);
+
+        d.content = S(d.content).unescapeHTML().s;
+
         var room = view.collection.find(function (channel) {
           return channel.get('name') === d.channel;
         });
