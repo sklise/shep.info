@@ -115,6 +115,10 @@ io.sockets.on('connection', function(socket) {
       timestamp: Date.now()
     }
 
+    client.sadd('logs:'+data.channel, msg, function (err, res) {
+      if (err) return;
+    })
+
     // Forward the message to Shep
     request.post(process.env.HUBOT_DOMAIN + '/receive/'+msg.channel, {
       'form': {
