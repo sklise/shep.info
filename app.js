@@ -174,7 +174,7 @@ app.post('/responses/:channel', function (req, res) {
     'timestamp': Date.now()
   }
 
-  client.sadd('logs:'+data.channel, JSON.stringify(m), function (err, res) {
+  client.sadd('logs:'+req.params.channel, JSON.stringify(m), function (err, res) {
       if (err) return;
     });
 
