@@ -54,7 +54,7 @@ client.keys('users:*', function (err, reply) {
 
 var preprocessMessage = function(m) {
   return m
-    .replace(/(^|\w)(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$2'>$2</a>")
+    .replace(/(^|\s)(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/, "<a target='_blank' href='$2'>$2</a>")
     .replace(/\*([^\*]*)\*/g, "<strong>$1</strong>")
     .replace(/\b_([^_]*)_\b/gi, "<em>$1</em>")
     .replace(/\b~([^~]*)~\b/gi, "<span class='comic'>$1</span>")
@@ -173,6 +173,10 @@ app.post('/responses/:channel', function (req, res) {
     'nickname': 'shep',
     'timestamp': Date.now()
   }
+
+  client.sadd('logs:'+data.channel, JSON.stringify(m), function (err, res) {
+      if (err) return;
+    });
 
   io.sockets.in(req.params.channel).emit('message', m);
   res.end('hi');
