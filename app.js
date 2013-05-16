@@ -115,7 +115,7 @@ io.sockets.on('connection', function(socket) {
       timestamp: Date.now()
     }
 
-    client.sadd('logs:'+data.channel, msg, function (err, res) {
+    client.sadd('logs:'+data.channel, JSON.stringify(msg), function (err, res) {
       if (err) return;
     })
 
