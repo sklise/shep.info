@@ -144,16 +144,18 @@ io.sockets.on('connection', function(socket) {
     socket.get('nickname', function(err, nickname) {
       console.log("[[ DISCONNECT ]] => " + nickname)
       // leave the rooms our user is in.
-      _.forEach(socket.rooms, function (room) {
-        socket.leave(room);
-        client.srem('users:'+room, nickname, function (err, reply) {
-          console.log('remove ' + nickname + ' from ' + room)
-          // return if the nickname was not in the room
-          if (reply === 0) { return; }
-          // get list of remaining users in this room.
-          client.smembers(key, function (err, reply) {
-            // broadcast the updated userlist to the room
-            io.sockets.in(room).emit('userlist', reply)
+      socket.get('rooms', function (err, rooms) {
+        _.forEach(rooms, function (room) {
+          socket.leave(room);
+          client.srem('users:'+room, nickname, function (err, reply) {
+            console.log('[[ REDIS ]] => remove ' + nickname + ' from ' + room)
+            // return if the nickname was not in the room
+            if (reply === 0) { return; }
+            // get list of remaining users in this room.
+            client.smembers('users:'+room, function (err, reply) {
+              // broadcast the updated userlist to the room
+              io.sockets.in(room).emit('userlist', reply)
+            });
           });
         });
       });
