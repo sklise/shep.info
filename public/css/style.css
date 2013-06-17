@@ -371,3 +371,10 @@ _____________________________________________________________________________*/
 .message:hover .timestamp {
   opacity: 1;
 }
+
+#logout-link {
+  display: block;
+  right: 0;
+  position: absolute;
+  bottom: 10px;
+}
