@@ -16,19 +16,20 @@ $(document).ready(function () {
 
       var nickname = $('.signup-nickname-input').val();
 
+      var slugified = S(nickname).slugify().s;
+
       if (nickname.length === 0) {
+        return false;
+      } else if (nickname !== slugified) {
+        view.$el.find('.signup-nickname-input').val(slugified);
+        view.$el.find('.nickname-status').html("<span class='error'>Your nickname has been changed to remove punctuation and spaces. Please check to make sure this is how you want your nickname to appear.</span>");
         return false;
       } else if (nickname.length < 3 || nickname.length > 32) {
         view.$el.find('.nickname-status').html("<span class='error'>nickname must be between 3 and 32 characters</span>");
         view.$el.find('button').prop('disabled',true);
         console.log("oyea")
         return false;
-      } else if (S(nickname).contains(' ')) {
-        view.$el.find('.nickname-status').html("<span class='error'>No spaces please.</span>");
-        view.$el.find('button').prop('disabled',true);
-        return false;
       }
-
 
       $.ajax({
         url: '/nicknames/check',
