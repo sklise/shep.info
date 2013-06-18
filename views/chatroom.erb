@@ -55,3 +55,17 @@
   <span class="nickname">{{ nickname }}:</span>
   <span class="message-content">{{{ content }}}</span>
 </script>
+
+<script type="text/template" id="channel-chooser-template">
+<div class="add-channel-dropdown">
+  Choose a channel: <select data-placeholder="Choose an Existing Channel" class="channel-list-select" style="width:300px;">
+  <option></option>
+  {{#each channels}}
+  <option value="{{name}}">{{name}}</option>
+  {{/each}}
+  </select>
+
+  or Create a new one <input type="text" class="new-channel-input"/>
+  <input type="submit" value="Create Channel" class="create-channel"/>
+</div>
+</script>

@@ -12,6 +12,7 @@
 
     setChannel: function (channelName) {
       this.currentChannelName = channelName;
+
       this.models.forEach(function (channel) {
         if (channel.get('name') === channelName) {
           channel.set('isCurrent', true)
@@ -21,6 +22,17 @@
       });
 
       this.trigger('change:channel');
+    },
+
+    addChannel: function (channelName) {
+      window.selected_channel = this.findWhere({'name': channelName});
+
+      var collection = this;
+      this.on('add', function (channel) {
+        collection.setChannel(channelName);
+      });
+
+      this.add(new app.Channel({name: channelName, isCurrent: true}));
     },
 
     getChannel: function () {

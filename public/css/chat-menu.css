@@ -22,7 +22,7 @@
 
 .chat-room-list {
   display: inline-block;
-  overflow-y: hidden;
+  /*overflow-y: hidden;*/
 }
 
 .chat-room-list li {
@@ -87,4 +87,27 @@
 
 .channel-menu-button img {
   width: 16px;
+}
+
+.add-channel-dropdown {
+  background-color: #eee;
+  -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+  -moz-box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4);
+  clear: both;
+  padding: 1em 0.5em;
+  position: relative;
+  width: 100%;
+  overflow-y: visible;
+}
+
+.add-channel-dropdown select {
+  margin-right: 0.5em;
+}
+
+input[type='text'].new-channel-input,
+.add-channel-dropdown input[type='submit'] {
+  display: inline;
+  margin: 0 0 0 0.4em;
+  padding: 0.2em;
 }

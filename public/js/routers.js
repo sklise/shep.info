@@ -18,7 +18,13 @@ $(document).ready(function () {
       this.view.collection.bind('change:channel', this.changeChannel, this);
     },
 
+    addChannel: function (name) {
+      this.view.collection.setChannel(name);
+      Backbone.history.navigate('channels/' + name);
+    },
+
     changeChannel: function () {
+      console.log('changing channel....');
       Backbone.history.navigate("channels/" + this.view.collection.getChannel().get('name'));
     },
 
