@@ -121,23 +121,30 @@ class Shep < Sinatra::Base
   #############################################
   #                CHANNELS                   #
   #############################################
-  get '/channels' do
+  get '/api/channels' do
     content_type :json
     @channels = Channel.all(private: false)
 
     @channels.to_json
   end
 
-  post '/channels' do
+  post '/api/channels' do
     content_type :json
     channel_data = JSON.parse(request.body.read)
 
-    @channel = Channel.first_or_create(name: channel_data['channel'])
+    @channel = Channel.first(name: channel_data['channel'])
 
-    @channel.to_json
+    if @channel.nil?
+      @channel = Channel.create(name: channel_data['channel'])
+      @channel.to_json
+    elsif @channel.private
+      halt 401
+    else
+      @channel.to_json
+    end
   end
 
-  get '/channels/:id' do
+  get '/api/channels/:id' do
     content_type :json
 
     @channel = Channel.first(id: params[:id])
