@@ -2,7 +2,6 @@
   var Channel = Backbone.Model.extend({
     // Create users and messages collections
     initialize: function (options) {
-      console.log("new channel");
       this.set('users', options.users || new app.Users);
       this.set('messages', options.messages || new app.Messages);
     },

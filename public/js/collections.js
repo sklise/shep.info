@@ -4,6 +4,7 @@
 
   var Channels = Backbone.Collection.extend({
     model: app.Channel,
+    urlRoot: "/api/channels/",
 
     initialize: function (options) {
       options[0].isCurrent = true;
@@ -29,6 +30,10 @@
 
       var collection = this;
       this.on('add', function (channel) {
+        $.ajax({
+          url: '/api/channels/add/' + channelName,
+          method: 'post'
+        });
         collection.setChannel(channelName);
       });
 

@@ -128,6 +128,15 @@ class Shep < Sinatra::Base
     @channels.to_json
   end
 
+  post '/api/channels/add/:channel_name' do
+    content_type :json
+
+    @channel = Channel.first_or_create(name: params[:channel_name])
+    env['warden'].user.channels << @channel
+    env['warden'].user.save
+    @channel.to_json
+  end
+
   post '/api/channels' do
     content_type :json
     channel_data = JSON.parse(request.body.read)
@@ -136,6 +145,8 @@ class Shep < Sinatra::Base
 
     if @channel.nil?
       @channel = Channel.create(name: channel_data['channel'])
+      env['warden'].user.channels << @channel
+      env['warden'].user.save
       @channel.to_json
     elsif @channel.private
       halt 401
