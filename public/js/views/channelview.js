@@ -8,6 +8,7 @@ $(document).ready(function () {
     initialize: function (options) {
       this.collection.bind('change:channel', this.render, this);
       this.collection.bind('change:users', this.refreshUserList, this);
+      this.collection.bind('show:help', this.showHelp, this);
     },
 
     refreshUserList: function () {
@@ -20,6 +21,27 @@ $(document).ready(function () {
       })
     },
 
+    showHelp: function () {
+      this.$el.empty();
+
+      var view = this;
+      var template = Handlebars.compile($('#help-template').html());
+
+      // check to see if the commands have already been fetched
+      if ("commands" in view) {
+        // if so, just show 'em.
+        view.$el.html(template({"commands": S(view.commands).decodeHTMLEntities().s}));
+      } else {
+        // otherwise, get them from Shep and then show them.
+        $.ajax("/shep/help").done(function (response) {
+          view.commands = $(response).filter('.commands').html();
+          view.$el.html(template({"commands": S(view.commands).decodeHTMLEntities().s}));
+        });
+      }
+
+      return this;
+    },
+
     render: function () {
       template = Handlebars.compile(this.templateSource);
       var currentChannel = this.collection.getChannel();
@@ -27,7 +49,6 @@ $(document).ready(function () {
       this.$el.empty();
 
       this.$el.html(template(currentChannel.toJSON()))
-
       var newMessageView = new NewMessageView({model: currentChannel});
       var messagesView = new MessagesView({model: currentChannel});
       app.Helpers.fitHeight()

@@ -4,7 +4,8 @@ $(document).ready(function () {
     templateSource: $('#menu-template').html(),
 
     events: {
-      'click .add-channel' : 'addChannel'
+      'click .add-channel' : 'addChannel',
+      'click .help-button' : 'showHelp'
     },
 
     initialize: function (options) {
@@ -19,6 +20,10 @@ $(document).ready(function () {
       console.log(e)
     },
 
+    showHelp: function () {
+      this.collection.trigger('show:help');
+    },
+
     render: function () {
       var template = Handlebars.compile(this.templateSource);
 
@@ -31,7 +36,7 @@ $(document).ready(function () {
         this.$el.find('.chat-room-list').append(channelTabView.render().el)
       }, this);
 
-      this.$el.find('.chat-room-list').append('<li class="add-channel"><span class="channel-menu-button"><div class="channel-icon glyphicons circle_plus"><i></i></div></span></li>');
+      this.$el.find('.chat-room-list').append('<li class="add-channel"><span class="channel-menu-button"><div class="channel-icon glyphicons circle_plus"><i></i></div></span></li><li class="help-button">Help</li>');
       return this;
     }
   });

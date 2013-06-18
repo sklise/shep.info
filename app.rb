@@ -93,6 +93,12 @@ class Shep < Sinatra::Base
     end
   end
 
+  get '/shep/help' do
+    require 'net/http'
+    help_uri = URI.parse("#{ENV['HUBOT_DOMAIN']}/shep/help")
+    Net::HTTP.get(help_uri)
+  end
+
   get '/users/:id' do
     content_type :json
     @user = User.first(id: params[:id])
@@ -110,8 +116,6 @@ class Shep < Sinatra::Base
 
     user_data = JSON.parse(request.body.read)
     @user.update user_data
-
-
   end
 
   #############################################
