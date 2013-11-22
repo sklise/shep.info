@@ -62,6 +62,7 @@ GEM
     macaddr (1.6.1)
       systemu (~> 2.5.0)
     multi_json (1.6.1)
+    newrelic_rpm (3.6.9.171)
     nokogiri (1.5.6)
     omniauth (1.1.1)
       hashie (~> 1.2)
@@ -106,6 +107,7 @@ DEPENDENCIES
   data_mapper (= 1.2.0)
   dm-postgres-adapter (= 1.2.0)
   json (= 1.7.5)
+  newrelic_rpm
   omniauth (= 1.1.1)
   omniauth-saml (= 1.0.0)
   rack-flash3 (= 1.0.1)
