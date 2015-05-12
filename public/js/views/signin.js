@@ -3,23 +3,23 @@ $(document).ready(function () {
     el: '#login-panel',
 
     initialize: function () {
-      this.render().el;
+      this.render().el
     },
 
     render: function () {
-      var view = this;
-      var template = Handlebars.compile($('#sign-in-template').html());
+      var view = this
+      var template = Handlebars.compile($('#sign-in-template').html())
 
-      this.$el.empty();
+      this.$el.empty()
 
-      this.$el.html(template());
-      $('.signin-link').addClass('current-login-choice');
-      $('.signup-link').removeClass('current-login-choice');
+      this.$el.html(template())
+      $('.signin-link').addClass('current-login-choice')
+      $('.signup-link').removeClass('current-login-choice')
 
-      return this;
+      return this
     }
-  });
+  })
 
   this.app = window.app != null ? window.app : {}
-  this.app.SignInView = SignInView;
-});
+  this.app.SignInView = SignInView
+})

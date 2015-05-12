@@ -6,62 +6,62 @@ $(document).ready(function () {
     templateSource: $('#channel-template').html(),
 
     initialize: function (options) {
-      this.collection.bind('change:channel', this.render, this);
-      this.collection.bind('change:users', this.refreshUserList, this);
-      this.collection.bind('show:help', this.showHelp, this);
+      this.collection.bind('change:channel', this.render, this)
+      this.collection.bind('change:users', this.refreshUserList, this)
+      this.collection.bind('show:help', this.showHelp, this)
     },
 
     refreshUserList: function () {
       console.log('refresh userlist')
-      var userList = this.$el.find('#user-list');
+      var userList = this.$el.find('#user-list')
       var alphabetizedList = _.sortBy(this.collection.users, function (u) {return u})
-      $(userList).empty();
+      $(userList).empty()
       _.each(alphabetizedList, function (username) {
-        $(userList).append('<li>'+username+'</li>')
+        $(userList).append('<li>' + username + '</li>')
       })
     },
 
     showHelp: function () {
-      this.$el.empty();
+      this.$el.empty()
 
-      var view = this;
-      var template = Handlebars.compile($('#help-template').html());
+      var view = this
+      var template = Handlebars.compile($('#help-template').html())
 
       // check to see if the commands have already been fetched
-      if ("commands" in view) {
+      if ('commands' in view) {
         // if so, just show 'em.
-        view.$el.html(template({"commands": S(view.commands).decodeHTMLEntities().s}));
+        view.$el.html(template({'commands': S(view.commands).decodeHTMLEntities().s}))
       } else {
         // otherwise, get them from Shep and then show them.
-        $.ajax("/shep/help").done(function (response) {
-          view.commands = $(response).filter('.commands').html();
-          view.$el.html(template({"commands": S(view.commands).decodeHTMLEntities().s}));
-        });
+        $.ajax('/shep/help').done(function (response) {
+          view.commands = $(response).filter('.commands').html()
+          view.$el.html(template({'commands': S(view.commands).decodeHTMLEntities().s}))
+        })
       }
 
-      return this;
+      return this
     },
 
     render: function () {
-      template = Handlebars.compile(this.templateSource);
-      var currentChannel = this.collection.getChannel();
+      template = Handlebars.compile(this.templateSource)
+      var currentChannel = this.collection.getChannel()
 
-      this.$el.empty();
+      this.$el.empty()
 
       this.$el.html(template(currentChannel.toJSON()))
-      var newMessageView = new NewMessageView({model: currentChannel});
-      var messagesView = new MessagesView({model: currentChannel});
+      var newMessageView = new NewMessageView({model: currentChannel})
+      var messagesView = new MessagesView({model: currentChannel})
       app.Helpers.fitHeight()
 
-      messagesView.scrollToBottom();
-      this.refreshUserList();
+      messagesView.scrollToBottom()
+      this.refreshUserList()
 
-      return this;
+      return this
     }
-  });
+  })
 
   // MESSAGE VIEW
-  //___________________________________________________________________________
+  // ___________________________________________________________________________
   // Individual message view. Sets the template based on the value of model.type
   var MessageView = Backbone.View.extend({
     tagName: 'li',
@@ -69,29 +69,29 @@ $(document).ready(function () {
     templateSource: $('#message-template').html(),
 
     render: function () {
-      var template = Handlebars.compile(this.templateSource);
+      var template = Handlebars.compile(this.templateSource)
       var message = this.model.toJSON()
 
-      this.$el.html(template(message));
+      this.$el.html(template(message))
 
       if (this.model.get('consecutive')) {
         this.$el.addClass('consecutive')
-      };
+      }
 
       if (this.model.get('is_shep')) {
-        this.$el.addClass('shep');
+        this.$el.addClass('shep')
       }
 
       if (this.model.get('is_self')) {
-        this.$el.addClass('self');
+        this.$el.addClass('self')
       }
 
-      return this;
+      return this
     }
-  });
+  })
 
   // MESSAGE LIST VIEW
-  //___________________________________________________________________________
+  // ___________________________________________________________________________
   // Message list view gets recreated when a the channel is changed.
 
   var MessagesView = Backbone.View.extend({
@@ -103,46 +103,46 @@ $(document).ready(function () {
     },
 
     appendLast: function () {
-      var message = this.model.get('messages').last();
-      var messageView = new MessageView({model: message});
+      var message = this.model.get('messages').last()
+      var messageView = new MessageView({model: message})
 
-      this.$el.append(messageView.render().el);
-      this.scrollToBottom();
-      return this;
+      this.$el.append(messageView.render().el)
+      this.scrollToBottom()
+      return this
     },
 
     render: function () {
-      var self = this;
+      var self = this
       this.$el.empty()
 
       this.model.get('messages').forEach(function (message) {
-        var messageView = new MessageView({model: message});
+        var messageView = new MessageView({model: message})
         self.$el.append(messageView.render().el)
-      });
-      return this;
+      })
+      return this
     },
 
     scrollToBottom: function (force) {
-      var lastMessageHeight = this.$el.find('li').last().height() || 30;
-      var scrollPosition = $('#chat-log-container').scrollTop();
-      var containerHeight = $('#chat-log-container').height();
-      var chatHeight = this.$el.outerHeight();
-      var logOverflow = chatHeight - containerHeight;
+      var lastMessageHeight = this.$el.find('li').last().height() || 30
+      var scrollPosition = $('#chat-log-container').scrollTop()
+      var containerHeight = $('#chat-log-container').height()
+      var chatHeight = this.$el.outerHeight()
+      var logOverflow = chatHeight - containerHeight
 
       if (scrollPosition - logOverflow + lastMessageHeight <= 0 || force === true) {
-        $('#chat-log-container').scrollTop(chatHeight);
+        $('#chat-log-container').scrollTop(chatHeight)
       }
 
     }
   })
 
   // New Message View
-  //___________________________________________________________________________
+  // ___________________________________________________________________________
   var NewMessageView = Backbone.View.extend({
     el: '#new-message',
     templateSource: $('#new-message-template').html(),
     events: {
-      'keypress .new-message-input' : 'keyListener'
+      'keypress .new-message-input': 'keyListener'
     },
 
     initialize: function (options) {
@@ -156,9 +156,9 @@ $(document).ready(function () {
 
     render: function () {
       this.template = Handlebars.compile(this.templateSource)
-      this.$el.html(this.template(this.model.toJSON()));
+      this.$el.html(this.template(this.model.toJSON()))
       this.$el.find('.new-message-input textarea').focus()
-      return this;
+      return this
     },
 
     emptyInput: function () {
@@ -166,7 +166,7 @@ $(document).ready(function () {
     },
 
     keyListener: function (event) {
-      var messageContent = this.$el.find('textarea').val();
+      var messageContent = this.$el.find('textarea').val()
       if (event.which === 13) {
         // halt if field is empty.
         if (messageContent.length === 0) {return false;}
@@ -175,14 +175,14 @@ $(document).ready(function () {
         // send message
         this.model.sendMessage(messageContent)
 
-        return false;
+        return false
       }
     },
 
     makeExpandingArea: function (container) {
       // http://www.alistapart.com/articles/expanding-text-areas-made-elegant/
-      var area = container.querySelector('textarea');
-      var span = container.querySelector('span');
+      var area = container.querySelector('textarea')
+      var span = container.querySelector('span')
 
       if (area.addEventListener) {
         area.addEventListener('input', function () {
@@ -199,8 +199,8 @@ $(document).ready(function () {
       container.className += ' active'
     }
 
-  });
+  })
 
   this.app = window.app != null ? window.app : {}
-  this.app.ChannelView = ChannelView;
-});
+  this.app.ChannelView = ChannelView
+})
