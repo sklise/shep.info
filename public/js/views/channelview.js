@@ -12,7 +12,6 @@ $(document).ready(function () {
     },
 
     refreshUserList: function () {
-      console.log('refresh userlist')
       var userList = this.$el.find('#user-list')
       var alphabetizedList = _.sortBy(this.collection.users, function (u) {return u})
       $(userList).empty()

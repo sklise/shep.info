@@ -36,8 +36,6 @@ $(document).ready(function () {
       })
 
       socket.on('message', function (d) {
-        console.log('received message: ', d)
-
         var room = view.collection.find(function (channel) {
           return channel.get('name') === d.channel
         })
@@ -46,7 +44,6 @@ $(document).ready(function () {
       })
 
       socket.on('userlist', function (userlist) {
-        console.log('userlist', userlist)
         view.updateUserList(userlist)
       })
     },

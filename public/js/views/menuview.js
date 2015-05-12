@@ -66,14 +66,10 @@ $(document).ready(function () {
         var my_channels = _.pluck(view.collection.toJSON(), 'name')
 
         var new_channels = _.reject(data, function (channel) {
-          console.log(_.contains(my_channels, channel.name), channel.name, my_channels)
           return _.contains(my_channels, channel.name)
         })
 
-        console.log(new_channels)
-
         view.$el.html(template({channels: new_channels}))
-      // $('.chzn-select').chosen()
       })
       return this
     }

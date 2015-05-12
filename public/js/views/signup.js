@@ -27,7 +27,6 @@ $(document).ready(function () {
       } else if (nickname.length < 3 || nickname.length > 32) {
         view.$el.find('.nickname-status').html("<span class='error'>nickname must be between 3 and 32 characters</span>")
         view.$el.find('button').prop('disabled', true)
-        console.log('oyea')
         return false
       }
 
